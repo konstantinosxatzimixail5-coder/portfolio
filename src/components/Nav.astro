@@ -1,0 +1,160 @@
+---
+interface Props {
+  active?: string;
+}
+const { active } = Astro.props;
+
+const links = [
+  { href: '/#work', label: 'Work', key: 'work' },
+  { href: '/#pipelines', label: 'Pipelines', key: 'pipelines' },
+  { href: '/spec/', label: 'Spec', key: 'spec' },
+  { href: '/#writing', label: 'Writing', key: 'writing' },
+  { href: '/#about', label: 'About', key: 'about' },
+];
+---
+
+<header class="nav">
+  <div class="nav__inner shell">
+    <a class="nav__mark" href="/" aria-label="Konstantinos Chatzimichail, home">
+      <span aria-hidden="true">K</span><span class="nav__slash" aria-hidden="true">/</span><span
+        aria-hidden="true">C</span
+      >
+    </a>
+
+    <nav class="nav__links" aria-label="Main">
+      {
+        links.map((l) => (
+          <a
+            href={l.href}
+            class="nav__link mono"
+            aria-current={active === l.key ? 'page' : undefined}
+          >
+            {l.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <a class="nav__reel mono" href="/reel/" aria-current={active === 'reel' ? 'page' : undefined}>
+      Reel
+    </a>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--ink) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--s-5);
+    min-height: var(--tap);
+    padding-block: var(--s-2);
+  }
+
+  .nav__mark {
+    font-family: var(--display);
+    font-size: 1.35rem;
+    line-height: 1;
+    color: var(--newsprint);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding-right: var(--s-2);
+    letter-spacing: 0.02em;
+  }
+
+  .nav__slash {
+    color: var(--red);
+    padding-inline: 0.08em;
+  }
+
+  .nav__links {
+    display: flex;
+    gap: var(--s-5);
+    margin-right: auto;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav__links::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav__link {
+    color: var(--fg-quiet);
+    text-decoration: none;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    border-bottom: 1px solid transparent;
+  }
+
+  .nav__link:hover,
+  .nav__link[aria-current='page'] {
+    color: var(--newsprint);
+    border-bottom-color: var(--red);
+  }
+
+  /* Full tap height at every width, not only on a phone. This is the primary
+     call to action on the site and a 34px target is mean to a trackpad too. */
+  .nav__reel {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding: 0 var(--s-4);
+    margin-left: var(--s-2);
+    color: var(--ink);
+    background: var(--cyan);
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .nav__reel:hover {
+    background: var(--newsprint);
+    color: var(--ink);
+  }
+
+  /* On a phone the five links do not fit beside the mark and the reel button,
+     and a silently scrolling nav reads as a clipped one. Second row instead. */
+  @media (max-width: 720px) {
+    .nav__inner {
+      flex-wrap: wrap;
+      gap: var(--s-3);
+      padding-bottom: 0;
+    }
+    .nav__mark {
+      margin-right: auto;
+    }
+    .nav__links {
+      order: 3;
+      width: 100%;
+      gap: var(--s-4);
+      margin-right: 0;
+      border-top: 1px solid var(--rule);
+    }
+    .nav__link {
+      font-size: 0.72rem;
+      min-height: var(--tap);
+    }
+  }
+
+  @media (max-width: 360px) {
+    .nav__links {
+      gap: var(--s-3);
+    }
+    .nav__link {
+      font-size: 0.68rem;
+    }
+  }
+</style>

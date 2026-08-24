@@ -1,0 +1,297 @@
+---
+import Base from '../layouts/Base.astro';
+import Frame from '../components/Frame.astro';
+import { specBrands } from '../data/spec';
+
+const total = specBrands.reduce((n, b) => n + b.shots.length, 0);
+---
+
+<Base
+  title="Spec shelf, Konstantinos Chatzimichail"
+  description="Four invented brands, built to test a specific failure. Product sets and creator ads, self-initiated, with the control gate each one was made to prove."
+  active="spec"
+>
+  <article class="shelf">
+    <!-- header -->
+    <header class="shelf__head shell">
+      <p class="mono shelf__flag">Spec, self-initiated</p>
+      <h1 class="shelf__title">The spec shelf</h1>
+      <p class="shelf__lede">
+        Four brands that do not exist, {total} frames, all of it set by me. Nobody commissioned any of
+        it and nobody paid for it.
+      </p>
+      <p class="shelf__note quiet">
+        Each one was built to break a specific thing. A wordmark that has to survive five sets. A
+        pack claim a model would happily invent. One face under three different light sources. The
+        brand is the excuse. The gate underneath it is the point.
+      </p>
+    </header>
+
+    <!-- contents -->
+    <nav class="shelf__toc shell" aria-label="Brands">
+      <ol class="toc__list">
+        {
+          specBrands.map((b) => (
+            <li>
+              <a class="toc__row" href={`#${b.id}`}>
+                <span class="toc__num mono">{b.num}</span>
+                <span class="toc__name">{b.name}</span>
+                <span class="toc__what mono mono--lower faint">{b.product}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+
+    <!-- brands -->
+    {
+      specBrands.map((b) => (
+        <section class="brand shell spread" id={b.id}>
+          <div class="rail">
+            <span class="rail__num">{b.num}</span>
+            <span class="rail__slug">{b.name}</span>
+          </div>
+
+          <div class="brand__body">
+            <header class="brand__head">
+              <p class="mono brand__kind">
+                Spec, self-initiated
+                <span class="faint" aria-hidden="true"> · </span>
+                <span class="quiet">{b.product}</span>
+              </p>
+              <h2 class="brand__name">{b.name}</h2>
+              <p class="brand__proves">{b.proves}</p>
+              <p class="brand__note quiet">{b.note}</p>
+              <p class="mono brand__pipe">
+                Runs on <a href={b.pipeline.href}>{b.pipeline.label}</a>
+              </p>
+            </header>
+
+            <div class="brand__grid">
+              {b.shots.map((s, i) => (
+                <Frame
+                  src={s.src}
+                  alt={s.alt}
+                  num={String(i + 1).padStart(2, '0')}
+                  label={s.label}
+                  sizes="(max-width: 620px) 90vw, (max-width: 1000px) 45vw, 30vw"
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      ))
+    }
+
+    <!-- back -->
+    <nav class="shelf__back shell" aria-label="Back">
+      <a class="mono" href="/">← Back to the front page</a>
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .shelf__head {
+    padding-top: var(--s-8);
+    padding-bottom: var(--s-6);
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .shelf__flag {
+    color: var(--gold);
+    font-size: 0.68rem;
+    max-width: none;
+  }
+
+  .shelf__title {
+    font-size: var(--step-5);
+    letter-spacing: -0.03em;
+  }
+
+  .shelf__lede {
+    font-size: var(--step-1);
+    line-height: 1.4;
+    max-width: 40ch;
+    color: var(--newsprint-dim);
+  }
+
+  .shelf__note {
+    font-size: var(--step--1);
+    max-width: 54ch;
+  }
+
+  /* --- contents ----------------------------------------------------------- */
+
+  .shelf__toc {
+    padding-bottom: var(--s-8);
+  }
+
+  .toc__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--rule-bright);
+  }
+
+  .toc__row {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 11rem) minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--s-4);
+    padding-block: var(--s-3);
+    min-height: var(--tap);
+    border-bottom: 1px solid var(--rule);
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+  }
+
+  .toc__row::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    height: 1px;
+    width: 0;
+    background: var(--gold);
+    transition: width 340ms var(--ease);
+  }
+
+  .toc__row:hover::after,
+  .toc__row:focus-visible::after {
+    width: 100%;
+  }
+
+  .toc__num {
+    color: var(--gold);
+    font-size: 0.66rem;
+  }
+
+  .toc__name {
+    font-family: var(--display);
+    font-size: var(--step-2);
+    line-height: 1.1;
+    color: var(--newsprint);
+    transition: color var(--dur) var(--ease);
+  }
+
+  .toc__row:hover .toc__name {
+    color: var(--gold);
+  }
+
+  .toc__what {
+    font-size: 0.66rem;
+    max-width: none;
+  }
+
+  @media (max-width: 760px) {
+    .toc__row {
+      grid-template-columns: 2.2rem minmax(0, 1fr);
+      gap: 0.15rem var(--s-3);
+    }
+    .toc__num {
+      grid-row: span 2;
+    }
+    .toc__what {
+      grid-column: 2;
+    }
+  }
+
+  /* --- brand -------------------------------------------------------------- */
+
+  .brand {
+    padding-block: var(--s-8);
+    border-top: 1px solid var(--rule);
+  }
+
+  .brand .rail__num,
+  .brand :global(.rail__num) {
+    color: var(--gold);
+  }
+
+  .brand__body {
+    display: grid;
+    gap: var(--s-6);
+    min-width: 0;
+  }
+
+  .brand__head {
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .brand__kind {
+    color: var(--gold);
+    font-size: 0.66rem;
+    max-width: none;
+  }
+
+  .brand__name {
+    font-size: var(--step-4);
+    letter-spacing: -0.03em;
+  }
+
+  .brand__proves {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.4;
+    color: var(--newsprint);
+    max-width: 44ch;
+  }
+
+  .brand__note {
+    font-size: var(--step--1);
+    max-width: var(--measure);
+  }
+
+  .brand__pipe {
+    font-size: 0.64rem;
+    color: var(--fg-faint);
+    max-width: none;
+  }
+
+  /* Columns, not a row grid. These frames are square, portrait and vertical in
+     the same set, and a row grid either leaves gaps or crops. Cropping is the
+     one thing this page cannot do: the whole point is that the labels survive. */
+  .brand__grid {
+    column-count: 3;
+    column-gap: var(--s-4);
+  }
+
+  .brand__grid > :global(*) {
+    break-inside: avoid;
+    margin-bottom: var(--s-4);
+  }
+
+  @media (max-width: 900px) {
+    .brand__grid {
+      column-count: 2;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .brand__grid {
+      column-gap: var(--s-3);
+    }
+    .brand__grid > :global(*) {
+      margin-bottom: var(--s-3);
+    }
+  }
+
+  /* --- back --------------------------------------------------------------- */
+
+  .shelf__back {
+    padding-block: var(--s-6);
+    border-top: 1px solid var(--rule);
+  }
+
+  .shelf__back a {
+    text-decoration: none;
+    font-size: 0.68rem;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+</style>

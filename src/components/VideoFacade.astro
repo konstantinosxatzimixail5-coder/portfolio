@@ -1,0 +1,180 @@
+---
+// Click-to-play facade. The poster frame is a static image. No third-party
+// iframe, cookie or script loads until someone presses play.
+// Swap the reel by changing `videoId` and `host` in the page that uses this.
+import Frame from './Frame.astro';
+
+interface Props {
+  host: 'vimeo' | 'youtube';
+  videoId: string;
+  poster: string; // manifest key
+  alt: string;
+  title: string;
+  duration?: string;
+  loading?: 'lazy' | 'eager';
+}
+
+const { host, videoId, poster, alt, title, duration, loading = 'lazy' } = Astro.props;
+
+const embed =
+  host === 'vimeo'
+    ? `https://player.vimeo.com/video/${videoId}?autoplay=1&dnt=1&title=0&byline=0&portrait=0`
+    : `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+
+const watch =
+  host === 'vimeo' ? `https://vimeo.com/${videoId}` : `https://www.youtube.com/watch?v=${videoId}`;
+---
+
+<div class="facade" data-facade data-embed={embed} data-title={title}>
+  <Frame src={poster} alt={alt} loading={loading} sizes="(max-width: 900px) 100vw, 80vw" />
+
+  <button type="button" class="facade__btn" data-play>
+    <span class="facade__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true">
+        <path d="M8 5.2v13.6L19 12z"></path>
+      </svg>
+    </span>
+    <span class="facade__label">
+      <span class="facade__play mono">Play</span>
+      <span class="facade__title">{title}</span>
+    </span>
+    {duration && <span class="facade__dur mono">{duration}</span>}
+  </button>
+
+  <noscript>
+    <p class="facade__noscript">
+      <a href={watch} rel="noopener">Watch {title} on {host === 'vimeo' ? 'Vimeo' : 'YouTube'}</a>
+    </p>
+  </noscript>
+</div>
+
+<style>
+  .facade {
+    position: relative;
+    display: grid;
+  }
+
+  .facade :global(.frame) {
+    grid-area: 1 / 1;
+  }
+
+  .facade__btn {
+    grid-area: 1 / 1;
+    z-index: 2;
+    -webkit-appearance: none;
+    appearance: none;
+    border: 0;
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--ink) 82%, transparent) 0%,
+      color-mix(in srgb, var(--ink) 20%, transparent) 45%,
+      transparent 100%
+    );
+    color: var(--newsprint);
+    cursor: pointer;
+    display: flex;
+    align-items: flex-end;
+    gap: var(--s-4);
+    padding: var(--s-5);
+    text-align: left;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius);
+    transition: background var(--dur) var(--ease);
+  }
+
+  .facade__icon {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--cyan);
+    color: var(--ink);
+    transition:
+      transform var(--dur) var(--ease),
+      background var(--dur) var(--ease);
+  }
+
+  .facade__btn:hover .facade__icon {
+    transform: scale(1.07);
+    background: var(--newsprint);
+  }
+
+  .facade__label {
+    display: grid;
+    gap: 0.15rem;
+    margin-right: auto;
+    min-width: 0;
+  }
+
+  .facade__play {
+    color: var(--cyan);
+    font-size: 0.66rem;
+  }
+
+  .facade__title {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.2;
+  }
+
+  .facade__dur {
+    flex: 0 0 auto;
+    color: var(--newsprint);
+    font-size: 0.68rem;
+    align-self: flex-end;
+    padding-bottom: 0.35rem;
+  }
+
+  .facade__noscript {
+    grid-area: 1 / 1;
+    align-self: end;
+    z-index: 3;
+    padding: var(--s-5);
+  }
+
+  @media (max-width: 620px) {
+    .facade__btn {
+      padding: var(--s-4);
+      gap: var(--s-3);
+    }
+    .facade__icon {
+      width: 46px;
+      height: 46px;
+    }
+    .facade__dur {
+      display: none;
+    }
+  }
+
+  .facade__iframe {
+    grid-area: 1 / 1;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-facade]').forEach((facade) => {
+    const btn = facade.querySelector<HTMLButtonElement>('[data-play]');
+    const embed = facade.dataset.embed;
+    const title = facade.dataset.title ?? 'Video';
+    if (!btn || !embed) return;
+
+    btn.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      iframe.className = 'facade__iframe';
+      iframe.src = embed;
+      iframe.title = title;
+      iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+      iframe.setAttribute('allowfullscreen', '');
+      iframe.setAttribute('loading', 'lazy');
+      facade.replaceChildren(iframe);
+      iframe.focus();
+    });
+  });
+</script>

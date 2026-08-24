@@ -1,0 +1,122 @@
+---
+import Frame from './Frame.astro';
+
+interface Props {
+  href: string;
+  num: string;
+  client: string;
+  kind: 'Client' | 'Spec, self-initiated';
+  problem: string;
+  image: string;
+  alt: string;
+  year?: string;
+}
+
+const { href, num, client, kind, problem, image, alt, year } = Astro.props;
+const spec = kind === 'Spec, self-initiated';
+---
+
+<a class="card" href={href}>
+  <Frame src={image} alt={alt} num={num} ratio="4 / 3" sizes="(max-width: 900px) 100vw, 45vw" />
+
+  <div class="card__body">
+    <p class="card__meta mono">
+      <span class="card__client">{client}</span>
+      <span class="card__sep" aria-hidden="true">·</span>
+      <span class={spec ? 'card__kind card__kind--spec' : 'card__kind'}>{kind}</span>
+      {
+        year && (
+          <>
+            <span class="card__sep" aria-hidden="true">
+              ·
+            </span>
+            <span class="faint">{year}</span>
+          </>
+        )
+      }
+    </p>
+    <p class="card__problem">{problem}</p>
+  </div>
+</a>
+
+<style>
+  .card {
+    display: grid;
+    gap: var(--s-3);
+    text-decoration: none;
+    color: inherit;
+    padding-bottom: var(--s-2);
+  }
+
+  .card :global(.frame__plate) {
+    transition: border-color var(--dur) var(--ease);
+  }
+
+  .card :global(.frame__plate img) {
+    transition:
+      transform 600ms var(--ease),
+      filter var(--dur) var(--ease);
+    filter: saturate(0.92);
+  }
+
+  .card:hover :global(.frame__plate) {
+    border-color: var(--cyan);
+  }
+
+  .card:hover :global(.frame__plate img) {
+    transform: scale(1.03);
+    filter: saturate(1.05);
+  }
+
+  .card__body {
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: baseline;
+    font-size: 0.66rem;
+    margin: 0;
+    max-width: none;
+  }
+
+  .card__client {
+    color: var(--newsprint);
+  }
+
+  .card__sep {
+    color: var(--fg-faint);
+  }
+
+  .card__kind {
+    color: var(--cyan);
+  }
+
+  .card__kind--spec {
+    color: var(--gold);
+  }
+
+  .card__problem {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.28;
+    max-width: 30ch;
+    color: var(--newsprint);
+  }
+
+  .card:hover .card__problem {
+    text-decoration: underline;
+    text-decoration-color: var(--red);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card:hover :global(.frame__plate img) {
+      transform: none;
+    }
+  }
+</style>

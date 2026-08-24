@@ -1,0 +1,122 @@
+---
+// A numbered image frame. Every image on the site goes through this so that
+// intrinsic dimensions, AVIF/WebP sources and a caption slug are never optional.
+import manifest from '../image-manifest.json';
+
+interface Props {
+  src: string; // manifest key, e.g. "mariposa/dinner-mariposa"
+  alt: string; // required. no decorative images on this site.
+  num?: string; // frame number shown on the edge
+  label?: string; // caption slug, mono
+  sizes?: string;
+  loading?: 'lazy' | 'eager';
+  ratio?: string; // css aspect-ratio override, e.g. "4 / 5"
+  focus?: string; // object-position when a ratio crops, e.g. "50% 15%"
+  class?: string;
+}
+
+const {
+  src,
+  alt,
+  num,
+  label,
+  sizes = '(max-width: 900px) 100vw, 60vw',
+  loading = 'lazy',
+  ratio,
+  focus,
+  class: className = '',
+} = Astro.props;
+
+const styles = [
+  ratio && `--frame-ratio:${ratio}`,
+  focus && `--frame-focus:${focus}`,
+].filter(Boolean).join(';');
+
+const entry = (manifest as Record<string, any>)[src];
+if (!entry) {
+  throw new Error(
+    `Frame: no image "${src}" in the manifest. Drop it in source-assets/ and run \`npm run images\`.`
+  );
+}
+
+const srcset = (list: { w: number; src: string }[]) =>
+  list.map((s) => `${s.src} ${s.w}w`).join(', ');
+---
+
+<figure class={`frame ${className}`} style={styles || undefined}>
+  <div class="frame__plate">
+    {num && <span class="frame__num mono" aria-hidden="true">{num}</span>}
+    <picture>
+      <source type="image/avif" srcset={srcset(entry.avif)} sizes={sizes} />
+      <source type="image/webp" srcset={srcset(entry.webp)} sizes={sizes} />
+      <img
+        src={entry.fallback}
+        width={entry.width}
+        height={entry.height}
+        alt={alt}
+        loading={loading}
+        decoding="async"
+        fetchpriority={loading === 'eager' ? 'high' : undefined}
+      />
+    </picture>
+  </div>
+  {label && <figcaption class="frame__cap mono mono--lower">{label}</figcaption>}
+</figure>
+
+<style>
+  .frame {
+    margin: 0;
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .frame__plate {
+    position: relative;
+    background: var(--ink-sunk);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .frame__plate img {
+    width: 100%;
+    height: auto;
+  }
+
+  /* When a ratio is set the image crops to it. Used in grids so rows align.
+     The picture element has to be a block with a height of its own, because a
+     percentage height on the img resolves against picture and an inline picture
+     has no definite height. Without this the crop silently does nothing. */
+  .frame[style*='--frame-ratio'] .frame__plate {
+    aspect-ratio: var(--frame-ratio);
+  }
+  .frame[style*='--frame-ratio'] .frame__plate picture {
+    display: block;
+    height: 100%;
+  }
+  .frame[style*='--frame-ratio'] .frame__plate img {
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--frame-focus, 50% 50%);
+  }
+
+  .frame__num {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    padding: 0.3rem 0.5rem;
+    background: var(--ink);
+    color: var(--red);
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .frame__cap {
+    color: var(--fg-faint);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+  }
+</style>

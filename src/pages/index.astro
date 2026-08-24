@@ -1,0 +1,570 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Frame from '../components/Frame.astro';
+import WorkCard from '../components/WorkCard.astro';
+import Strip from '../components/Strip.astro';
+import { pipelines } from '../data/pipelines';
+import { site, reel } from '../data/site';
+
+const work = (await getCollection('work'))
+  .filter((e) => !e.data.draft)
+  .sort((a, b) => a.data.order - b.data.order);
+
+// The contents index. This is the front matter of the site, set as a book
+// would set it, and it doubles as the second navigation.
+const contents = [
+  { num: '01', href: '#reel', label: 'Reel', note: 'Ninety seconds, and what my hand did on each piece' },
+  { num: '02', href: '#work', label: 'Selected work', note: `${work.length} client projects, start to delivery` },
+  { num: '03', href: '#pipelines', label: 'Pipelines', note: 'Three of the seven, stage by stage, with the gates' },
+  { num: '04', href: '/spec/', label: 'Spec shelf', note: 'Invented brands, product sets and creator ads' },
+  { num: '05', href: '#writing', label: 'Writing', note: 'Direct response scripts, ghostwriting, one article' },
+  { num: '06', href: '#about', label: 'About and contact', note: 'CV, the studio, and how to reach me' },
+];
+
+// Three frames from the cut, standing in for the poster until the reel is hosted.
+const reelTrio = [
+  {
+    src: 'spec/feral/product-05',
+    alt: 'A FERAL Yuzu Static can standing in shallow water with magenta and green vapour behind it.',
+  },
+  {
+    src: 'bike-barn/frame-01',
+    alt: 'A rider on an Indian motorcycle on wet cobbles at night, canal houses and street lamps behind.',
+  },
+  {
+    src: 'spec/knuckle/product-01',
+    alt: 'A single amber KNUCKLE chew sliding out of a black leather sleeve, the flavour names stamped into it.',
+  },
+];
+
+const writing = [
+  { title: 'X-ALL VSL', note: 'Ninety-second direct response script, plus a hook battery for the mini cut' },
+  { title: 'Three espresso scripts', note: 'One product, three ninety-second angles, written to be tested against each other' },
+  { title: 'Money laundering in video games', note: 'Feature article on in-game economies and how value leaves them' },
+  { title: 'LinkedIn ghostwriting', note: 'Long-running post work in a founder voice, in Greek and English' },
+];
+---
+
+<Base
+  title="Konstantinos Chatzimichail, writer, director, synthetic media production"
+  description="Generated product photography, synthetic creators and the pipelines that keep them honest. Client work, spec work and the control gates, from Athens."
+  active="home"
+>
+  <!-- ============================================================ 00 open -->
+  <section class="open shell">
+    <p class="mono open__slug faint">
+      {site.role}
+      <span class="open__sep" aria-hidden="true">/</span>
+      {site.base}
+    </p>
+
+    <div class="open__top">
+      <div class="open__say">
+        <h1 class="open__line">
+          I make the films and the pictures a shoot could not pay for.
+        </h1>
+
+        <p class="open__lede">
+          Generated product photography, synthetic creators, and the pipelines that keep both of
+          them honest. I write the brief, build the line, run the gates and hand over the folder.
+        </p>
+
+        <p class="open__note quiet">
+          Greek and English. Every piece below carries a label saying whether a client paid for it
+          or I set it myself.
+        </p>
+      </div>
+
+      <Frame
+        class="open__face"
+        src="spec/knuckle/fighter"
+        alt="A synthetic creator built for the KNUCKLE spec brand: a man in a black vest with taped hands, standing in a dark warehouse lit from behind."
+        num="00"
+        label="one creator, trained once, reused"
+        ratio="1 / 2"
+        loading="eager"
+        sizes="(max-width: 900px) 60vw, 300px"
+      />
+    </div>
+
+    <!-- the contents index -->
+    <nav class="toc" aria-label="Contents">
+      <ol class="toc__list">
+        {
+          contents.map((c) => (
+            <li class="toc__item">
+              <a class="toc__row" href={c.href}>
+                <span class="toc__num mono">{c.num}</span>
+                <span class="toc__label">{c.label}</span>
+                <span class="toc__note mono mono--lower faint">{c.note}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+  </section>
+
+  <!-- ============================================================ 01 reel -->
+  <section id="reel" class="section shell spread">
+    <div class="rail">
+      <span class="rail__num">01</span>
+      <span class="rail__slug">Reel</span>
+    </div>
+
+    <div class="stack-block">
+      <h2 class="sec__h2">Ninety seconds</h2>
+
+      <a class="reel" href="/reel/">
+        <span class="reel__trio">
+          {
+            reelTrio.map((f, i) => (
+              <Frame
+                src={f.src}
+                alt={f.alt}
+                num={String(i + 1).padStart(2, '0')}
+                ratio="3 / 4"
+                loading="eager"
+                sizes="(max-width: 700px) 33vw, 300px"
+              />
+            ))
+          }
+        </span>
+        <span class="reel__badge mono">
+          {reel.id ? 'Play the cut' : 'The cut, piece by piece'}
+          <span aria-hidden="true"> →</span>
+        </span>
+      </a>
+
+      <p class="quiet reel__note">
+        One cut, and under it a list saying what each shot is, which pipeline made it and what I
+        did on it. Client work and spec work are marked separately in that list.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================================================ 02 work -->
+  <section id="work" class="section shell spread">
+    <div class="rail">
+      <span class="rail__num">02</span>
+      <span class="rail__slug">Selected work</span>
+    </div>
+
+    <div class="stack-block">
+      <h2 class="sec__h2">Selected work</h2>
+      <div class="grid">
+        {
+          work.map((e, i) => (
+            <WorkCard
+              href={`/work/${e.id}/`}
+              num={String(i + 1).padStart(2, '0')}
+              client={e.data.client}
+              kind={e.data.kind}
+              problem={e.data.problem}
+              image={e.data.hero}
+              alt={e.data.heroAlt}
+              year={e.data.year}
+            />
+          ))
+        }
+      </div>
+
+      <p class="quiet more">
+        The self-initiated work sits on its own shelf, labelled as spec throughout.
+        <a href="/spec/">Open the spec shelf</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======================================================= 03 pipelines -->
+  <section id="pipelines" class="section shell spread">
+    <div class="rail">
+      <span class="rail__num">03</span>
+      <span class="rail__slug">Pipelines</span>
+    </div>
+
+    <div class="stack-block">
+      <h2 class="sec__h2">Pipelines</h2>
+      <p class="pipes__intro">
+        Seven of these exist. Three are on this page in full: the stages, what runs each one, what
+        gets fixed there, and the control gates that stop a frame from shipping. The tools are
+        named. So are the ways each line fails.
+      </p>
+
+      <div class="pipes">
+        {pipelines.map((p) => <Strip {...p} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================= 04 writing -->
+  <section id="writing" class="section shell spread">
+    <div class="rail">
+      <span class="rail__num">04</span>
+      <span class="rail__slug">Writing</span>
+    </div>
+
+    <div class="stack-block">
+      <h2 class="sec__h2">Writing</h2>
+      <dl class="write">
+        {
+          writing.map((w) => (
+            <div class="write__row">
+              <dt>{w.title}</dt>
+              <dd class="quiet">{w.note}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      <p class="quiet more">Samples on request.</p>
+    </div>
+  </section>
+
+  <!-- =========================================================== 05 about -->
+  <section id="about" class="section shell spread">
+    <div class="rail">
+      <span class="rail__num">05</span>
+      <span class="rail__slug">About</span>
+    </div>
+
+    <div class="stack-block">
+      <h2 class="sec__h2">About and contact</h2>
+
+      <p class="about__body">
+        I am a writer and director working out of {site.base}. Most of my time goes on generated
+        stills and film for brands that need volume: product sets, creator ads, explainers and the
+        scripts under them. The rest goes on building the lines that produce them, so a team can
+        run the work after I leave.
+      </p>
+
+      <p class="about__body quiet">
+        I built and shipped two sites this year:
+        <a href={site.studio.href} rel="noopener">{site.studio.label}</a>, my own studio, and
+        <a href="https://mariposa.restaurant/" rel="noopener">mariposa.restaurant</a>.
+      </p>
+
+      <ul class="contact">
+        <li><a class="btn mono" href={`mailto:${site.email}`}>Email me</a></li>
+        <li><a class="btn btn--ghost mono" href={site.cv} download>Download CV<span aria-hidden="true"> ↓</span></a></li>
+        <li>
+          <a class="btn btn--ghost mono" href={site.studio.href} rel="noopener">
+            {site.studio.label}<span aria-hidden="true"> ↗</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* --- 00 open ------------------------------------------------------------ */
+
+  .open {
+    padding-top: var(--s-8);
+    padding-bottom: var(--s-7);
+  }
+
+  .open__slug {
+    font-size: 0.66rem;
+    max-width: none;
+    margin-bottom: var(--s-6);
+  }
+
+  .open__sep {
+    color: var(--red);
+    padding-inline: 0.35rem;
+  }
+
+  /* Headline left, one trained creator on the right, so the first screen
+     carries a picture as well as a claim. */
+  .open__top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 19rem);
+    gap: var(--s-6);
+    align-items: end;
+  }
+
+  .open__line {
+    font-size: var(--step-5);
+    letter-spacing: -0.03em;
+    max-width: 17ch;
+    margin-bottom: var(--s-5);
+  }
+
+  @media (max-width: 900px) {
+    .open__top {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-5);
+    }
+    .open__face {
+      max-width: 15rem;
+    }
+  }
+
+  .open__lede {
+    font-size: var(--step-1);
+    line-height: 1.42;
+    max-width: 44ch;
+    color: var(--newsprint-dim);
+  }
+
+  .open__note {
+    margin-top: var(--s-3);
+    font-size: var(--step--1);
+    max-width: 46ch;
+  }
+
+  /* --- the contents index ------------------------------------------------- */
+
+  .toc {
+    margin-top: var(--s-7);
+    border-top: 1px solid var(--rule-bright);
+  }
+
+  .toc__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .toc__row {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 15rem) minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--s-4);
+    padding-block: var(--s-3);
+    min-height: var(--tap);
+    border-bottom: 1px solid var(--rule);
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+  }
+
+  /* A red bar that runs the width of the row on hover. This is the one place
+     the page raises its voice. */
+  .toc__row::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    height: 1px;
+    width: 0;
+    background: var(--red);
+    transition: width 340ms var(--ease);
+  }
+
+  .toc__row:hover::after,
+  .toc__row:focus-visible::after {
+    width: 100%;
+  }
+
+  .toc__num {
+    color: var(--red);
+    font-size: 0.66rem;
+  }
+
+  .toc__label {
+    font-family: var(--display);
+    font-size: var(--step-2);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    color: var(--newsprint);
+    transition: color var(--dur) var(--ease);
+  }
+
+  .toc__row:hover .toc__label {
+    color: var(--cyan);
+  }
+
+  .toc__note {
+    font-size: 0.66rem;
+    max-width: none;
+  }
+
+  @media (max-width: 760px) {
+    .toc__row {
+      grid-template-columns: 2.2rem minmax(0, 1fr);
+      gap: 0.15rem var(--s-3);
+      padding-block: var(--s-3);
+    }
+    .toc__num {
+      grid-row: span 2;
+    }
+    .toc__note {
+      grid-column: 2;
+    }
+  }
+
+  /* --- shared section furniture ------------------------------------------- */
+
+  .stack-block {
+    display: grid;
+    gap: var(--s-5);
+    min-width: 0;
+  }
+
+  .sec__h2 {
+    font-family: var(--mono);
+    font-variation-settings: var(--rec-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    font-weight: 500;
+  }
+
+  .more {
+    font-size: var(--step--1);
+  }
+
+  /* --- 01 reel ------------------------------------------------------------ */
+
+  .reel {
+    display: block;
+    position: relative;
+    text-decoration: none;
+  }
+
+  .reel__trio {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2px;
+  }
+
+  .reel :global(.frame__plate) {
+    transition: border-color var(--dur) var(--ease);
+  }
+
+  .reel:hover :global(.frame__plate) {
+    border-color: var(--cyan);
+  }
+
+  .reel__badge {
+    position: absolute;
+    left: var(--s-4);
+    bottom: var(--s-4);
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding: 0 var(--s-4);
+    background: var(--ink);
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    font-size: 0.66rem;
+  }
+
+  .reel:hover .reel__badge {
+    background: var(--cyan);
+    color: var(--ink);
+  }
+
+  .reel__note {
+    font-size: var(--step--1);
+  }
+
+  /* --- 02 work ------------------------------------------------------------ */
+
+  /* Six projects, so two up. Three up shrinks every image for nothing, and the
+     count has to stay even or the last row leaves an orphan. */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-6) var(--s-5);
+  }
+
+  @media (max-width: 640px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* --- 03 pipelines ------------------------------------------------------- */
+
+  .pipes__intro {
+    font-size: var(--step-0);
+    color: var(--newsprint-dim);
+    max-width: var(--measure);
+  }
+
+  .pipes {
+    display: grid;
+    gap: var(--s-8);
+  }
+
+  /* --- 04 writing --------------------------------------------------------- */
+
+  .write {
+    margin: 0;
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .write__row {
+    display: grid;
+    grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+    gap: var(--s-4);
+    padding-block: var(--s-3);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .write__row dt {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    color: var(--newsprint);
+    line-height: 1.2;
+  }
+
+  .write__row dd {
+    margin: 0;
+    font-size: var(--step--1);
+  }
+
+  @media (max-width: 620px) {
+    .write__row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.2rem;
+    }
+  }
+
+  /* --- 05 about ----------------------------------------------------------- */
+
+  .about__body {
+    font-size: var(--step-0);
+    max-width: var(--measure);
+  }
+
+  .contact {
+    list-style: none;
+    margin: var(--s-2) 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding: 0 var(--s-4);
+    border: 1px solid var(--cyan);
+    background: var(--cyan);
+    color: var(--ink);
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-size: 0.66rem;
+  }
+
+  .btn--ghost {
+    background: transparent;
+    color: var(--cyan);
+  }
+
+  .btn:hover {
+    background: var(--red);
+    border-color: var(--red);
+    color: var(--ink);
+  }
+</style>

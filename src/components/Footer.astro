@@ -1,0 +1,39 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="foot">
+  <div class="shell foot__inner">
+    <p class="mono foot__mark">K/C</p>
+    <p class="mono foot__note faint">
+      Athens, Greece · Built with Astro · Type is Redaction and Recursive, both OFL
+    </p>
+    <p class="mono foot__note faint">© {year} Konstantinos Chatzimichail</p>
+  </div>
+</footer>
+
+<style>
+  .foot {
+    border-top: 1px solid var(--rule);
+    padding-block: var(--s-6);
+    margin-top: var(--s-8);
+  }
+
+  .foot__inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3) var(--s-6);
+    align-items: baseline;
+  }
+
+  .foot__mark {
+    color: var(--red);
+    margin-right: auto;
+  }
+
+  .foot__note {
+    font-size: 0.66rem;
+    margin: 0;
+    max-width: none;
+  }
+</style>

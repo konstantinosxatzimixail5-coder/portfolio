@@ -1,0 +1,373 @@
+---
+// THE STRIP. The signature object of the site.
+// Six numbered stages on a line, with a detail panel per stage and the control
+// gates beneath. Renders complete and readable with JavaScript disabled: every
+// stage detail is visible as a stacked list. Script upgrades it to one at a time.
+
+interface Stage {
+  name: string;
+  model: string; // what runs this stage
+  fixes: string; // what gets fixed here
+  time: string; // roughly how long
+}
+
+interface Gate {
+  name: string;
+  test: string;
+  fail: string;
+}
+
+interface Props {
+  id: string;
+  title: string;
+  mechanism: string;
+  summary: string;
+  loop: string; // how long the whole loop takes
+  stages: Stage[];
+  gates: Gate[];
+}
+
+const { id, title, mechanism, summary, loop, stages, gates } = Astro.props;
+const pad = (i: number) => String(i + 1).padStart(2, '0');
+---
+
+<article class="strip" id={id} data-strip>
+  <header class="strip__head">
+    <p class="mono strip__mech">{mechanism}</p>
+    <h3 class="strip__title">{title}</h3>
+    <p class="strip__summary quiet">{summary}</p>
+  </header>
+
+  <!-- stage line -->
+  <ol class="strip__line" aria-label={`${title}: stages`}>
+    {
+      stages.map((s, i) => (
+        <li class="strip__stage">
+          <button
+            type="button"
+            class="strip__node"
+            data-stage={i}
+            aria-expanded={i === 0 ? 'true' : 'false'}
+            aria-controls={`${id}-detail-${i}`}
+          >
+            <span class="strip__dot" aria-hidden="true">
+              {pad(i)}
+            </span>
+            <span class="strip__name">{s.name}</span>
+          </button>
+        </li>
+      ))
+    }
+  </ol>
+
+  <!-- stage details -->
+  <div class="strip__details">
+    {
+      stages.map((s, i) => (
+        <div class="strip__detail" id={`${id}-detail-${i}`} data-detail={i}>
+          <p class="mono strip__detail-head">
+            <span class="faint">{pad(i)}</span> {s.name}
+          </p>
+          <dl class="strip__dl">
+            <dt class="mono">Runs on</dt>
+            <dd>{s.model}</dd>
+            <dt class="mono">Fixes</dt>
+            <dd>{s.fixes}</dd>
+            <dt class="mono">Takes</dt>
+            <dd>{s.time}</dd>
+          </dl>
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- gates -->
+  <div class="strip__gates">
+    <p class="mono strip__gates-head">Control gates</p>
+    <ul class="strip__gate-list">
+      {
+        gates.map((g) => (
+          <li class="gate">
+            <p class="gate__name mono">{g.name}</p>
+            <p class="gate__row">
+              <span class="gate__key mono">Test</span>
+              <span class="gate__val">{g.test}</span>
+            </p>
+            <p class="gate__row">
+              <span class="gate__key mono gate__key--fail">Fail</span>
+              <span class="gate__val">{g.fail}</span>
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <p class="strip__loop mono">
+    <span class="faint">Loop</span>
+    {loop}
+  </p>
+</article>
+
+<style>
+  .strip {
+    display: grid;
+    gap: var(--s-5);
+    padding-block: var(--s-6);
+    border-top: 1px solid var(--rule);
+  }
+
+  .strip__head {
+    display: grid;
+    gap: var(--s-2);
+  }
+  .strip__mech {
+    color: var(--red);
+  }
+  .strip__title {
+    font-size: var(--step-2);
+  }
+  .strip__summary {
+    max-width: 60ch;
+  }
+
+  /* --- the line ----------------------------------------------------------- */
+
+  .strip__line {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    position: relative;
+  }
+
+  /* the rule the stages sit on */
+  .strip__line::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0.72rem;
+    height: 1px;
+    background: var(--rule-bright);
+  }
+
+  .strip__stage {
+    min-width: 0;
+  }
+
+  .strip__node {
+    -webkit-appearance: none;
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 0 var(--s-1) var(--s-3) 0;
+    width: 100%;
+    display: grid;
+    gap: var(--s-2);
+    justify-items: start;
+    text-align: left;
+    cursor: pointer;
+    color: var(--fg-quiet);
+    min-height: var(--tap);
+  }
+
+  .strip__dot {
+    font-family: var(--mono);
+    font-variation-settings: var(--rec-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    display: grid;
+    place-items: center;
+    width: 1.45rem;
+    height: 1.45rem;
+    border-radius: 50%;
+    background: var(--ink);
+    border: 1px solid var(--rule-bright);
+    color: var(--fg-faint);
+    transition:
+      background var(--dur) var(--ease),
+      color var(--dur) var(--ease),
+      border-color var(--dur) var(--ease);
+  }
+
+  .strip__name {
+    font-family: var(--mono);
+    font-variation-settings: var(--rec-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    line-height: 1.3;
+  }
+
+  .strip__node:hover .strip__dot,
+  .strip__node[aria-expanded='true'] .strip__dot {
+    background: var(--cyan);
+    border-color: var(--cyan);
+    color: var(--ink);
+  }
+
+  .strip__node:hover,
+  .strip__node[aria-expanded='true'] {
+    color: var(--newsprint);
+  }
+
+  @media (max-width: 700px) {
+    .strip__line {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--s-4) 0;
+    }
+    .strip__line::before {
+      display: none;
+    }
+  }
+
+  /* --- details ------------------------------------------------------------ */
+
+  .strip__details {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  .strip__detail {
+    background: var(--ink-raised);
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--cyan);
+    border-radius: var(--radius);
+    padding: var(--s-4) var(--s-5);
+  }
+
+  .strip__detail-head {
+    color: var(--newsprint);
+    margin-bottom: var(--s-3);
+  }
+
+  .strip__dl {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    gap: var(--s-2) var(--s-4);
+    margin: 0;
+  }
+  .strip__dl dt {
+    color: var(--fg-faint);
+    font-size: 0.68rem;
+    padding-top: 0.28rem;
+  }
+  .strip__dl dd {
+    margin: 0;
+    font-size: var(--step--1);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 560px) {
+    .strip__dl {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-1) 0;
+    }
+    .strip__dl dd {
+      margin-bottom: var(--s-3);
+    }
+  }
+
+  /* When JS is on, show one detail at a time. */
+  .strip.is-enhanced .strip__detail {
+    display: none;
+  }
+  .strip.is-enhanced .strip__detail.is-active {
+    display: block;
+  }
+
+  /* --- gates -------------------------------------------------------------- */
+
+  .strip__gates {
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .strip__gates-head {
+    color: var(--fg-faint);
+  }
+
+  .strip__gate-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--s-3);
+  }
+
+  .gate {
+    background: var(--ink-sunk);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: var(--s-4);
+    display: grid;
+    gap: var(--s-2);
+    align-content: start;
+  }
+
+  .gate__name {
+    color: var(--mint);
+    font-size: 0.68rem;
+  }
+
+  .gate__row {
+    display: grid;
+    grid-template-columns: 2.6rem minmax(0, 1fr);
+    gap: var(--s-3);
+    margin: 0;
+    max-width: none;
+  }
+
+  .gate__key {
+    font-size: 0.62rem;
+    color: var(--fg-faint);
+    padding-top: 0.2rem;
+  }
+
+  .gate__key--fail {
+    color: var(--red);
+  }
+
+  .gate__val {
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: var(--fg-quiet);
+  }
+
+  /* --- loop --------------------------------------------------------------- */
+
+  .strip__loop {
+    color: var(--gold);
+    display: flex;
+    gap: var(--s-3);
+    align-items: baseline;
+  }
+</style>
+
+<script>
+  // Progressive enhancement: collapse stage details to one at a time.
+  // Without this script every detail stays visible and the page still reads.
+  document.querySelectorAll<HTMLElement>('[data-strip]').forEach((strip) => {
+    const nodes = Array.from(strip.querySelectorAll<HTMLButtonElement>('[data-stage]'));
+    const details = Array.from(strip.querySelectorAll<HTMLElement>('[data-detail]'));
+    if (nodes.length === 0 || details.length === 0) return;
+
+    strip.classList.add('is-enhanced');
+
+    const show = (i: number) => {
+      nodes.forEach((n, j) => n.setAttribute('aria-expanded', String(i === j)));
+      details.forEach((d, j) => d.classList.toggle('is-active', i === j));
+    };
+
+    show(0);
+
+    nodes.forEach((node, i) => {
+      node.addEventListener('click', () => show(i));
+      node.addEventListener('mouseenter', () => show(i));
+      node.addEventListener('focus', () => show(i));
+    });
+  });
+</script>

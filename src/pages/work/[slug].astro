@@ -1,0 +1,491 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Frame from '../../components/Frame.astro';
+import VideoFacade from '../../components/VideoFacade.astro';
+
+export async function getStaticPaths() {
+  const entries = (await getCollection('work')).filter((e) => !e.data.draft);
+  const sorted = entries.sort((a, b) => a.data.order - b.data.order);
+  return sorted.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: {
+      entry,
+      prev: sorted[i - 1] ?? sorted[sorted.length - 1],
+      next: sorted[i + 1] ?? sorted[0],
+    },
+  }));
+}
+
+const { entry, prev, next } = Astro.props;
+const d = entry.data;
+
+const paras = (s: string) =>
+  s
+    .trim()
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+// The skeleton. Same five sections on every case study, in this order, always.
+const sections = [
+  { id: 'brief', label: 'Brief', body: d.brief },
+  { id: 'constraint', label: 'Constraint', body: d.constraint },
+  { id: 'built', label: 'What I built', body: d.built },
+  { id: 'how', label: 'How I built it', body: d.how },
+  { id: 'landed', label: 'Where it landed', body: d.landed },
+];
+
+const spec = d.kind === 'Spec, self-initiated';
+---
+
+<Base
+  title={`${d.title}, Konstantinos Chatzimichail`}
+  description={d.problem}
+  active="work"
+>
+  <article class="cs">
+    <!-- header -->
+    <header class="cs__head shell">
+      <p class="cs__meta mono">
+        <span class={spec ? 'cs__kind cs__kind--spec' : 'cs__kind'}>{d.kind}</span>
+        <span class="faint" aria-hidden="true">·</span>
+        <span class="quiet">{d.year}</span>
+        {
+          d.place && (
+            <>
+              <span class="faint" aria-hidden="true">
+                ·
+              </span>
+              <span class="quiet">{d.place}</span>
+            </>
+          )
+        }
+      </p>
+      <h1 class="cs__title">{d.title}</h1>
+      <p class="cs__problem">{d.problem}</p>
+    </header>
+
+    <!-- lead image -->
+    <div class="cs__lead shell">
+      <Frame
+        src={d.hero}
+        alt={d.heroAlt}
+        num="01"
+        loading="eager"
+        sizes="(max-width: 900px) 100vw, 1100px"
+      />
+    </div>
+
+    <!-- skeleton -->
+    <div class="cs__body shell spread">
+      <!-- the strip, drawn small, as the section index -->
+      <nav class="index" aria-label="Sections">
+        <ol class="index__list">
+          {
+            sections.map((s, i) => (
+              <li class="index__item">
+                <a href={`#${s.id}`} class="index__link" data-index-link={s.id}>
+                  <span class="index__dot" aria-hidden="true" />
+                  <span class="index__label mono">{String(i + 1).padStart(2, '0')} {s.label}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+
+      <div class="cs__prose">
+        {
+          sections.map((s) => (
+            <section class={`cs__sec cs__sec--${s.id}`} id={s.id} data-section={s.id}>
+              <h2 class="cs__h2">{s.label}</h2>
+              {paras(s.body).map((p) => (
+                <p>{p}</p>
+              ))}
+
+              {s.id === 'built' && d.gallery.length > 0 && (
+                <div class="cs__strip">
+                  {d.gallery.map((g, i) => (
+                    <Frame
+                      src={g.src}
+                      alt={g.alt}
+                      num={String(i + 2).padStart(2, '0')}
+                      label={g.label}
+                      ratio="1 / 1"
+                      focus={g.focus}
+                      sizes="(max-width: 700px) 45vw, 22vw"
+                    />
+                  ))}
+                </div>
+              )}
+
+              {s.id === 'built' && d.video && (
+                <div class="cs__video">
+                  <VideoFacade
+                    host={d.video.host}
+                    videoId={d.video.id}
+                    poster={d.video.poster}
+                    alt={d.video.alt}
+                    title={d.video.title}
+                    duration={d.video.duration}
+                  />
+                </div>
+              )}
+
+              {s.id === 'how' && d.stack.length > 0 && (
+                <div class="stack">
+                  <p class="mono stack__head">Stack, stage by stage</p>
+                  <dl class="stack__list">
+                    {d.stack.map((row) => (
+                      <div class="stack__row">
+                        <dt class="mono">{row.stage}</dt>
+                        <dd class="mono mono--lower">{row.tool}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              )}
+
+              {s.id === 'landed' && d.links.length > 0 && (
+                <ul class="cs__links">
+                  {d.links.map((l) => (
+                    <li>
+                      <a href={l.href} class="cs__link mono" rel="noopener">
+                        {l.label}
+                        <span aria-hidden="true"> ↗</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- pager -->
+    <nav class="pager shell" aria-label="More work">
+      <a class="pager__link" href={`/work/${prev.id}/`}>
+        <span class="mono faint">← Previous</span>
+        <span class="pager__title">{prev.data.title}</span>
+      </a>
+      <a class="pager__link pager__link--next" href={`/work/${next.id}/`}>
+        <span class="mono faint">Next →</span>
+        <span class="pager__title">{next.data.title}</span>
+      </a>
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .cs__head {
+    padding-top: var(--s-8);
+    padding-bottom: var(--s-5);
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .cs__meta {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.68rem;
+    margin: 0;
+    max-width: none;
+  }
+  .cs__kind {
+    color: var(--cyan);
+  }
+  .cs__kind--spec {
+    color: var(--gold);
+  }
+
+  .cs__title {
+    font-size: var(--step-5);
+    letter-spacing: -0.025em;
+  }
+
+  .cs__problem {
+    font-size: var(--step-1);
+    line-height: 1.4;
+    max-width: 38ch;
+    color: var(--fg-quiet);
+  }
+
+  .cs__lead {
+    padding-bottom: var(--s-7);
+  }
+
+  .cs__body {
+    padding-bottom: var(--s-8);
+  }
+
+  /* --- section index (the strip, vertical) -------------------------------- */
+
+  .index {
+    position: sticky;
+    top: 5rem;
+    padding-top: 0.4rem;
+  }
+
+  .index__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0;
+    position: relative;
+  }
+
+  .index__list::before {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 0.6rem;
+    bottom: 0.6rem;
+    width: 1px;
+    background: var(--rule-bright);
+  }
+
+  .index__link {
+    display: grid;
+    grid-template-columns: 7px minmax(0, 1fr);
+    gap: 0.55rem;
+    align-items: start;
+    padding-block: 0.5rem;
+    text-decoration: none;
+    color: var(--fg-faint);
+  }
+
+  .index__dot {
+    width: 7px;
+    height: 7px;
+    margin-top: 0.42rem;
+    border-radius: 50%;
+    background: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--rule-bright);
+    transition:
+      background var(--dur) var(--ease),
+      box-shadow var(--dur) var(--ease);
+  }
+
+  .index__label {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    line-height: 1.4;
+  }
+
+  .index__link:hover,
+  .index__link.is-current {
+    color: var(--newsprint);
+  }
+
+  .index__link:hover .index__dot,
+  .index__link.is-current .index__dot {
+    background: var(--cyan);
+    box-shadow: inset 0 0 0 1px var(--cyan);
+  }
+
+  @media (max-width: 900px) {
+    .index {
+      display: none;
+    }
+  }
+
+  /* --- prose -------------------------------------------------------------- */
+
+  .cs__prose {
+    display: grid;
+    gap: var(--s-8);
+    min-width: 0;
+  }
+
+  .cs__sec {
+    display: grid;
+    gap: var(--s-4);
+    scroll-margin-top: 5rem;
+  }
+
+  .cs__h2 {
+    font-family: var(--mono);
+    font-variation-settings: var(--rec-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    font-weight: 500;
+  }
+
+  .cs__sec p {
+    font-size: var(--step-0);
+    max-width: var(--measure);
+  }
+
+  /* The constraint is the line that matters most, so it is set apart. */
+  .cs__sec--constraint {
+    border-left: 2px solid var(--red);
+    padding-left: var(--s-5);
+  }
+
+  .cs__sec--constraint .cs__h2 {
+    color: var(--red);
+  }
+
+  .cs__sec--constraint p {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.42;
+    color: var(--newsprint);
+    max-width: 46ch;
+  }
+
+  @media (max-width: 620px) {
+    .cs__sec--constraint {
+      padding-left: var(--s-4);
+    }
+  }
+
+  /* --- frame strip -------------------------------------------------------- */
+
+  .cs__strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: var(--s-3);
+    margin-top: var(--s-2);
+  }
+
+  .cs__video {
+    margin-top: var(--s-4);
+  }
+
+  /* --- stack -------------------------------------------------------------- */
+
+  .stack {
+    margin-top: var(--s-3);
+    background: var(--ink-raised);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: var(--s-4) var(--s-5);
+  }
+
+  .stack__head {
+    color: var(--fg-faint);
+    font-size: 0.62rem;
+    margin-bottom: var(--s-3);
+  }
+
+  .stack__list {
+    margin: 0;
+    display: grid;
+    gap: 0;
+  }
+
+  .stack__row {
+    display: grid;
+    grid-template-columns: minmax(0, 9rem) minmax(0, 1fr);
+    gap: var(--s-4);
+    padding-block: var(--s-2);
+    border-top: 1px solid var(--rule);
+  }
+  .stack__row:first-child {
+    border-top: 0;
+  }
+
+  .stack__row dt {
+    color: var(--fg-quiet);
+    font-size: 0.64rem;
+  }
+  .stack__row dd {
+    margin: 0;
+    color: var(--mint);
+    font-size: 0.8rem;
+  }
+
+  @media (max-width: 560px) {
+    .stack__row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.1rem;
+    }
+  }
+
+  /* --- links -------------------------------------------------------------- */
+
+  .cs__links {
+    list-style: none;
+    margin: var(--s-2) 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+  }
+
+  .cs__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding: 0 var(--s-4);
+    border: 1px solid var(--cyan);
+    border-radius: var(--radius);
+    color: var(--cyan);
+    text-decoration: none;
+  }
+
+  .cs__link:hover {
+    background: var(--cyan);
+    color: var(--ink);
+  }
+
+  /* --- pager -------------------------------------------------------------- */
+
+  .pager {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-5);
+    justify-content: space-between;
+    padding-block: var(--s-6);
+    border-top: 1px solid var(--rule);
+  }
+
+  .pager__link {
+    display: grid;
+    gap: var(--s-1);
+    text-decoration: none;
+    color: inherit;
+    min-height: var(--tap);
+  }
+
+  .pager__link--next {
+    text-align: right;
+    justify-items: end;
+  }
+
+  .pager__title {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    color: var(--newsprint);
+  }
+
+  .pager__link:hover .pager__title {
+    color: var(--cyan);
+  }
+</style>
+
+<script>
+  // Fill the section index as the reader moves down the page.
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-index-link]'));
+  const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-section]'));
+  if (links.length && sections.length && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          const id = (e.target as HTMLElement).dataset.section;
+          links.forEach((l) => l.classList.toggle('is-current', l.dataset.indexLink === id));
+        });
+      },
+      { rootMargin: '-20% 0px -70% 0px' }
+    );
+    sections.forEach((s) => observer.observe(s));
+  }
+</script>

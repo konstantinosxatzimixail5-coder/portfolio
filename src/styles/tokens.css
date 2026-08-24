@@ -1,0 +1,85 @@
+/* ---------------------------------------------------------------------------
+   Design tokens.
+   Palette is a two-plate riso idea: cyan and pink-red printed on newsprint,
+   over an ink blue-black ground. Mint and gold are working colours only.
+   --------------------------------------------------------------------------- */
+
+:root {
+  /* --- plates ------------------------------------------------------------ */
+  --ink: #131820;
+  --ink-raised: #191F29;
+  --ink-sunk: #0D1118;
+  --newsprint: #e5e2d8;
+  --newsprint-dim: #cdcabf;
+
+  --cyan: #35c4e0;
+  --cyan-deep: #00a5c4;
+  --red: #e8455e;
+  --mint: #7fbfa8;
+  --gold: #c9a227;
+
+  /* --- roles ------------------------------------------------------------- */
+  --bg: var(--ink);
+  --fg: var(--newsprint);
+  --fg-quiet: #9aa3ae;
+  /* Lifted from #626c79, which sat at 3.3:1 on --ink and 3.1:1 on --ink-sunk.
+     This clears 4.5:1 on both, which matters because every mono label, caption
+     and rail slug on the site is set in it at eleven or twelve pixels. */
+  --fg-faint: #828e9d;
+  --rule: #262E3A;
+  --rule-bright: #38424f;
+
+  --accent: var(--cyan);
+  --accent-warm: var(--red);
+  --ok: var(--gold);
+
+  /* --- type -------------------------------------------------------------- */
+  --display: 'Redaction', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --sans: 'Recursive', ui-sans-serif, system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+  --mono: 'Recursive', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+
+  /* Recursive variable axes. MONO 1 gives a true monospace cut. */
+  --rec-sans: 'MONO' 0, 'CASL' 0, 'slnt' 0, 'CRSV' 0;
+  --rec-mono: 'MONO' 1, 'CASL' 0, 'slnt' 0, 'CRSV' 0;
+
+  /* Fluid scale, 320px to 1600px viewport. */
+  --step--1: clamp(0.833rem, 0.80rem + 0.16vw, 0.9rem);
+  --step-0: clamp(1rem, 0.96rem + 0.20vw, 1.125rem);
+  --step-1: clamp(1.2rem, 1.12rem + 0.40vw, 1.5rem);
+  --step-2: clamp(1.44rem, 1.30rem + 0.70vw, 2rem);
+  --step-3: clamp(1.73rem, 1.48rem + 1.25vw, 2.75rem);
+  --step-4: clamp(2.07rem, 1.62rem + 2.25vw, 4rem);
+  --step-5: clamp(2.49rem, 1.70rem + 3.95vw, 6rem);
+
+  --lh-body: 1.6;
+  --lh-tight: 1.12;
+  --measure: 68ch;
+
+  /* --- space ------------------------------------------------------------- */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --s-7: 3rem;
+  --s-8: 4.5rem;
+  --s-9: 7rem;
+  --s-10: 10rem;
+
+  /* --- structure --------------------------------------------------------- */
+  --rail: 5.5rem;
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+  --col-max: 78rem;
+  --radius: 2px;
+
+  --tap: 44px;
+  --dur: 220ms;
+  --ease: cubic-bezier(0.2, 0.6, 0.2, 1);
+}
+
+@media (max-width: 900px) {
+  :root {
+    --rail: 0rem;
+  }
+}
