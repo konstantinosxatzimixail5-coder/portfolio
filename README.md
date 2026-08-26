@@ -1,26 +1,58 @@
 # kc-portfolio
 
 Portfolio and reel site for Konstantinos Chatzimichail. Astro, static output, plain
-CSS. No component library, no CMS, no client framework. The only JavaScript that
+CSS. No component library and no client framework. The only JavaScript that
 ships is a small progressive enhancement for the pipeline strip and the section
 index, and both of those work with scripting turned off.
 
+Every word and every picture is edited in Sanity. The Studio is a second app in
+`studio/`, and it never touches the public site: the build reads the dataset
+once, downloads the images, and writes plain HTML. Nothing about the CMS reaches
+the browser.
+
 ---
 
-## Running it
+## First run
+
+The content already lives in the Sanity dataset. All a fresh checkout needs is
+the project id.
 
 ```bash
-nvm use            # if you have a .nvmrc set up
+cp .env.example .env                # SANITY_PROJECT_ID, SANITY_DATASET
+cp studio/.env.example studio/.env  # SANITY_STUDIO_PROJECT_ID, same value
+```
+
+Both files are gitignored. Neither needs a token while the dataset is public.
+
+```bash
 npm install
-npm run dev        # http://localhost:4321
+npm run sync        # downloads every image in the dataset
+npm run images      # AVIF and WebP derivatives
+npm run dev         # http://localhost:4321
+npm run studio      # http://localhost:3333
+```
+
+To edit the content you also need to be logged in, once per machine:
+
+```bash
+npx sanity login
 ```
 
 | Script | What it does |
 |---|---|
 | `npm run dev` | Dev server with hot reload |
-| `npm run build` | Static build into `dist/` |
+| `npm run build` | `sync`, then `images`, then a static build into `dist/` |
 | `npm run preview` | Serve `dist/` as it will be served in production |
-| `npm run images` | Rebuild AVIF and WebP derivatives from `source-assets/` |
+| `npm run sync` | Download every image in the dataset into `source-assets/cms/` |
+| `npm run images` | Rebuild AVIF and WebP derivatives from `source-assets/cms/` |
+| `npm run studio` | The Sanity Studio, locally |
+| `npm run studio:deploy` | Put the Studio on a sanity.studio address |
+
+The dataset was first filled by a migration script that read the markdown and
+TypeScript files this site used to keep its content in. Both the script and
+those files were deleted once it had run, since the dataset is now the only
+version anyone should edit. They are in the history at `bc48d3a` if the
+provenance of a sentence is ever in question.
 
 ---
 
@@ -30,45 +62,36 @@ The build is a folder of static files. Any host that serves a directory will do.
 
 **Build command:** `npm run build`
 **Publish directory:** `dist`
-**Node version:** 20 or newer
+**Node version:** 22 or newer
+**Environment variables:** `SANITY_PROJECT_ID` and `SANITY_DATASET`
 
-On Netlify or Vercel, point the project at the repo and those three settings are
-the whole configuration. On Cloudflare Pages, same three. There is no server, no
-environment variable and no runtime.
+Both of those are public values. The project id is in every Studio URL and the
+dataset name is printed on the front of the Sanity dashboard. Neither token
+belongs on the host: the read token is only needed if you make the dataset
+private, and the write token is only for the seed.
 
-Before the first deploy, set the real domain in `astro.config.mjs`:
+The domain is not in `astro.config.mjs`. It is the **Domain** field in Site
+settings in the Studio, and it builds every canonical URL and every link preview
+tag. Set it before the first deploy or social cards will point at a host that
+does not exist.
 
-```js
-site: 'https://konstantinoschatzimichail.com',
-```
-
-That value builds the canonical URLs and the Open Graph tags, so it has to be
-right or previews will link to the wrong host.
+Content edits do not redeploy by themselves. Add a webhook in `sanity.io/manage`
+pointing at the host's build hook if you want publishing in the Studio to put
+the change live.
 
 ---
 
 ## Where to swap the reel link
 
-One file: `src/data/site.ts`.
+The Studio, under **Reel**. Set **Video ID** and **Host**, and add a poster frame.
 
-```ts
-export const reel = {
-  host: 'vimeo',        // 'vimeo' or 'youtube'
-  id: '',               // the video id, nothing else
-  poster: 'spec/feral/product-05',
-  posterAlt: '...',
-  title: 'Reel 2026, ninety seconds',
-  duration: '1:30',
-};
-```
-
-While `id` is an empty string the site does not pretend the cut exists. `/reel`
+While the video id is empty the site does not pretend the cut exists. `/reel`
 shows three frames from it and the running order underneath, and the home page
 links through to that page instead of embedding a player.
 
-Fill `id` in and two things happen on their own: `/reel` renders a click to play
-facade, and the home page badge changes to read "Play the cut". Nothing else
-needs editing.
+Fill the id in and two things happen on their own: `/reel` renders a click to
+play facade, and the home page badge changes to read "Play the cut". Nothing in
+this repo needs editing.
 
 The facade never loads the player until somebody clicks it. YouTube goes through
 `youtube-nocookie`, Vimeo through `dnt=1`. That is deliberate and it is why the
@@ -76,104 +99,40 @@ page weight does not move when the reel goes live.
 
 **Video budget: three embeds site wide, four at the outside.** Every embed is a
 third party script and a tracking surface. If you are about to add a fifth, take
-one out first.
+one out first. Nothing in the Studio stops you, so this one is on you.
 
 ---
 
 ## Adding a case study
 
-Two steps, and the second one is optional if the images are already in.
+In the Studio, **Case study**, New. The slug becomes the URL, so `new-client`
+lands at `/work/new-client/`.
 
-### 1. Drop the images in
+The five body sections are all required: Brief, Constraint, What I built, How I
+built it, Where it landed. That shape is the same on every page and the schema
+will not let you publish without all five. **Constraint** is the one that
+matters. A case study without it reads as a portfolio; with it, it reads as work.
 
-Put the source files anywhere under `source-assets/`, in a folder named after
-the client:
+Alt text is required on every image, with twenty characters as the floor. That is
+enforced in the schema, not by anyone remembering.
 
-```
-source-assets/
-  new-client/
-    hero.jpg
-    frame-01.jpg
-```
-
-Then run:
+Then, locally:
 
 ```bash
-npm run images
+npm run sync && npm run images
 ```
 
-That writes AVIF and WebP at 480, 960 and 1600 wide into `public/img/`, and
-records the intrinsic width and height of every source in
-`src/image-manifest.json`. The manifest is what keeps the layout from jumping
-while images load, so it is generated, never edited by hand.
+`sync` downloads anything new into `source-assets/cms/`, `images` writes AVIF and
+WebP at 480, 960 and 1600 wide into `public/img/` and records the intrinsic width
+and height of every source in `src/image-manifest.json`. That manifest is what
+keeps the layout from jumping while images load, so it is generated, never edited
+by hand. Both run automatically as part of `npm run build`, so a deploy picks up
+new pictures on its own.
 
-The manifest key is the path without the extension: `new-client/hero`.
+Both scripts prune. Remove an image in the Studio and the next sync deletes the
+source and the derivatives with it.
 
-> The script does not prune. If you delete a source file, delete its key from
-> `src/image-manifest.json` too, or the site will keep asking for a file that
-> is no longer built.
-
-### 2. Write the markdown
-
-Create `src/content/work/new-client.md`. The filename becomes the URL, so this
-one lands at `/work/new-client/`.
-
-```markdown
----
-title: The piece
-client: New Client
-kind: Client            # "Client" or "Spec, self-initiated"
-year: '2026'
-place: Athens, Greece
-order: 5                # lower numbers sort first on the home page
-problem: One line. This is what shows on the card.
-
-brief: |
-  What they needed and who it was for.
-
-constraint: |
-  What made it hard. This is the section that matters most.
-
-built: |
-  What was delivered.
-
-how: |
-  Which pipeline, which gates, which tools. Name the failure modes.
-
-landed: |
-  Where it went.
-
-hero: new-client/hero
-heroAlt: A full sentence describing the picture for somebody who cannot see it.
-
-gallery:
-  - src: new-client/frame-01
-    alt: Another full sentence.
-    label: short slug under the frame
-    focus: 50% 20%        # optional, see below
-
-stack:
-  - stage: Master plate
-    tool: Nano Banana Pro
-
-links:
-  - label: example.com
-    href: https://example.com/
----
-```
-
-Every field above is required except `gallery`, `links` and `place`. The schema
-lives in `src/content.config.ts` and the build fails loudly if something is
-missing, which is the intended behaviour.
-
-**Two things that will break the build, both on purpose:**
-
-- An `alt` containing a colon followed by a space has to be quoted, because YAML
-  reads it as a key. Wrap the whole line in single quotes.
-- A `hero` or `src` that is not in the manifest throws with the message telling
-  you to run `npm run images`.
-
-### 3. Check the crops
+### Check the crops
 
 Gallery frames are cropped square so the rows line up. A square crop takes the
 middle of a wide frame and throws the sides away, which is fine until the thing
@@ -181,43 +140,45 @@ that matters is at an edge. On this site that has already happened three times:
 a wordmark cut to half a word, a painted sign cropped out of a saloon, and two
 presenters cut across the eyeline.
 
-The `focus` field on a gallery entry sets `object-position` for that one frame.
-It takes the same two values CSS does, horizontal then vertical.
+Every image field in the Studio has a **hotspot**. Open the image, drag the
+circle onto the thing that has to survive, and the crop holds it. That is the
+same control the front page opener needs, since it is cropped to 1:2.
 
-```yaml
-focus: 90% 50%    # hold the right edge, e.g. a wordmark sitting off to one side
-focus: 50% 20%    # pull the crop up, e.g. faces near the top of the frame
-```
-
-Open every new case study and look at each square frame before calling it done.
-If a logo, a face or a line of type is clipped, set `focus` until it is not. A
-site whose whole argument is that labels survive cannot ship a cut label.
+Look at each square frame before calling a case study done. If a logo, a face or
+a line of type is clipped, move the hotspot. A site whose whole argument is that
+labels survive cannot ship a cut label.
 
 ---
 
 ## Adding to the spec shelf
 
-The spec brands are not markdown. They live in `src/data/spec.ts`, because they
-are galleries with a short argument attached and not case studies.
+In the Studio, **Spec brand**. Each brand is a gallery with a short argument
+attached, which is why it is not a case study.
 
-Each brand needs a `proves` line saying which control gate it was built to break.
-That line is the reason a made up brand is allowed on the site at all. A brand
-without one is just decoration.
+Every brand needs a **What it proves** line saying which control gate it was
+built to break. That line is the reason a made up brand is allowed on the site
+at all, and the schema requires it. A brand without one is just decoration.
 
-Everything on `/spec` is labelled **Spec, self-initiated**, on the card and in
-the header. That labelling is not styling, it is the honesty rule, and it should
-not be removed to make the shelf read more like client work.
+Everything on `/spec` is labelled from the **Flag** field on the Spec shelf
+document, and it reads "Spec, self-initiated" in both places it appears. That
+labelling is not styling, it is the honesty rule, and it should not be softened
+to make the shelf read more like client work.
+
+The lede counts its own numbers. Write `{brands}` and `{count}` and the build
+fills in how many brands and how many frames are actually published.
 
 ---
 
 ## Editing the pipelines
 
-`src/data/pipelines.ts`. Three of the seven are on the site in full.
+In the Studio, **Pipeline**. Three of the seven are on the site in full, and the
+front page counts them, so adding a fourth updates the sentence that says how
+many there are.
 
-Each one has `stages` and `gates`. A stage says what runs it, what gets fixed
-there and how long it takes. A gate says what the test is and what happens on a
-fail. Keep the failure modes in. A pipeline diagram with no failure modes is a
-sales chart.
+Each one has stages and gates. A stage says what runs it, what gets fixed there
+and how long it takes. A gate says what the test is and what happens on a fail.
+The schema will not accept a pipeline with no gates. Keep the failure modes in.
+A pipeline diagram with no failure modes is a sales chart.
 
 ---
 
@@ -259,11 +220,13 @@ These are not style preferences. They are the reason the site is credible.
 2. **No invented numbers.** No metrics, awards, budgets, team sizes or
    timelines that did not happen.
 3. **Every image has real alt text.** A full sentence describing the picture,
-   not a filename and not a keyword list.
+   not a filename and not a keyword list. The schema enforces the length. It
+   cannot enforce that the sentence is true, so read it against the picture.
 4. **Client photography is labelled as client photography.** The Mariposa
    reference plates say `reference plate, shot on site` because that is what
    they are.
-5. **Three embedded videos, four at the outside.**
+5. **Three embedded videos, four at the outside.** Every embed is a third party
+   script and a tracking surface. Nothing in the Studio counts them for you.
 
 ---
 

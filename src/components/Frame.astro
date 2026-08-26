@@ -2,10 +2,14 @@
 // A numbered image frame. Every image on the site goes through this so that
 // intrinsic dimensions, AVIF/WebP sources and a caption slug are never optional.
 import manifest from '../image-manifest.json';
+import type { CmsImage } from '../lib/sanity';
 
 interface Props {
-  src: string; // manifest key, e.g. "mariposa/dinner-mariposa"
-  alt: string; // required. no decorative images on this site.
+  // Either hand it a picture from the CMS, which carries its own key, alt text,
+  // caption and hotspot, or set those four by hand.
+  image?: CmsImage | null;
+  src?: string; // manifest key, e.g. "cms/8f3a1c9e"
+  alt?: string; // required. no decorative images on this site.
   num?: string; // frame number shown on the edge
   label?: string; // caption slug, mono
   sizes?: string;
@@ -16,16 +20,25 @@ interface Props {
 }
 
 const {
-  src,
-  alt,
+  image,
   num,
-  label,
   sizes = '(max-width: 900px) 100vw, 60vw',
   loading = 'lazy',
   ratio,
-  focus,
   class: className = '',
 } = Astro.props;
+
+// An explicit prop wins over the same value on the image, so a page can override
+// a caption for one placement without editing the picture everywhere it appears.
+const src = Astro.props.src ?? image?.key;
+const alt = Astro.props.alt ?? image?.alt;
+const label = Astro.props.label ?? image?.label;
+const focus = Astro.props.focus ?? image?.focus;
+
+if (!src) throw new Error('Frame: needs either an `image` or a `src`.');
+if (typeof alt !== 'string') {
+  throw new Error(`Frame: no alt text for "${src}". Every image on this site describes itself.`);
+}
 
 const styles = [
   ratio && `--frame-ratio:${ratio}`,

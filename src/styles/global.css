@@ -77,8 +77,12 @@ figcaption {
   border-radius: 1px;
 }
 
+/* Fixed, not absolute. An absolute skip link sits at the top of the document,
+   so tabbing round to it from the footer focuses something the reader cannot
+   see. Fixed keeps it in the viewport at any scroll position, and the transform
+   keeps it out of the way until it is focused. */
 .skip-link {
-  position: absolute;
+  position: fixed;
   left: var(--s-4);
   top: var(--s-4);
   z-index: 100;

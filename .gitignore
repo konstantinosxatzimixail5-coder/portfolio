@@ -4,6 +4,17 @@ node_modules/
 # build output
 dist/
 .astro/
+studio/dist/
+studio/.sanity/
+
+# images pulled down from the CMS. Sanity holds the originals, this directory
+# is a local cache that `npm run sync` refills from scratch.
+source-assets/cms/
+
+# the AVIF and WebP derivatives. `npm run images` rebuilds all of them from that
+# cache, and the build script runs it, so committing them would put eleven
+# megabytes of regenerable binary into every history that touches a picture.
+public/img/
 
 # tooling
 .playwright-cli/

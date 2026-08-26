@@ -1,29 +1,30 @@
 ---
+import { getSettings } from '../lib/content';
+
 interface Props {
   active?: string;
 }
 const { active } = Astro.props;
 
-const links = [
-  { href: '/#work', label: 'Work', key: 'work' },
-  { href: '/#pipelines', label: 'Pipelines', key: 'pipelines' },
-  { href: '/spec/', label: 'Spec', key: 'spec' },
-  { href: '/#writing', label: 'Writing', key: 'writing' },
-  { href: '/#about', label: 'About', key: 'about' },
-];
+const settings = await getSettings();
+const links = settings.navLinks ?? [];
+
+// The monogram is drawn as three parts so the slash can take the red. It is one
+// string in the CMS, split here, because "K/C" is what an editor wants to type.
+const [markStart = '', markEnd = ''] = String(settings.monogram ?? '').split('/');
 ---
 
 <header class="nav">
   <div class="nav__inner shell">
-    <a class="nav__mark" href="/" aria-label="Konstantinos Chatzimichail, home">
-      <span aria-hidden="true">K</span><span class="nav__slash" aria-hidden="true">/</span><span
-        aria-hidden="true">C</span
-      >
+    <a class="nav__mark" href="/" aria-label={`${settings.name}, home`}>
+      <span aria-hidden="true">{markStart}</span><span class="nav__slash" aria-hidden="true"
+        >/</span
+      ><span aria-hidden="true">{markEnd}</span>
     </a>
 
     <nav class="nav__links" aria-label="Main">
       {
-        links.map((l) => (
+        links.map((l: any) => (
           <a
             href={l.href}
             class="nav__link mono"

@@ -2,103 +2,30 @@
 import Base from '../layouts/Base.astro';
 import Frame from '../components/Frame.astro';
 import VideoFacade from '../components/VideoFacade.astro';
-import { reel } from '../data/site';
+import { getReel } from '../lib/content';
 
-// Until the cut is hosted, the page shows three frames from it instead of one
-// poster. The source frames are portrait, so a single 16:9 still would crop.
-const trio = [
-  {
-    src: 'spec/feral/product-05',
-    alt: 'A FERAL Yuzu Static can standing in shallow water with magenta and green vapour behind it.',
-  },
-  {
-    src: 'bike-barn/frame-01',
-    alt: 'A rider on an Indian motorcycle on wet cobbles at night, canal houses and street lamps behind.',
-  },
-  {
-    src: 'spec/knuckle/product-01',
-    alt: 'A single amber KNUCKLE chew sliding out of a black leather sleeve, the flavour names stamped into it.',
-  },
-];
-
-// What is in the cut, in order. Each shot says which piece it came from, which
-// pipeline made it and what I did. Client and spec are marked separately.
-const shots = [
-  {
-    t: '00:00',
-    piece: 'Mariposa',
-    kind: 'Client',
-    pipeline: 'Phantom Set',
-    role: 'Wrote, produced, cut. Also built the site it links to.',
-  },
-  {
-    t: '00:12',
-    piece: 'Bike Barn, Indian Elite',
-    kind: 'Client',
-    pipeline: 'Phantom Set',
-    role: 'Plate, set specification, motion and cut.',
-  },
-  {
-    t: '00:24',
-    piece: 'COCOON, vector attack explainer',
-    kind: 'Client',
-    pipeline: 'Written and boarded by hand',
-    role: 'Read the grant text, wrote the sequence, boarded and cut it.',
-  },
-  {
-    t: '00:38',
-    piece: 'Amino Alliance',
-    kind: 'Client',
-    pipeline: 'Identity Lock and Phantom Set',
-    role: 'Trained both presenters, wrote the openings, ran the hand gate.',
-  },
-  {
-    t: '00:50',
-    piece: 'FERAL, Yuzu Static',
-    kind: 'Spec, self-initiated',
-    pipeline: 'Phantom Set and Identity Lock',
-    role: 'Invented the brand, designed the can, built every frame.',
-  },
-  {
-    t: '01:02',
-    piece: 'KNUCKLE energy chews',
-    kind: 'Spec, self-initiated',
-    pipeline: 'Phantom Set',
-    role: 'Invented the brand, the four flavours and the pack.',
-  },
-  {
-    t: '01:14',
-    piece: 'GRAIN 01',
-    kind: 'Spec, self-initiated',
-    pipeline: 'Identity Lock',
-    role: 'Trained the creator, shot all three lighting conditions from one identity.',
-  },
-];
+// Everything on this page is edited in the Studio. While the cut is unhosted
+// the video id is empty and the three frames stand in for the poster, because
+// the source frames are portrait and a single wide still would crop them.
+const reel = await getReel();
+const shots = reel.shots ?? [];
 ---
 
-<Base
-  title="Reel, Konstantinos Chatzimichail"
-  description="Ninety seconds, and a list under it saying what each shot is, which pipeline made it and what my hand did on it."
-  active="reel"
->
+<Base title={reel.seoTitle} description={reel.seoDescription} active="reel">
   <article class="reelpage">
     <header class="reelpage__head shell">
       <p class="mono faint">{reel.duration} · {reel.title}</p>
-      <h1 class="reelpage__title">Reel</h1>
-      <p class="reelpage__lede">
-        One cut. Under it, every shot in order, with the piece it came from, the pipeline that made
-        it and what I actually did.
-      </p>
+      <h1 class="reelpage__title">{reel.heading}</h1>
+      <p class="reelpage__lede">{reel.lede}</p>
     </header>
 
     <div class="reelpage__player shell">
       {
-        reel.id ? (
+        reel.videoId ? (
           <VideoFacade
             host={reel.host}
-            videoId={reel.id}
+            videoId={reel.videoId}
             poster={reel.poster}
-            alt={reel.posterAlt}
             title={reel.title}
             duration={reel.duration}
             loading="eager"
@@ -106,22 +33,17 @@ const shots = [
         ) : (
           <div class="pending">
             <div class="pending__trio">
-              {
-                trio.map((f, i) => (
-                  <Frame
-                    src={f.src}
-                    alt={f.alt}
-                    num={String(i + 1).padStart(2, '0')}
-                    ratio="3 / 4"
-                    loading="eager"
-                    sizes="(max-width: 900px) 33vw, 360px"
-                  />
-                ))
-              }
+              {reel.trio.map((f, i) => (
+                <Frame
+                  image={f}
+                  num={String(i + 1).padStart(2, '0')}
+                  ratio="3 / 4"
+                  loading="eager"
+                  sizes="(max-width: 900px) 33vw, 360px"
+                />
+              ))}
             </div>
-            <p class="mono pending__note">
-              The cut is being assembled. The shot list below is the running order.
-            </p>
+            <p class="mono pending__note">{reel.pendingNote}</p>
           </div>
         )
       }
@@ -130,16 +52,16 @@ const shots = [
     <section class="shell spread reelpage__list">
       <div class="rail">
         <span class="rail__num">01</span>
-        <span class="rail__slug">Shot list</span>
+        <span class="rail__slug">{reel.shotsRail}</span>
       </div>
 
       <div>
-        <h2 class="sec__h2">What is in it</h2>
+        <h2 class="sec__h2">{reel.shotsHeading}</h2>
         <ol class="shots">
           {
-            shots.map((s) => (
+            shots.map((s: any) => (
               <li class="shot">
-                <span class="mono shot__t faint">{s.t}</span>
+                <span class="mono shot__t faint">{s.time}</span>
                 <span class="shot__piece">{s.piece}</span>
                 <span
                   class={

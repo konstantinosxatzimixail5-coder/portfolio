@@ -1,5 +1,6 @@
 ---
 import Frame from './Frame.astro';
+import type { CmsImage } from '../lib/sanity';
 
 interface Props {
   href: string;
@@ -7,17 +8,16 @@ interface Props {
   client: string;
   kind: 'Client' | 'Spec, self-initiated';
   problem: string;
-  image: string;
-  alt: string;
+  image: CmsImage | null;
   year?: string;
 }
 
-const { href, num, client, kind, problem, image, alt, year } = Astro.props;
+const { href, num, client, kind, problem, image, year } = Astro.props;
 const spec = kind === 'Spec, self-initiated';
 ---
 
 <a class="card" href={href}>
-  <Frame src={image} alt={alt} num={num} ratio="4 / 3" sizes="(max-width: 900px) 100vw, 45vw" />
+  <Frame image={image} num={num} ratio="4 / 3" sizes="(max-width: 900px) 100vw, 45vw" />
 
   <div class="card__body">
     <p class="card__meta mono">

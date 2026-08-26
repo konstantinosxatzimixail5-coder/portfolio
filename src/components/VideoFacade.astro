@@ -1,20 +1,26 @@
 ---
 // Click-to-play facade. The poster frame is a static image. No third-party
 // iframe, cookie or script loads until someone presses play.
-// Swap the reel by changing `videoId` and `host` in the page that uses this.
+// The video id, host and poster all come from the CMS.
 import Frame from './Frame.astro';
+import type { CmsImage } from '../lib/sanity';
 
 interface Props {
   host: 'vimeo' | 'youtube';
   videoId: string;
-  poster: string; // manifest key
-  alt: string;
+  poster: CmsImage | null;
   title: string;
   duration?: string;
   loading?: 'lazy' | 'eager';
 }
 
-const { host, videoId, poster, alt, title, duration, loading = 'lazy' } = Astro.props;
+const { host, videoId, poster, title, duration, loading = 'lazy' } = Astro.props;
+
+if (!poster) {
+  throw new Error(
+    `VideoFacade: "${title}" has a video id but no poster frame. Add one in the Studio, or the player has nothing to sit behind.`
+  );
+}
 
 const embed =
   host === 'vimeo'
@@ -26,7 +32,7 @@ const watch =
 ---
 
 <div class="facade" data-facade data-embed={embed} data-title={title}>
-  <Frame src={poster} alt={alt} loading={loading} sizes="(max-width: 900px) 100vw, 80vw" />
+  <Frame image={poster} loading={loading} sizes="(max-width: 900px) 100vw, 80vw" />
 
   <button type="button" class="facade__btn" data-play>
     <span class="facade__icon" aria-hidden="true">

@@ -1,14 +1,24 @@
-// Converts everything in source-assets/ to AVIF + WebP at a fixed ladder of widths
-// and writes src/image-manifest.json with intrinsic dimensions so pages can set
-// width/height and avoid layout shift.
+// Converts the images the site actually uses to AVIF + WebP at a fixed ladder of
+// widths, and writes src/image-manifest.json with intrinsic dimensions so pages
+// can set width/height and avoid layout shift.
+//
+// It reads source-assets/cms/ and nothing else. That directory is filled by
+// `npm run sync` from the pictures published in Sanity, so what gets built is
+// exactly what some page references. The other folders under source-assets/ are
+// the original masters, kept in the repository so Sanity is not the only copy of
+// them. Building those too meant 54 unused image sets in every deploy.
 //
 // Run: npm run images
 
-import { readdir, mkdir, writeFile, stat } from 'node:fs/promises';
+import { readdir, mkdir, writeFile, stat, unlink, rmdir } from 'node:fs/promises';
 import { join, relative, extname, dirname } from 'node:path';
 import sharp from 'sharp';
 
+// Keys are relative to SRC, not to WALK, so a picture keeps the key cms/<hash>
+// that sanity.ts builds from the asset id. Narrowing the walk must not quietly
+// rename every image.
 const SRC = 'source-assets';
+const WALK = 'source-assets/cms';
 const OUT = 'public/img';
 const MANIFEST = 'src/image-manifest.json';
 const WIDTHS = [480, 960, 1600];
@@ -38,9 +48,9 @@ const slug = (s) =>
     .replace(/^-|-$/g, '')
     .replace(/-+/g, '-');
 
-const files = await walk(SRC);
+const files = await walk(WALK);
 if (files.length === 0) {
-  console.log(`No images found in ${SRC}/. Drop files in and run again.`);
+  console.log(`No images found in ${WALK}/. Run \`npm run sync\` and try again.`);
   process.exit(0);
 }
 
@@ -102,5 +112,39 @@ for (const file of files) {
 await mkdir(dirname(MANIFEST), { recursive: true });
 await writeFile(MANIFEST, JSON.stringify(manifest, null, 2) + '\n');
 
-console.log(`${files.length} source images -> ${written} files written`);
+// Delete derivatives whose source has gone. This script used to only ever add
+// files, so deleting a source left its AVIF and WebP behind to be deployed
+// forever: 321 KB of pictures no page referenced had built up before anyone
+// noticed. Only files this script could have written are touched, matched on
+// the -<width>.<format> suffix it names them with.
+const wanted = new Set();
+for (const entry of Object.values(manifest)) {
+  for (const s of [...entry.avif, ...entry.webp]) wanted.add(join('public', s.src.slice(1)));
+}
+
+async function prune(dir) {
+  let entries;
+  try {
+    entries = await readdir(dir, { withFileTypes: true });
+  } catch {
+    return 0;
+  }
+  let removed = 0;
+  for (const e of entries) {
+    const p = join(dir, e.name);
+    if (e.isDirectory()) {
+      removed += await prune(p);
+      await rmdir(p).catch(() => {}); // only succeeds once the directory is empty
+    } else if (/-\d+\.(avif|webp)$/.test(e.name) && !wanted.has(p)) {
+      await unlink(p);
+      removed++;
+      console.log(`  pruned ${p}`);
+    }
+  }
+  return removed;
+}
+
+const pruned = await prune(OUT);
+
+console.log(`${files.length} source images -> ${written} files written, ${pruned} pruned`);
 console.log(`manifest: ${MANIFEST} (${Object.keys(manifest).length} entries)`);

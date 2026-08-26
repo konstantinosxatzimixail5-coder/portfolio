@@ -1,33 +1,29 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Frame from '../../components/Frame.astro';
 import VideoFacade from '../../components/VideoFacade.astro';
+import RichText from '../../components/RichText.astro';
+import { getWork, getSettings } from '../../lib/content';
 
 export async function getStaticPaths() {
-  const entries = (await getCollection('work')).filter((e) => !e.data.draft);
-  const sorted = entries.sort((a, b) => a.data.order - b.data.order);
-  return sorted.map((entry, i) => ({
-    params: { slug: entry.id },
+  // The query already drops drafts and sorts by the order field.
+  const entries = await getWork();
+  return entries.map((entry, i) => ({
+    params: { slug: entry.slug },
     props: {
-      entry,
-      prev: sorted[i - 1] ?? sorted[sorted.length - 1],
-      next: sorted[i + 1] ?? sorted[0],
+      d: entry,
+      prev: entries[i - 1] ?? entries[entries.length - 1],
+      next: entries[i + 1] ?? entries[0],
     },
   }));
 }
 
-const { entry, prev, next } = Astro.props;
-const d = entry.data;
-
-const paras = (s: string) =>
-  s
-    .trim()
-    .split(/\n\s*\n/)
-    .map((p) => p.trim())
-    .filter(Boolean);
+const { d, prev, next } = Astro.props;
+const site = await getSettings();
 
 // The skeleton. Same five sections on every case study, in this order, always.
+// The labels are not editable on purpose: the shape is the promise the site
+// makes, and a page missing its constraint is the one thing that cannot happen.
 const sections = [
   { id: 'brief', label: 'Brief', body: d.brief },
   { id: 'constraint', label: 'Constraint', body: d.constraint },
@@ -39,11 +35,7 @@ const sections = [
 const spec = d.kind === 'Spec, self-initiated';
 ---
 
-<Base
-  title={`${d.title}, Konstantinos Chatzimichail`}
-  description={d.problem}
-  active="work"
->
+<Base title={`${d.title}, ${site.name}`} description={d.problem} active="work">
   <article class="cs">
     <!-- header -->
     <header class="cs__head shell">
@@ -68,13 +60,7 @@ const spec = d.kind === 'Spec, self-initiated';
 
     <!-- lead image -->
     <div class="cs__lead shell">
-      <Frame
-        src={d.hero}
-        alt={d.heroAlt}
-        num="01"
-        loading="eager"
-        sizes="(max-width: 900px) 100vw, 1100px"
-      />
+      <Frame image={d.hero} num="01" loading="eager" sizes="(max-width: 900px) 100vw, 1100px" />
     </div>
 
     <!-- skeleton -->
@@ -100,20 +86,15 @@ const spec = d.kind === 'Spec, self-initiated';
           sections.map((s) => (
             <section class={`cs__sec cs__sec--${s.id}`} id={s.id} data-section={s.id}>
               <h2 class="cs__h2">{s.label}</h2>
-              {paras(s.body).map((p) => (
-                <p>{p}</p>
-              ))}
+              <RichText value={s.body} />
 
               {s.id === 'built' && d.gallery.length > 0 && (
                 <div class="cs__strip">
-                  {d.gallery.map((g, i) => (
+                  {d.gallery.map((g: any, i: number) => (
                     <Frame
-                      src={g.src}
-                      alt={g.alt}
+                      image={g}
                       num={String(i + 2).padStart(2, '0')}
-                      label={g.label}
                       ratio="1 / 1"
-                      focus={g.focus}
                       sizes="(max-width: 700px) 45vw, 22vw"
                     />
                   ))}
@@ -124,9 +105,8 @@ const spec = d.kind === 'Spec, self-initiated';
                 <div class="cs__video">
                   <VideoFacade
                     host={d.video.host}
-                    videoId={d.video.id}
+                    videoId={d.video.videoId}
                     poster={d.video.poster}
-                    alt={d.video.alt}
                     title={d.video.title}
                     duration={d.video.duration}
                   />
@@ -137,7 +117,7 @@ const spec = d.kind === 'Spec, self-initiated';
                 <div class="stack">
                   <p class="mono stack__head">Stack, stage by stage</p>
                   <dl class="stack__list">
-                    {d.stack.map((row) => (
+                    {d.stack.map((row: any) => (
                       <div class="stack__row">
                         <dt class="mono">{row.stage}</dt>
                         <dd class="mono mono--lower">{row.tool}</dd>
@@ -149,7 +129,7 @@ const spec = d.kind === 'Spec, self-initiated';
 
               {s.id === 'landed' && d.links.length > 0 && (
                 <ul class="cs__links">
-                  {d.links.map((l) => (
+                  {d.links.map((l: any) => (
                     <li>
                       <a href={l.href} class="cs__link mono" rel="noopener">
                         {l.label}
@@ -167,13 +147,13 @@ const spec = d.kind === 'Spec, self-initiated';
 
     <!-- pager -->
     <nav class="pager shell" aria-label="More work">
-      <a class="pager__link" href={`/work/${prev.id}/`}>
+      <a class="pager__link" href={`/work/${prev.slug}/`}>
         <span class="mono faint">← Previous</span>
-        <span class="pager__title">{prev.data.title}</span>
+        <span class="pager__title">{prev.title}</span>
       </a>
-      <a class="pager__link pager__link--next" href={`/work/${next.id}/`}>
+      <a class="pager__link pager__link--next" href={`/work/${next.slug}/`}>
         <span class="mono faint">Next →</span>
-        <span class="pager__title">{next.data.title}</span>
+        <span class="pager__title">{next.title}</span>
       </a>
     </nav>
   </article>
@@ -317,7 +297,9 @@ const spec = d.kind === 'Spec, self-initiated';
     font-weight: 500;
   }
 
-  .cs__sec p {
+  /* The paragraphs are rendered by RichText, a child component, so a scoped
+     selector never reaches them. These have to be global, held inside .cs__sec. */
+  .cs__sec :global(p) {
     font-size: var(--step-0);
     max-width: var(--measure);
   }
@@ -332,7 +314,7 @@ const spec = d.kind === 'Spec, self-initiated';
     color: var(--red);
   }
 
-  .cs__sec--constraint p {
+  .cs__sec--constraint :global(p) {
     font-family: var(--display);
     font-size: var(--step-1);
     line-height: 1.42;

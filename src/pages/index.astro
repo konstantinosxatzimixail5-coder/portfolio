@@ -1,56 +1,45 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Frame from '../components/Frame.astro';
 import WorkCard from '../components/WorkCard.astro';
 import Strip from '../components/Strip.astro';
-import { pipelines } from '../data/pipelines';
-import { site, reel } from '../data/site';
+import RichText from '../components/RichText.astro';
+import { getHome, getSettings, getWork, getPipelines, getReel } from '../lib/content';
+import { fill, Words } from '../lib/text';
 
-const work = (await getCollection('work'))
-  .filter((e) => !e.data.draft)
-  .sort((a, b) => a.data.order - b.data.order);
+const [home, site, work, pipelines, reel] = await Promise.all([
+  getHome(),
+  getSettings(),
+  getWork(),
+  getPipelines(),
+  getReel(),
+]);
 
-// The contents index. This is the front matter of the site, set as a book
-// would set it, and it doubles as the second navigation.
-const contents = [
-  { num: '01', href: '#reel', label: 'Reel', note: 'Ninety seconds, and what my hand did on each piece' },
-  { num: '02', href: '#work', label: 'Selected work', note: `${work.length} client projects, start to delivery` },
-  { num: '03', href: '#pipelines', label: 'Pipelines', note: 'Three of the seven, stage by stage, with the gates' },
-  { num: '04', href: '/spec/', label: 'Spec shelf', note: 'Invented brands, product sets and creator ads' },
-  { num: '05', href: '#writing', label: 'Writing', note: 'Direct response scripts, ghostwriting, one article' },
-  { num: '06', href: '#about', label: 'About and contact', note: 'CV, the studio, and how to reach me' },
-];
+// The three frames from the cut belong to the reel, not to this page, so both
+// places show the same pictures and there is one row to change.
+const reelTrio = reel.trio;
 
-// Three frames from the cut, standing in for the poster until the reel is hosted.
-const reelTrio = [
-  {
-    src: 'spec/feral/product-05',
-    alt: 'A FERAL Yuzu Static can standing in shallow water with magenta and green vapour behind it.',
-  },
-  {
-    src: 'bike-barn/frame-01',
-    alt: 'A rider on an Indian motorcycle on wet cobbles at night, canal houses and street lamps behind.',
-  },
-  {
-    src: 'spec/knuckle/product-01',
-    alt: 'A single amber KNUCKLE chew sliding out of a black leather sleeve, the flavour names stamped into it.',
-  },
-];
+// Numbers written into the copy are counted here instead of typed, because a
+// typed number stays a valid sentence long after it stops being true.
+const counts = { count: work.length };
 
-const writing = [
-  { title: 'X-ALL VSL', note: 'Ninety-second direct response script, plus a hook battery for the mini cut' },
-  { title: 'Three espresso scripts', note: 'One product, three ninety-second angles, written to be tested against each other' },
-  { title: 'Money laundering in video games', note: 'Feature article on in-game economies and how value leaves them' },
-  { title: 'LinkedIn ghostwriting', note: 'Long-running post work in a founder voice, in Greek and English' },
-];
+// The contents index and the labels down the left margin are the same six
+// sections, so they read from one list. Numbering them twice is how 02 in the
+// index ends up next to 03 in the margin.
+const byHref = new Map<string, any>((home.contents ?? []).map((c: any) => [c.href, c]));
+
+const mark = (href: string) => {
+  const row = byHref.get(href);
+  if (!row) {
+    throw new Error(
+      `The front page has a "${href}" section but no row for it in the contents index. Add one in the Studio, under Home page, Contents index.`
+    );
+  }
+  return row;
+};
 ---
 
-<Base
-  title="Konstantinos Chatzimichail, writer, director, synthetic media production"
-  description="Generated product photography, synthetic creators and the pipelines that keep them honest. Client work, spec work and the control gates, from Athens."
-  active="home"
->
+<Base title={home.seoTitle} description={home.seoDescription} active="home">
   <!-- ============================================================ 00 open -->
   <section class="open shell">
     <p class="mono open__slug faint">
@@ -61,27 +50,17 @@ const writing = [
 
     <div class="open__top">
       <div class="open__say">
-        <h1 class="open__line">
-          I make the films and the pictures a shoot could not pay for.
-        </h1>
+        <h1 class="open__line">{home.headline}</h1>
 
-        <p class="open__lede">
-          Generated product photography, synthetic creators, and the pipelines that keep both of
-          them honest. I write the brief, build the line, run the gates and hand over the folder.
-        </p>
+        <p class="open__lede">{home.lede}</p>
 
-        <p class="open__note quiet">
-          Greek and English. Every piece below carries a label saying whether a client paid for it
-          or I set it myself.
-        </p>
+        <p class="open__note quiet">{home.note}</p>
       </div>
 
       <Frame
         class="open__face"
-        src="spec/knuckle/fighter"
-        alt="A synthetic creator built for the KNUCKLE spec brand: a man in a black vest with taped hands, standing in a dark warehouse lit from behind."
+        image={home.openImage}
         num="00"
-        label="one creator, trained once, reused"
         ratio="1 / 2"
         loading="eager"
         sizes="(max-width: 900px) 60vw, 300px"
@@ -92,12 +71,12 @@ const writing = [
     <nav class="toc" aria-label="Contents">
       <ol class="toc__list">
         {
-          contents.map((c) => (
+          (home.contents ?? []).map((c: any) => (
             <li class="toc__item">
               <a class="toc__row" href={c.href}>
                 <span class="toc__num mono">{c.num}</span>
                 <span class="toc__label">{c.label}</span>
-                <span class="toc__note mono mono--lower faint">{c.note}</span>
+                <span class="toc__note mono mono--lower faint">{fill(c.note, counts)}</span>
               </a>
             </li>
           ))
@@ -109,20 +88,19 @@ const writing = [
   <!-- ============================================================ 01 reel -->
   <section id="reel" class="section shell spread">
     <div class="rail">
-      <span class="rail__num">01</span>
-      <span class="rail__slug">Reel</span>
+      <span class="rail__num">{mark('#reel').num}</span>
+      <span class="rail__slug">{mark('#reel').rail}</span>
     </div>
 
     <div class="stack-block">
-      <h2 class="sec__h2">Ninety seconds</h2>
+      <h2 class="sec__h2">{home.reelHeading}</h2>
 
       <a class="reel" href="/reel/">
         <span class="reel__trio">
           {
             reelTrio.map((f, i) => (
               <Frame
-                src={f.src}
-                alt={f.alt}
+                image={f}
                 num={String(i + 1).padStart(2, '0')}
                 ratio="3 / 4"
                 loading="eager"
@@ -132,68 +110,57 @@ const writing = [
           }
         </span>
         <span class="reel__badge mono">
-          {reel.id ? 'Play the cut' : 'The cut, piece by piece'}
+          {reel.videoId ? home.reelBadgePlay : home.reelBadgePending}
           <span aria-hidden="true"> →</span>
         </span>
       </a>
 
-      <p class="quiet reel__note">
-        One cut, and under it a list saying what each shot is, which pipeline made it and what I
-        did on it. Client work and spec work are marked separately in that list.
-      </p>
+      <p class="quiet reel__note">{home.reelNote}</p>
     </div>
   </section>
 
   <!-- ============================================================ 02 work -->
   <section id="work" class="section shell spread">
     <div class="rail">
-      <span class="rail__num">02</span>
-      <span class="rail__slug">Selected work</span>
+      <span class="rail__num">{mark('#work').num}</span>
+      <span class="rail__slug">{mark('#work').rail}</span>
     </div>
 
     <div class="stack-block">
-      <h2 class="sec__h2">Selected work</h2>
+      <h2 class="sec__h2">{home.workHeading}</h2>
       <div class="grid">
         {
-          work.map((e, i) => (
+          work.map((e: any, i: number) => (
             <WorkCard
-              href={`/work/${e.id}/`}
+              href={`/work/${e.slug}/`}
               num={String(i + 1).padStart(2, '0')}
-              client={e.data.client}
-              kind={e.data.kind}
-              problem={e.data.problem}
-              image={e.data.hero}
-              alt={e.data.heroAlt}
-              year={e.data.year}
+              client={e.client}
+              kind={e.kind}
+              problem={e.problem}
+              image={e.hero}
+              year={e.year}
             />
           ))
         }
       </div>
 
-      <p class="quiet more">
-        The self-initiated work sits on its own shelf, labelled as spec throughout.
-        <a href="/spec/">Open the spec shelf</a>.
-      </p>
+      <RichText value={home.workMore} class="quiet more" />
     </div>
   </section>
 
   <!-- ======================================================= 03 pipelines -->
   <section id="pipelines" class="section shell spread">
     <div class="rail">
-      <span class="rail__num">03</span>
-      <span class="rail__slug">Pipelines</span>
+      <span class="rail__num">{mark('#pipelines').num}</span>
+      <span class="rail__slug">{mark('#pipelines').rail}</span>
     </div>
 
     <div class="stack-block">
-      <h2 class="sec__h2">Pipelines</h2>
-      <p class="pipes__intro">
-        Seven of these exist. Three are on this page in full: the stages, what runs each one, what
-        gets fixed there, and the control gates that stop a frame from shipping. The tools are
-        named. So are the ways each line fails.
-      </p>
+      <h2 class="sec__h2">{home.pipelinesHeading}</h2>
+      <p class="pipes__intro">{fill(home.pipelinesIntro, { pipelines: Words(pipelines.length) })}</p>
 
       <div class="pipes">
-        {pipelines.map((p) => <Strip {...p} />)}
+        {pipelines.map((p: any) => <Strip {...p} />)}
       </div>
     </div>
   </section>
@@ -201,15 +168,15 @@ const writing = [
   <!-- ========================================================= 04 writing -->
   <section id="writing" class="section shell spread">
     <div class="rail">
-      <span class="rail__num">04</span>
-      <span class="rail__slug">Writing</span>
+      <span class="rail__num">{mark('#writing').num}</span>
+      <span class="rail__slug">{mark('#writing').rail}</span>
     </div>
 
     <div class="stack-block">
-      <h2 class="sec__h2">Writing</h2>
+      <h2 class="sec__h2">{home.writingHeading}</h2>
       <dl class="write">
         {
-          writing.map((w) => (
+          (home.writingItems ?? []).map((w: any) => (
             <div class="write__row">
               <dt>{w.title}</dt>
               <dd class="quiet">{w.note}</dd>
@@ -217,41 +184,45 @@ const writing = [
           ))
         }
       </dl>
-      <p class="quiet more">Samples on request.</p>
+      {home.writingMore && <p class="quiet more">{home.writingMore}</p>}
     </div>
   </section>
 
   <!-- =========================================================== 05 about -->
   <section id="about" class="section shell spread">
     <div class="rail">
-      <span class="rail__num">05</span>
-      <span class="rail__slug">About</span>
+      <span class="rail__num">{mark('#about').num}</span>
+      <span class="rail__slug">{mark('#about').rail}</span>
     </div>
 
     <div class="stack-block">
-      <h2 class="sec__h2">About and contact</h2>
+      <h2 class="sec__h2">{home.aboutHeading}</h2>
 
-      <p class="about__body">
-        I am a writer and director working out of {site.base}. Most of my time goes on generated
-        stills and film for brands that need volume: product sets, creator ads, explainers and the
-        scripts under them. The rest goes on building the lines that produce them, so a team can
-        run the work after I leave.
-      </p>
-
-      <p class="about__body quiet">
-        I built and shipped two sites this year:
-        <a href={site.studio.href} rel="noopener">{site.studio.label}</a>, my own studio, and
-        <a href="https://mariposa.restaurant/" rel="noopener">mariposa.restaurant</a>.
-      </p>
+      <div class="about__prose">
+        <RichText value={home.aboutBody} />
+      </div>
 
       <ul class="contact">
         <li><a class="btn mono" href={`mailto:${site.email}`}>Email me</a></li>
-        <li><a class="btn btn--ghost mono" href={site.cv} download>Download CV<span aria-hidden="true"> ↓</span></a></li>
-        <li>
-          <a class="btn btn--ghost mono" href={site.studio.href} rel="noopener">
-            {site.studio.label}<span aria-hidden="true"> ↗</span>
-          </a>
-        </li>
+        {
+          site.cv && (
+            <li>
+              <a class="btn btn--ghost mono" href={site.cv} download>
+                Download CV<span aria-hidden="true"> ↓</span>
+              </a>
+            </li>
+          )
+        }
+        {
+          site.studio?.href && (
+            <li>
+              <a class="btn btn--ghost mono" href={site.studio.href} rel="noopener">
+                {site.studio.label}
+                <span aria-hidden="true"> ↗</span>
+              </a>
+            </li>
+          )
+        }
       </ul>
     </div>
   </section>
@@ -530,9 +501,20 @@ const writing = [
 
   /* --- 05 about ----------------------------------------------------------- */
 
-  .about__body {
+  /* The paragraphs here are rendered inside RichText, so they never carry this
+     component's scope attribute and cannot be selected by class from out here.
+     Styling them through a wrapper is what makes the rule land. */
+  .about__prose :global(p) {
     font-size: var(--step-0);
     max-width: var(--measure);
+  }
+
+  /* The opening paragraph carries the section, anything after it is a footnote
+     to it. Done in CSS rather than as a class on the second paragraph, because
+     the paragraphs come from the CMS now and an editor should be able to add a
+     third one without being told to know that. */
+  .about__prose :global(p ~ p) {
+    color: var(--fg-quiet);
   }
 
   .contact {

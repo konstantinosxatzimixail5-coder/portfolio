@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import { getSettings } from '../lib/content';
 
 interface Props {
   title: string;
@@ -10,7 +11,13 @@ interface Props {
 }
 
 const { title, description, active } = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const settings = await getSettings();
+
+// The canonical address comes from the CMS rather than from astro.config, so
+// there is one place to change it and no chance of the two disagreeing. Every
+// link preview on every social platform is built from these three tags, so a
+// wrong value here is invisible on the site and wrong everywhere else.
+const canonical = new URL(Astro.url.pathname, settings.domain).href;
 ---
 
 <!doctype html>

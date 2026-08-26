@@ -1,0 +1,58 @@
+---
+// Wraps one run of text in whatever marks the editor put on it. Marks nest, so
+// this component peels one off and calls itself with the rest.
+//
+// Only bold, italic and links exist, because those are the only marks the
+// richText schema offers. Anything else falls through unwrapped instead of
+// throwing, so an old document written against a wider schema still renders.
+interface Props {
+  marks?: string[];
+  defs?: any[];
+}
+
+const { marks = [], defs = [] } = Astro.props;
+const Self = Astro.self;
+
+const [first, ...rest] = marks;
+const def = first ? defs.find((d: any) => d?._key === first) : undefined;
+
+// The schema already restricts the scheme, but a link is the one field where a
+// bad value turns into script execution, so it is checked again on the way out.
+const safeHref = (href: unknown): string | undefined => {
+  if (typeof href !== 'string') return undefined;
+  const v = href.trim();
+  if (/^(https?:|mailto:)/i.test(v)) return v;
+  if (/^[/#]/.test(v)) return v; // same-site path or anchor
+  return undefined;
+};
+
+const href = def?._type === 'link' ? safeHref(def.href) : undefined;
+---
+
+{
+  !first ? (
+    <slot />
+  ) : href ? (
+    <a href={href} rel={href.startsWith('http') ? 'noopener' : undefined}>
+      <Self marks={rest} defs={defs}>
+        <slot />
+      </Self>
+    </a>
+  ) : first === 'strong' ? (
+    <strong>
+      <Self marks={rest} defs={defs}>
+        <slot />
+      </Self>
+    </strong>
+  ) : first === 'em' ? (
+    <em>
+      <Self marks={rest} defs={defs}>
+        <slot />
+      </Self>
+    </em>
+  ) : (
+    <Self marks={rest} defs={defs}>
+      <slot />
+    </Self>
+  )
+}

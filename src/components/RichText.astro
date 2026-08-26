@@ -1,0 +1,29 @@
+---
+// Renders the body copy coming out of the CMS. Paragraphs only: the page owns
+// its heading levels, so a heading typed into a body field would break the
+// outline a screen reader navigates by, and the schema does not offer one.
+import Marked from './Marked.astro';
+
+interface Props {
+  value?: any[] | null;
+  class?: string;
+}
+
+const { value, class: className } = Astro.props;
+
+const blocks = (value ?? []).filter(
+  (b: any) => b?._type === 'block' && (b.children ?? []).some((c: any) => c?.text?.trim())
+);
+---
+
+{
+  blocks.map((b: any) => (
+    <p class={className}>
+      {(b.children ?? []).map((c: any) => (
+        <Marked marks={c.marks} defs={b.markDefs}>
+          {c.text}
+        </Marked>
+      ))}
+    </p>
+  ))
+}

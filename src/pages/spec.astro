@@ -1,37 +1,35 @@
 ---
 import Base from '../layouts/Base.astro';
 import Frame from '../components/Frame.astro';
-import { specBrands } from '../data/spec';
+import { getSpecPage, getSpecBrands } from '../lib/content';
+import { fill, Words } from '../lib/text';
 
-const total = specBrands.reduce((n, b) => n + b.shots.length, 0);
+const [page, specBrands] = await Promise.all([getSpecPage(), getSpecBrands()]);
+
+// The two numbers in the lede are counted, not typed. Add a brand or a frame in
+// the Studio and the sentence keeps up on its own. {brands} opens the sentence,
+// so it is spelled out with a capital.
+const counts = {
+  count: specBrands.reduce((n, b) => n + b.shots.length, 0),
+  brands: Words(specBrands.length),
+};
 ---
 
-<Base
-  title="Spec shelf, Konstantinos Chatzimichail"
-  description="Four invented brands, built to test a specific failure. Product sets and creator ads, self-initiated, with the control gate each one was made to prove."
-  active="spec"
->
+<Base title={page.seoTitle} description={page.seoDescription} active="spec">
   <article class="shelf">
     <!-- header -->
     <header class="shelf__head shell">
-      <p class="mono shelf__flag">Spec, self-initiated</p>
-      <h1 class="shelf__title">The spec shelf</h1>
-      <p class="shelf__lede">
-        Four brands that do not exist, {total} frames, all of it set by me. Nobody commissioned any of
-        it and nobody paid for it.
-      </p>
-      <p class="shelf__note quiet">
-        Each one was built to break a specific thing. A wordmark that has to survive five sets. A
-        pack claim a model would happily invent. One face under three different light sources. The
-        brand is the excuse. The gate underneath it is the point.
-      </p>
+      <p class="mono shelf__flag">{page.flag}</p>
+      <h1 class="shelf__title">{page.heading}</h1>
+      <p class="shelf__lede">{fill(page.lede, counts)}</p>
+      <p class="shelf__note quiet">{page.note}</p>
     </header>
 
     <!-- contents -->
     <nav class="shelf__toc shell" aria-label="Brands">
       <ol class="toc__list">
         {
-          specBrands.map((b) => (
+          specBrands.map((b: any) => (
             <li>
               <a class="toc__row" href={`#${b.id}`}>
                 <span class="toc__num mono">{b.num}</span>
@@ -46,7 +44,7 @@ const total = specBrands.reduce((n, b) => n + b.shots.length, 0);
 
     <!-- brands -->
     {
-      specBrands.map((b) => (
+      specBrands.map((b: any) => (
         <section class="brand shell spread" id={b.id}>
           <div class="rail">
             <span class="rail__num">{b.num}</span>
@@ -56,7 +54,7 @@ const total = specBrands.reduce((n, b) => n + b.shots.length, 0);
           <div class="brand__body">
             <header class="brand__head">
               <p class="mono brand__kind">
-                Spec, self-initiated
+                {page.flag}
                 <span class="faint" aria-hidden="true"> · </span>
                 <span class="quiet">{b.product}</span>
               </p>
@@ -69,12 +67,10 @@ const total = specBrands.reduce((n, b) => n + b.shots.length, 0);
             </header>
 
             <div class="brand__grid">
-              {b.shots.map((s, i) => (
+              {b.shots.map((s: any, i: number) => (
                 <Frame
-                  src={s.src}
-                  alt={s.alt}
+                  image={s}
                   num={String(i + 1).padStart(2, '0')}
-                  label={s.label}
                   sizes="(max-width: 620px) 90vw, (max-width: 1000px) 45vw, 30vw"
                 />
               ))}

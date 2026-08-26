@@ -1,14 +1,18 @@
 ---
+import { getSettings } from '../lib/content';
+
+const settings = await getSettings();
+
+// Built once as a static file, so this is the year of the build. That is the
+// only year a static page can honestly claim.
 const year = new Date().getFullYear();
 ---
 
 <footer class="foot">
   <div class="shell foot__inner">
-    <p class="mono foot__mark">K/C</p>
-    <p class="mono foot__note faint">
-      Athens, Greece · Built with Astro · Type is Redaction and Recursive, both OFL
-    </p>
-    <p class="mono foot__note faint">© {year} Konstantinos Chatzimichail</p>
+    <p class="mono foot__mark">{settings.monogram}</p>
+    {settings.footerNote && <p class="mono foot__note faint">{settings.footerNote}</p>}
+    <p class="mono foot__note faint">© {year} {settings.name}</p>
   </div>
 </footer>
 
