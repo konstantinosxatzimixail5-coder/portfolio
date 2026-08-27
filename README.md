@@ -41,7 +41,8 @@ npx sanity login
 | `npm run dev` | Dev server with hot reload |
 | `npm run build` | Static build into `dist/` |
 | `npm run preview` | Serve `dist/` as it will be served in production |
-| `npm run content` | `sync`, then `images`. Run after adding a picture in the Studio |
+| `npm run top-up` | Fetch and build only the pictures missing from this repo. Runs on its own before `dev` and `build` |
+| `npm run content` | `sync`, then `images`. The full pass, and the only one that deletes |
 | `npm run sync` | Download every image in the dataset into `source-assets/cms/` |
 | `npm run images` | Rebuild AVIF and WebP derivatives from `source-assets/cms/` |
 | `npm run studio` | The Sanity Studio, locally |
@@ -49,13 +50,19 @@ npx sanity login
 
 ### Changing a picture
 
-Words are read from Sanity at build time, so editing text in the Studio needs
-nothing here: publish, and the next deploy picks it up.
+Publish in the Studio. That is the whole requirement, for words and for
+pictures both.
 
-Pictures are different. The AVIF and WebP versions are committed to this
-repository, so the deploy never has to download and convert sixty-four images
-to put out a one-word change. The cost is one local step whenever a picture is
-added or replaced:
+The AVIF and WebP versions are committed to this repository, so a deploy does
+not download and convert sixty-four images to put out a one-word change. What
+keeps that from turning into a manual step is `top-up`, which runs before every
+build: it asks the dataset which pictures are in use, and fetches and converts
+only the ones this repository does not already have. A build that needs nothing
+adds about a second. Each genuinely new picture costs about another second.
+
+So a new picture is live on the next deploy either way. It is still worth
+running the full pass locally afterwards, because otherwise every future deploy
+re-fetches the same pictures:
 
 ```bash
 npm run content
@@ -63,8 +70,10 @@ git add public/img src/image-manifest.json
 git commit -m "New frames for the spec shelf"
 ```
 
-Forgetting it does not ship a broken page. The build stops and names the
-picture it cannot find.
+`top-up` only ever adds. Deleting a picture in the Studio leaves its files here
+until `npm run content` prunes them, which costs a few unused files in a deploy
+and never costs a broken page. Pruning on the host would mean a build that
+cannot reach Sanity deletes the pictures it cannot currently see.
 
 The dataset was first filled by a migration script that read the markdown and
 TypeScript files this site used to keep its content in. Both the script and
@@ -93,11 +102,23 @@ settings in the Studio, and it builds every canonical URL and every link preview
 tag. Set it before the first deploy or social cards will point at a host that
 does not exist.
 
-Content edits do not redeploy by themselves. Add a webhook in `sanity.io/manage`
-pointing at the host's build hook if you want publishing in the Studio to put
-the change live. That covers words. A new picture still needs `npm run content`
-and a commit first, since the deploy builds from the derivatives in this
-repository and not from the dataset.
+Content edits do not redeploy by themselves. Publishing in the Studio changes
+the dataset; it does not push to git, and the host only builds on a push.
+
+To close that gap, make a Deploy Hook on the host (on Vercel: Settings, Git,
+Deploy Hooks, branch `main`) and paste the URL it gives you into
+`sanity.io/manage`, under API, Webhooks. Trigger on create, update and delete,
+and set the filter to:
+
+```
+!(_id in path("drafts.**"))
+```
+
+That filter is the part not to skip. Without it every keystroke autosaving a
+draft starts a build.
+
+The hook URL is a secret in the sense that anyone holding it can start builds on
+your account. It cannot read anything.
 
 ---
 

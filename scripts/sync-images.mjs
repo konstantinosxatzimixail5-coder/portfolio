@@ -7,77 +7,30 @@
 // bites exactly when the site starts getting traffic. This costs one build step
 // and removes that ceiling.
 //
+// This is the full pass: it downloads everything and deletes what the CMS no
+// longer references. The build does not run it. `npm run top-up` runs there
+// instead, and only fetches what is missing.
+//
 // Run: npm run sync   (then npm run images)
 
-import { mkdir, writeFile, readdir, unlink, stat } from 'node:fs/promises';
+import { readdir, unlink, stat } from 'node:fs/promises';
 import { join } from 'node:path';
-import { client, projectId, dataset } from './sanity-env.mjs';
+import { client } from './sanity-env.mjs';
+import { SRC, download, usedAssets } from './lib/images.mjs';
 
-const OUT = 'source-assets/cms';
+const { assets, unreadable } = await usedAssets(client());
 
-// Every type that can hold a picture. A type missing from this list means its
-// images are never downloaded and the build fails on a missing manifest key,
-// which is loud, so this is the one line to check when that happens.
-const TYPES = ['siteSettings', 'homePage', 'reelPage', 'specPage', 'work', 'pipeline', 'specBrand'];
-
-// Walk the whole document tree looking for asset references. Doing it in
-// JavaScript rather than in the query means a new image field anywhere in the
-// schema is picked up without editing this file.
-function collectAssetIds(node, found = new Set()) {
-  if (Array.isArray(node)) {
-    for (const item of node) collectAssetIds(item, found);
-    return found;
-  }
-  if (node && typeof node === 'object') {
-    for (const [key, value] of Object.entries(node)) {
-      if (key === '_ref' && typeof value === 'string' && value.startsWith('image-')) {
-        found.add(value);
-      } else {
-        collectAssetIds(value, found);
-      }
-    }
-  }
-  return found;
-}
-
-// image-8f3a1c9e...-1920x1080-jpg
-//        hash        dimensions  ext
-function parseAssetId(id) {
-  const m = /^image-([a-f0-9]+)-(\d+x\d+)-(\w+)$/.exec(id);
-  if (!m) return null;
-  const [, hash, dims, ext] = m;
-  return {
-    hash,
-    ext,
-    // The originals live on the CDN under hash-dimensions.extension.
-    url: `https://cdn.sanity.io/images/${projectId}/${dataset}/${hash}-${dims}.${ext}`,
-    file: join(OUT, `${hash}.${ext}`),
-  };
-}
-
-const sanity = client();
-
-const docs = await sanity.fetch(`*[_type in $types]`, { types: TYPES });
-const assetIds = [...collectAssetIds(docs)];
-
-if (assetIds.length === 0) {
+if (assets.length === 0 && unreadable.length === 0) {
   console.log('No images referenced by any document yet. Nothing to pull down.');
   process.exit(0);
 }
 
-await mkdir(OUT, { recursive: true });
-
 let downloaded = 0;
 let cached = 0;
 const keep = new Set();
-const failed = [];
+const failed = unreadable.map((id) => `${id} (unreadable asset id)`);
 
-for (const id of assetIds) {
-  const asset = parseAssetId(id);
-  if (!asset) {
-    failed.push(`${id} (unreadable asset id)`);
-    continue;
-  }
+for (const asset of assets) {
   keep.add(`${asset.hash}.${asset.ext}`);
 
   // The hash in the id is a digest of the file itself, so a file already on disk
@@ -91,30 +44,29 @@ for (const id of assetIds) {
     // not cached, fall through and fetch it
   }
 
-  const res = await fetch(asset.url);
-  if (!res.ok) {
-    failed.push(`${id} (${res.status} ${res.statusText})`);
-    continue;
+  try {
+    await download(asset);
+    downloaded++;
+    console.log(`  pulled  ${asset.hash}.${asset.ext}`);
+  } catch (err) {
+    failed.push(`${asset.key} (${err.message})`);
   }
-  await writeFile(asset.file, Buffer.from(await res.arrayBuffer()));
-  downloaded++;
-  console.log(`  pulled  ${asset.hash}.${asset.ext}`);
 }
 
 // Drop anything left over from an image that has since been deleted or replaced
 // in the Studio. Without this the manifest keeps growing and the deploy carries
 // pictures no page has referenced for months.
 let pruned = 0;
-for (const name of await readdir(OUT).catch(() => [])) {
+for (const name of await readdir(SRC).catch(() => [])) {
   if (!keep.has(name)) {
-    await unlink(join(OUT, name));
+    await unlink(join(SRC, name));
     pruned++;
     console.log(`  pruned  ${name}`);
   }
 }
 
 console.log(
-  `\n${assetIds.length} images in use: ${downloaded} pulled, ${cached} already local, ${pruned} pruned.`
+  `\n${assets.length} images in use: ${downloaded} pulled, ${cached} already local, ${pruned} pruned.`
 );
 
 if (failed.length) {
