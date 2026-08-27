@@ -45,10 +45,15 @@ const styles = [
   focus && `--frame-focus:${focus}`,
 ].filter(Boolean).join(';');
 
+// The derivatives are committed, so the build does not talk to Sanity for
+// pictures. A picture added in the Studio therefore needs `npm run content`
+// and a commit before it exists here. Failing loudly beats a broken <img>.
 const entry = (manifest as Record<string, any>)[src];
 if (!entry) {
   throw new Error(
-    `Frame: no image "${src}" in the manifest. Drop it in source-assets/ and run \`npm run images\`.`
+    `Frame: no image "${src}" in the manifest. It was probably added in the Studio ` +
+      `since the last commit. Run \`npm run content\`, then commit public/img/ and ` +
+      `src/image-manifest.json.`
   );
 }
 

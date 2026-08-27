@@ -6,6 +6,11 @@ import { fill, Words } from '../lib/text';
 
 const [page, specBrands] = await Promise.all([getSpecPage(), getSpecBrands()]);
 
+// "Runs on" is left off a brand that has no pipeline set, the same way the reel
+// falls back when the cut is unhosted. A brand being written in the Studio
+// should not take the page down; the Studio warns about the empty field there,
+// which is where it can actually be fixed.
+
 // The two numbers in the lede are counted, not typed. Add a brand or a frame in
 // the Studio and the sentence keeps up on its own. {brands} opens the sentence,
 // so it is spelled out with a capital.
@@ -61,9 +66,11 @@ const counts = {
               <h2 class="brand__name">{b.name}</h2>
               <p class="brand__proves">{b.proves}</p>
               <p class="brand__note quiet">{b.note}</p>
-              <p class="mono brand__pipe">
-                Runs on <a href={b.pipeline.href}>{b.pipeline.label}</a>
-              </p>
+              {b.pipeline?.href && (
+                <p class="mono brand__pipe">
+                  Runs on <a href={b.pipeline.href}>{b.pipeline.label}</a>
+                </p>
+              )}
             </header>
 
             <div class="brand__grid">

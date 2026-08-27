@@ -26,8 +26,6 @@ Both files are gitignored. Neither needs a token while the dataset is public.
 
 ```bash
 npm install
-npm run sync        # downloads every image in the dataset
-npm run images      # AVIF and WebP derivatives
 npm run dev         # http://localhost:4321
 npm run studio      # http://localhost:3333
 ```
@@ -41,12 +39,32 @@ npx sanity login
 | Script | What it does |
 |---|---|
 | `npm run dev` | Dev server with hot reload |
-| `npm run build` | `sync`, then `images`, then a static build into `dist/` |
+| `npm run build` | Static build into `dist/` |
 | `npm run preview` | Serve `dist/` as it will be served in production |
+| `npm run content` | `sync`, then `images`. Run after adding a picture in the Studio |
 | `npm run sync` | Download every image in the dataset into `source-assets/cms/` |
 | `npm run images` | Rebuild AVIF and WebP derivatives from `source-assets/cms/` |
 | `npm run studio` | The Sanity Studio, locally |
 | `npm run studio:deploy` | Put the Studio on a sanity.studio address |
+
+### Changing a picture
+
+Words are read from Sanity at build time, so editing text in the Studio needs
+nothing here: publish, and the next deploy picks it up.
+
+Pictures are different. The AVIF and WebP versions are committed to this
+repository, so the deploy never has to download and convert sixty-four images
+to put out a one-word change. The cost is one local step whenever a picture is
+added or replaced:
+
+```bash
+npm run content
+git add public/img src/image-manifest.json
+git commit -m "New frames for the spec shelf"
+```
+
+Forgetting it does not ship a broken page. The build stops and names the
+picture it cannot find.
 
 The dataset was first filled by a migration script that read the markdown and
 TypeScript files this site used to keep its content in. Both the script and
@@ -66,9 +84,9 @@ The build is a folder of static files. Any host that serves a directory will do.
 **Environment variables:** `SANITY_PROJECT_ID` and `SANITY_DATASET`
 
 Both of those are public values. The project id is in every Studio URL and the
-dataset name is printed on the front of the Sanity dashboard. Neither token
-belongs on the host: the read token is only needed if you make the dataset
-private, and the write token is only for the seed.
+dataset name is printed on the front of the Sanity dashboard. No token belongs
+on the host. A read token is only needed if you make the dataset private, and
+nothing in this repository writes to it.
 
 The domain is not in `astro.config.mjs`. It is the **Domain** field in Site
 settings in the Studio, and it builds every canonical URL and every link preview
@@ -77,7 +95,9 @@ does not exist.
 
 Content edits do not redeploy by themselves. Add a webhook in `sanity.io/manage`
 pointing at the host's build hook if you want publishing in the Studio to put
-the change live.
+the change live. That covers words. A new picture still needs `npm run content`
+and a commit first, since the deploy builds from the derivatives in this
+repository and not from the dataset.
 
 ---
 

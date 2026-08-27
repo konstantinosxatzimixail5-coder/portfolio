@@ -5,8 +5,9 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run sync && npm run images && astro build",
+    "build": "astro build",
     "preview": "astro preview",
+    "content": "npm run sync && npm run images",
     "images": "node scripts/build-images.mjs",
     "sync": "node scripts/sync-images.mjs",
     "studio": "npm --prefix studio run dev",

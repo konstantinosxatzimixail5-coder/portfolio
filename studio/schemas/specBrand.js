@@ -61,14 +61,23 @@ export default defineType({
       name: 'pipeline',
       title: 'Runs on',
       type: 'object',
+      description:
+        'Which pipeline made this set. Leave it empty and the line is left off the page, so a brand can be written before it is decided.',
+      // A warning, not an error, so a half-written brand can still be saved and
+      // published. The page omits the line when this is empty.
+      validation: (Rule) =>
+        Rule.custom((v) =>
+          !v || (v.label && v.href)
+            ? true
+            : 'Set both the label and the link, or clear both. A half-filled pair prints "Runs on" with nothing after it.'
+        ).warning(),
       fields: [
-        { name: 'label', title: 'Label', type: 'string', validation: (R) => R.required() },
+        { name: 'label', title: 'Label', type: 'string' },
         {
           name: 'href',
           title: 'Link',
           type: 'string',
           description: 'Usually an anchor on the front page, e.g. /#phantom-set',
-          validation: (R) => R.required(),
         },
       ],
     }),
