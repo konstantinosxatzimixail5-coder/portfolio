@@ -2,11 +2,13 @@
 // widths, and writes src/image-manifest.json with intrinsic dimensions so pages
 // can set width/height and avoid layout shift.
 //
-// It reads source-assets/cms/ and nothing else. That directory is filled by
-// `npm run sync` from the pictures published in Sanity, so what gets built is
-// exactly what some page references. The other folders under source-assets/ are
-// the original masters, kept in the repository so Sanity is not the only copy of
-// them. Building those too meant 54 unused image sets in every deploy.
+// It reads two directories and no others. source-assets/cms/ is filled by
+// `npm run sync` from the pictures published in Sanity, so what gets built from
+// it is exactly what some page references. source-assets/site/ holds the
+// pictures this repository owns rather than the CMS, and every one of them is
+// referenced from src/data/. The remaining folders under source-assets/ are
+// original masters kept so Sanity is not the only copy of them; building those
+// too meant 54 unused image sets in every deploy.
 //
 // This is the full pass, and the only one that deletes anything. It rebuilds the
 // manifest from what is on disk, so run `npm run sync` first or it will drop the
@@ -16,28 +18,41 @@
 
 import { readdir, unlink, rmdir } from 'node:fs/promises';
 import { join, extname, basename } from 'node:path';
-import { OUT, SRC, derive, entryFiles, writeManifest } from './lib/images.mjs';
+import {
+  OUT,
+  SRC,
+  SITE_SRC,
+  INPUT_FORMATS,
+  derive,
+  entryFiles,
+  localAssets,
+  writeManifest,
+} from './lib/images.mjs';
 
-const INPUT = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif', '.tif', '.tiff']);
+// Two sources, one ladder. The CMS pictures are named for their Sanity hash, so
+// the key is a digest and a derivative on disk can be trusted. The repository
+// pictures under source-assets/site/ are named by hand, so their derivatives are
+// rebuilt whenever the master is newer.
+const cmsFiles = (await readdir(SRC).catch(() => []))
+  .filter((name) => INPUT_FORMATS.has(extname(name).toLowerCase()))
+  .sort()
+  .map((name) => ({ file: join(SRC, name), key: `cms/${basename(name, extname(name))}` }));
 
-const files = (await readdir(SRC).catch(() => []))
-  .filter((name) => INPUT.has(extname(name).toLowerCase()))
-  .map((name) => join(SRC, name));
+const siteFiles = await localAssets();
+const files = [...cmsFiles, ...siteFiles];
 
 if (files.length === 0) {
-  console.log(`No images found in ${SRC}/. Run \`npm run sync\` and try again.`);
+  console.log(
+    `No images found in ${SRC}/ or ${SITE_SRC}/. Run \`npm run sync\` and try again.`
+  );
   process.exit(0);
 }
 
 const manifest = {};
 let written = 0;
 
-for (const file of files) {
-  // The file is named for the Sanity hash, and that hash is the manifest key
-  // every page looks itself up by. It is not derived from the path, so moving
-  // this directory cannot quietly rename every image.
-  const key = `cms/${basename(file, extname(file))}`;
-  const result = await derive(file, key);
+for (const { file, key } of files) {
+  const result = await derive(file, key, { contentAddressed: key.startsWith('cms/') });
   if (!result) {
     console.warn(`skip (no dimensions): ${file}`);
     continue;
@@ -79,5 +94,8 @@ async function prune(dir) {
 
 const pruned = await prune(OUT);
 
-console.log(`${files.length} source images -> ${written} files written, ${pruned} pruned`);
+console.log(
+  `${files.length} source images (${cmsFiles.length} from the CMS, ${siteFiles.length} from the repo) ` +
+    `-> ${written} files written, ${pruned} pruned`
+);
 console.log(`manifest: src/image-manifest.json (${Object.keys(manifest).length} entries)`);

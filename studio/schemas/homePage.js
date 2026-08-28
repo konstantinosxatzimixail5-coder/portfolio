@@ -57,18 +57,31 @@ export default defineType({
       title: 'Contents index',
       type: 'array',
       group: 'contents',
-      description: 'The numbered list under the opening, which doubles as the second navigation.',
+      description:
+        'The numbered list under the opening, which doubles as the second navigation. The order ' +
+        'and the numbering come from src/data/sections.ts, so a row here supplies the words for a ' +
+        'section rather than deciding whether it exists. A row whose link matches nothing in that ' +
+        'file is ignored; a section with no row here falls back to the wording written there.',
       of: [
         {
           type: 'object',
           fields: [
-            { name: 'num', title: 'Number', type: 'string', validation: (R) => R.required() },
+            {
+              name: 'num',
+              title: 'Number',
+              type: 'string',
+              description:
+                'NOT IN USE. Numbering is counted from the section order in src/data/sections.ts, ' +
+                'which is what stopped the index and the margin disagreeing.',
+            },
             { name: 'label', title: 'Label', type: 'string', validation: (R) => R.required() },
             {
               name: 'href',
               title: 'Link',
               type: 'string',
-              description: 'An anchor such as #work, or a path such as /spec/.',
+              description:
+                'The anchor this row supplies words for, e.g. #work or #captures. It has to match ' +
+                'a section in src/data/sections.ts or the row is ignored.',
               validation: (R) => R.required(),
             },
             {
@@ -76,7 +89,9 @@ export default defineType({
               title: 'Note',
               type: 'string',
               description:
-                'Write {count} anywhere in this line and it is replaced by the number of published case studies, so the figure cannot go stale.',
+                'Counted tokens are filled in on build so a figure cannot go stale: {count} is the ' +
+                'number of published case studies, {samples} the writing samples, {frames} the ' +
+                'captures, {brands} the spec brands and {pipelines} the pipelines.',
               validation: (R) => R.required(),
             },
             {

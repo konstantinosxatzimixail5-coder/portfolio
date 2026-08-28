@@ -1,0 +1,245 @@
+---
+import Base from '../layouts/Base.astro';
+import Frame from '../components/Frame.astro';
+import { getSettings, captures } from '../lib/content';
+import { breadcrumbs, collection, graph, person } from '../lib/schema';
+import { words } from '../lib/text';
+
+const site = await getSettings();
+
+const title = `Photoreal captures: ${words(captures.length)} generated human frames | ${site.name}`;
+const description =
+  'Generated human frames and what each one was built to break: sponsor type on a moving garment, hands doing skilled work, two people with a real eyeline, wet ground at night. Every frame labelled as generated.';
+
+const jsonLd = graph([
+  person(site.domain, site),
+  collection(site.domain, '/captures/', 'Photoreal captures', description),
+  breadcrumbs(site.domain, [
+    { name: 'Home', path: '/' },
+    { name: 'Captures', path: '/captures/' },
+  ]),
+  {
+    '@type': 'ImageGallery',
+    name: 'Photoreal captures',
+    description,
+    author: { '@id': new URL('/', site.domain).href + '#person' },
+  },
+]);
+---
+
+<Base title={title} description={description} active="captures" jsonLd={jsonLd}>
+  <article class="caps">
+    <header class="caps__head shell">
+      <p class="mono caps__flag">Generated, every frame</p>
+      <h1 class="caps__title">Photoreal captures</h1>
+      <p class="caps__lede">
+        A gallery of pretty faces proves nothing, because a pretty face at rest is the easiest
+        thing these models make. Every frame here is hard in a specific and nameable way, and the
+        line under each one says which way.
+      </p>
+      <p class="caps__note quiet">
+        These are stills, not client work, and none of the people in them exist. That label sits on
+        the page rather than in a footnote, because the labelling is the argument.
+      </p>
+    </header>
+
+    <ol class="plates shell">
+      {
+        captures.map((c, i) => (
+          <li class="plate" id={c.key.split('/').pop()}>
+            <Frame
+              src={c.key}
+              alt={c.alt}
+              num={String(i + 1).padStart(2, '0')}
+              focus={c.focus}
+              sizes="(max-width: 900px) 92vw, 60vw"
+              loading={i < 2 ? 'eager' : 'lazy'}
+            />
+
+            <div class="plate__body">
+              <h2 class="plate__title">{c.title}</h2>
+              <dl class="plate__dl">
+                <dt class="mono">Proves</dt>
+                <dd>{c.proves}</dd>
+                <dt class="mono">Register</dt>
+                <dd class="quiet">{c.register}</dd>
+              </dl>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+
+    <section class="caps__how shell spread">
+      <div class="rail">
+        <span class="rail__num">00</span>
+        <span class="rail__slug">Method</span>
+      </div>
+      <div class="caps__how-body">
+        <h2 class="caps__how-title">How a frame gets kept</h2>
+        <p class="caps__how-p">
+          Nothing here started from an empty prompt. A frame loads a written brief first: the
+          register it is imitating, the light, the lens, and the one thing in it that has to
+          survive. Then it goes through the same gates the pipelines use. Hands are frozen and
+          counted. Type on a garment or a label is read at full resolution rather than glanced at.
+          A face is stacked against the rest of its set and flicked through at speed, because drift
+          in a jaw or a hairline shows up in motion long before it shows up in a still.
+        </p>
+        <p class="caps__how-p quiet">
+          A frame that fails is regenerated from the reference, never patched. Patching is how a
+          set ends up with eight frames that each look fine and do not belong to each other.
+        </p>
+        <p class="mono caps__how-link">
+          <a href="/#pipelines">The gates in full</a>
+        </p>
+      </div>
+    </section>
+
+    <nav class="caps__back shell" aria-label="Back">
+      <a class="mono" href="/">← Back to the front page</a>
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .caps__head {
+    padding-top: var(--s-8);
+    padding-bottom: var(--s-7);
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .caps__flag {
+    color: var(--mint);
+    font-size: 0.68rem;
+    max-width: none;
+  }
+
+  .caps__title {
+    font-size: var(--step-5);
+    letter-spacing: -0.03em;
+  }
+
+  .caps__lede {
+    font-size: var(--step-1);
+    line-height: 1.42;
+    max-width: 48ch;
+    color: var(--newsprint-dim);
+  }
+
+  .caps__note {
+    font-size: var(--step--1);
+    max-width: 54ch;
+  }
+
+  /* --- plates ------------------------------------------------------------- */
+
+  /* One frame per row, wide, with the argument beside it on a big screen. These
+     are photographs and the whole point is that they hold up at size, so a
+     three-up grid would be arguing against the page. */
+  .plates {
+    list-style: none;
+    margin: 0;
+    padding-inline: var(--gutter);
+    display: grid;
+    gap: var(--s-8);
+  }
+
+  .plate {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: var(--s-5);
+    align-items: start;
+    padding-top: var(--s-6);
+    border-top: 1px solid var(--rule);
+    scroll-margin-top: var(--s-7);
+  }
+
+  @media (max-width: 900px) {
+    .plate {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-4);
+    }
+  }
+
+  .plate__body {
+    display: grid;
+    gap: var(--s-3);
+    position: sticky;
+    top: var(--s-6);
+  }
+
+  @media (max-width: 900px) {
+    .plate__body {
+      position: static;
+    }
+  }
+
+  .plate__title {
+    font-size: var(--step-2);
+    letter-spacing: -0.02em;
+  }
+
+  .plate__dl {
+    margin: 0;
+    display: grid;
+    gap: var(--s-2);
+    border-top: 1px solid var(--rule);
+    padding-top: var(--s-3);
+  }
+
+  .plate__dl dt {
+    color: var(--fg-faint);
+    font-size: 0.62rem;
+  }
+
+  .plate__dl dd {
+    margin: 0 0 var(--s-2);
+    font-size: var(--step--1);
+    line-height: 1.55;
+    color: var(--newsprint-dim);
+  }
+
+  /* --- method ------------------------------------------------------------- */
+
+  .caps__how {
+    padding-block: var(--s-8);
+    margin-top: var(--s-8);
+    border-top: 1px solid var(--rule);
+  }
+
+  .caps__how-body {
+    display: grid;
+    gap: var(--s-4);
+    min-width: 0;
+  }
+
+  .caps__how-title {
+    font-size: var(--step-3);
+    letter-spacing: -0.02em;
+  }
+
+  .caps__how-p {
+    max-width: var(--measure);
+  }
+
+  .caps__how-link {
+    font-size: 0.66rem;
+    max-width: none;
+  }
+
+  /* --- back --------------------------------------------------------------- */
+
+  .caps__back {
+    padding-block: var(--s-6);
+    border-top: 1px solid var(--rule);
+  }
+
+  .caps__back a {
+    text-decoration: none;
+    font-size: 0.68rem;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+</style>

@@ -1630,5 +1630,221 @@
       }
     ],
     "fallback": "/img/cms/e6aaf7ad0cd505e3ef994aced7b74580da55740f-960.webp"
+  },
+  "site/capture-bus-stop": {
+    "key": "site/capture-bus-stop",
+    "width": 960,
+    "height": 524,
+    "aspect": 1.8333,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/capture-bus-stop-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/capture-bus-stop-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/capture-bus-stop-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/capture-bus-stop-960.webp"
+      }
+    ],
+    "fallback": "/img/site/capture-bus-stop-960.webp"
+  },
+  "site/capture-crossing": {
+    "key": "site/capture-crossing",
+    "width": 960,
+    "height": 524,
+    "aspect": 1.8333,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/capture-crossing-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/capture-crossing-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/capture-crossing-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/capture-crossing-960.webp"
+      }
+    ],
+    "fallback": "/img/site/capture-crossing-960.webp"
+  },
+  "site/capture-doorstep": {
+    "key": "site/capture-doorstep",
+    "width": 960,
+    "height": 640,
+    "aspect": 1.5,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/capture-doorstep-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/capture-doorstep-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/capture-doorstep-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/capture-doorstep-960.webp"
+      }
+    ],
+    "fallback": "/img/site/capture-doorstep-960.webp"
+  },
+  "site/capture-kitchen": {
+    "key": "site/capture-kitchen",
+    "width": 960,
+    "height": 640,
+    "aspect": 1.5,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/capture-kitchen-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/capture-kitchen-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/capture-kitchen-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/capture-kitchen-960.webp"
+      }
+    ],
+    "fallback": "/img/site/capture-kitchen-960.webp"
+  },
+  "site/capture-late-shift": {
+    "key": "site/capture-late-shift",
+    "width": 960,
+    "height": 524,
+    "aspect": 1.8333,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/capture-late-shift-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/capture-late-shift-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/capture-late-shift-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/capture-late-shift-960.webp"
+      }
+    ],
+    "fallback": "/img/site/capture-late-shift-960.webp"
+  },
+  "site/capture-runway": {
+    "key": "site/capture-runway",
+    "width": 960,
+    "height": 524,
+    "aspect": 1.8333,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/capture-runway-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/capture-runway-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/capture-runway-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/capture-runway-960.webp"
+      }
+    ],
+    "fallback": "/img/site/capture-runway-960.webp"
+  },
+  "site/capture-saddler": {
+    "key": "site/capture-saddler",
+    "width": 960,
+    "height": 524,
+    "aspect": 1.8333,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/capture-saddler-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/capture-saddler-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/capture-saddler-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/capture-saddler-960.webp"
+      }
+    ],
+    "fallback": "/img/site/capture-saddler-960.webp"
+  },
+  "site/capture-sunday-league": {
+    "key": "site/capture-sunday-league",
+    "width": 960,
+    "height": 524,
+    "aspect": 1.8333,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/capture-sunday-league-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/capture-sunday-league-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/capture-sunday-league-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/capture-sunday-league-960.webp"
+      }
+    ],
+    "fallback": "/img/site/capture-sunday-league-960.webp"
   }
 }

@@ -4,6 +4,7 @@ import Frame from '../../components/Frame.astro';
 import VideoFacade from '../../components/VideoFacade.astro';
 import RichText from '../../components/RichText.astro';
 import { getWork, getSettings } from '../../lib/content';
+import { breadcrumbs, caseStudy, graph, person } from '../../lib/schema';
 
 export async function getStaticPaths() {
   // The query already drops drafts and sorts by the order field.
@@ -33,9 +34,24 @@ const sections = [
 ];
 
 const spec = d.kind === 'Spec, self-initiated';
+
+const jsonLd = graph([
+  person(site.domain, site),
+  caseStudy(site.domain, d),
+  breadcrumbs(site.domain, [
+    { name: 'Home', path: '/' },
+    { name: 'Selected work', path: '/#work' },
+    { name: d.title, path: `/work/${d.slug}/` },
+  ]),
+]);
 ---
 
-<Base title={`${d.title}, ${site.name}`} description={d.problem} active="work">
+<Base
+  title={`${d.title}, ${site.name}`}
+  description={d.problem}
+  active="work"
+  jsonLd={jsonLd}
+>
   <article class="cs">
     <!-- header -->
     <header class="cs__head shell">

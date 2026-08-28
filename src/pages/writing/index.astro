@@ -1,0 +1,270 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getSettings, writingGroups, writingSamples } from '../../lib/content';
+import { breadcrumbs, collection, graph, person } from '../../lib/schema';
+
+const site = await getSettings();
+
+const title = `Writing samples: VSL scripts, feed writing and long form | ${site.name}`;
+const description =
+  'Direct response and VSL scripts with their direction column intact, ghostwritten feed posts, and long-form editorial for regulated readers. Published in full.';
+
+const jsonLd = graph([
+  person(site.domain, site),
+  collection(site.domain, '/writing/', 'Writing samples', description),
+  breadcrumbs(site.domain, [
+    { name: 'Home', path: '/' },
+    { name: 'Writing', path: '/writing/' },
+  ]),
+  {
+    '@type': 'ItemList',
+    itemListOrder: 'https://schema.org/ItemListOrderAscending',
+    numberOfItems: writingSamples.length,
+    itemListElement: writingSamples.map((s, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: new URL(`/writing/${s.slug}/`, site.domain).href,
+      name: s.title,
+    })),
+  },
+]);
+---
+
+<Base title={title} description={description} active="writing" jsonLd={jsonLd}>
+  <article class="shelf">
+    <header class="shelf__head shell">
+      <p class="mono shelf__flag">Writing</p>
+      <h1 class="shelf__title">Samples, in full</h1>
+      <p class="shelf__lede">
+        Most portfolios offer writing on request, which is a polite way of saying it is not ready.
+        These are here to be read. Scripts keep the column that makes them scripts. Feed writing is
+        set as text rather than photographed off a phone. The long form is described by the
+        argument it had to carry, since the documents themselves belong to the clients who paid
+        for them.
+      </p>
+      <p class="shelf__note quiet">
+        Every sample says whether a client paid for it or I set it myself, in the same place, every
+        time.
+      </p>
+    </header>
+
+    {
+      writingGroups.map((group) => (
+        <section class="group shell spread" id={group.key}>
+          <div class="rail">
+            <span class="rail__num">{group.num}</span>
+            <span class="rail__slug">{group.title}</span>
+          </div>
+
+          <div class="group__body">
+            <header class="group__head">
+              <h2 class="group__title">{group.title}</h2>
+              <p class="group__note quiet">{group.note}</p>
+            </header>
+
+            <ol class="samples">
+              {group.samples.map((s, i) => (
+                <li class="sample">
+                  <a class="sample__link" href={`/writing/${s.slug}/`}>
+                    <p class="sample__meta mono">
+                      <span class="sample__num faint">{String(i + 1).padStart(2, '0')}</span>
+                      <span
+                        class={
+                          s.kind === 'Client work'
+                            ? 'sample__kind'
+                            : 'sample__kind sample__kind--spec'
+                        }
+                      >
+                        {s.kind}
+                      </span>
+                      {s.client && (
+                        <>
+                          <span class="faint" aria-hidden="true">·</span>
+                          <span class="faint">{s.client}</span>
+                        </>
+                      )}
+                      <span class="faint" aria-hidden="true">·</span>
+                      <span class="faint">{s.year}</span>
+                    </p>
+
+                    <h3 class="sample__title">{s.title}</h3>
+                    <p class="sample__stand">{s.standfirst}</p>
+                    <p class="sample__format mono mono--lower faint">{s.format}</p>
+
+                    <span class="sample__go mono">
+                      Read it<span aria-hidden="true"> →</span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      ))
+    }
+
+    <nav class="shelf__back shell" aria-label="Back">
+      <a class="mono" href="/">← Back to the front page</a>
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .shelf__head {
+    padding-top: var(--s-8);
+    padding-bottom: var(--s-8);
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .shelf__flag {
+    color: var(--red);
+    font-size: 0.68rem;
+    max-width: none;
+  }
+
+  .shelf__title {
+    font-size: var(--step-5);
+    letter-spacing: -0.03em;
+  }
+
+  .shelf__lede {
+    font-size: var(--step-1);
+    line-height: 1.42;
+    max-width: 52ch;
+    color: var(--newsprint-dim);
+  }
+
+  .shelf__note {
+    font-size: var(--step--1);
+    max-width: 54ch;
+  }
+
+  /* --- group -------------------------------------------------------------- */
+
+  .group {
+    padding-block: var(--s-8);
+    border-top: 1px solid var(--rule);
+  }
+
+  .group__body {
+    display: grid;
+    gap: var(--s-6);
+    min-width: 0;
+  }
+
+  .group__head {
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .group__title {
+    font-size: var(--step-3);
+    letter-spacing: -0.02em;
+  }
+
+  .group__note {
+    font-size: var(--step--1);
+    max-width: 56ch;
+  }
+
+  /* --- samples ------------------------------------------------------------ */
+
+  .samples {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  .sample__link {
+    display: grid;
+    gap: var(--s-2);
+    text-decoration: none;
+    color: inherit;
+    padding: var(--s-5);
+    background: var(--ink-sunk);
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--rule-bright);
+    border-radius: var(--radius);
+    transition: border-color var(--dur) var(--ease);
+  }
+
+  .sample__link:hover,
+  .sample__link:focus-visible {
+    border-left-color: var(--red);
+  }
+
+  .sample__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: baseline;
+    font-size: 0.62rem;
+    margin: 0;
+    max-width: none;
+  }
+
+  .sample__num {
+    color: var(--red);
+  }
+
+  .sample__kind {
+    color: var(--cyan);
+  }
+
+  .sample__kind--spec {
+    color: var(--gold);
+  }
+
+  .sample__title {
+    font-size: var(--step-2);
+    line-height: 1.16;
+    color: var(--newsprint);
+    max-width: 30ch;
+    transition: color var(--dur) var(--ease);
+  }
+
+  .sample__link:hover .sample__title {
+    color: var(--cyan);
+  }
+
+  .sample__stand {
+    font-size: var(--step-0);
+    line-height: 1.5;
+    color: var(--newsprint-dim);
+    max-width: 62ch;
+  }
+
+  .sample__format {
+    font-size: 0.64rem;
+    margin: 0;
+    max-width: none;
+  }
+
+  .sample__go {
+    font-size: 0.64rem;
+    color: var(--cyan);
+    margin-top: var(--s-2);
+  }
+
+  .sample__link:hover .sample__go {
+    color: var(--red);
+  }
+
+  /* --- back --------------------------------------------------------------- */
+
+  .shelf__back {
+    padding-block: var(--s-6);
+    border-top: 1px solid var(--rule);
+  }
+
+  .shelf__back a {
+    text-decoration: none;
+    font-size: 0.68rem;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+</style>

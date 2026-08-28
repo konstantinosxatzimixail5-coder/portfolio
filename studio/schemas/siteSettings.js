@@ -17,14 +17,18 @@ export default defineType({
       name: 'role',
       title: 'Role line',
       type: 'string',
-      description: 'The small line above the headline, e.g. "Writer, director and ...".',
-      validation: (Rule) => Rule.required(),
+      description:
+        'NOT IN USE. The site reads this line from src/data/profile.ts in the repository instead, ' +
+        'because it has to agree with the CV and the LinkedIn headline word for word and two ' +
+        'editable copies of one sentence is how that stops being true. Editing it here changes ' +
+        'nothing on the site.',
     }),
     defineField({
       name: 'base',
       title: 'Based in',
       type: 'string',
-      validation: (Rule) => Rule.required(),
+      description:
+        'NOT IN USE, for the same reason as the role line above. Set in src/data/profile.ts.',
     }),
     defineField({
       name: 'email',
@@ -79,7 +83,10 @@ export default defineType({
       name: 'navLinks',
       title: 'Navigation',
       type: 'array',
-      description: 'The bar across the top of every page. The Reel button is added automatically.',
+      description:
+        'The bar across the top of every page. The Reel button is added automatically, and so is ' +
+        'any link in src/data/sections.ts that is missing here, matched on the label. Add a ' +
+        'Writing link here and it replaces the automatic one rather than sitting beside it.',
       of: [
         {
           type: 'object',

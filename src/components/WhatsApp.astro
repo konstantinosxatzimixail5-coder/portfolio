@@ -1,0 +1,267 @@
+---
+// The message panel.
+//
+// The brief was a way to reach WhatsApp without leaving the site, and the honest
+// reading of that is: the composing happens here, and only the sending leaves.
+// So this opens in place, on the page, and the send link is the one thing that
+// opens a second tab. The portfolio is still behind it when they come back.
+//
+// It works with scripting off. The topics are ordinary links carrying their own
+// prefilled message, so a reader with no JavaScript picks a reason and lands in
+// WhatsApp with the first line already written. Script upgrades that into a
+// composer: choosing a topic fills the box instead of navigating, and editing
+// the box rewrites the send link.
+
+import { profile, whatsappHref } from '../data/profile';
+
+interface Props {
+  heading?: string;
+  class?: string;
+}
+
+const { heading = 'Message me on WhatsApp', class: className = '' } = Astro.props;
+const topics = profile.whatsappTopics;
+const fallback = topics[0];
+---
+
+<details class={`wa ${className}`} data-wa>
+  <summary class="wa__open mono">
+    {heading}
+    <span class="wa__chevron" aria-hidden="true">+</span>
+  </summary>
+
+  <div class="wa__panel">
+    <p class="wa__intro quiet">
+      Pick a reason, edit the line if you want to, and WhatsApp opens in a new tab with it
+      already written. Nothing is sent from this page and nothing is stored on it.
+    </p>
+
+    <ul class="wa__topics" data-wa-topics>
+      {
+        topics.map((t) => (
+          <li>
+            <a
+              class="wa__topic mono"
+              href={whatsappHref(t.draft)}
+              data-draft={t.draft}
+              target="_blank"
+              rel="noopener"
+            >
+              {t.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <label class="wa__label mono" for="wa-message">Your message</label>
+    <textarea
+      class="wa__box"
+      id="wa-message"
+      name="message"
+      rows="3"
+      data-wa-box
+      spellcheck="true">{fallback.draft}</textarea>
+
+    <div class="wa__foot">
+      <a
+        class="wa__send mono"
+        href={whatsappHref(fallback.draft)}
+        data-wa-send
+        target="_blank"
+        rel="noopener"
+      >
+        Open WhatsApp<span aria-hidden="true"> ↗</span>
+      </a>
+      <p class="wa__num mono mono--lower faint">
+        or call <a href={`tel:${profile.phone.e164}`}>{profile.phone.display}</a>
+      </p>
+    </div>
+  </div>
+</details>
+
+<style>
+  .wa {
+    border: 1px solid var(--rule-bright);
+    border-radius: var(--radius);
+    background: var(--ink-sunk);
+    max-width: 34rem;
+  }
+
+  .wa__open {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    min-height: var(--tap);
+    padding: 0 var(--s-4);
+    font-size: 0.66rem;
+    color: var(--mint);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  /* Safari draws its own marker through ::-webkit-details-marker rather than
+     through list-style, so both have to go or the chevron gets a twin. */
+  .wa__open::-webkit-details-marker {
+    display: none;
+  }
+
+  .wa__open:hover {
+    color: var(--newsprint);
+  }
+
+  .wa__chevron {
+    font-family: var(--mono);
+    font-variation-settings: var(--rec-mono);
+    color: var(--fg-faint);
+    transition: transform var(--dur) var(--ease);
+  }
+
+  .wa[open] .wa__chevron {
+    transform: rotate(45deg);
+  }
+
+  .wa__panel {
+    display: grid;
+    gap: var(--s-3);
+    padding: var(--s-4);
+    border-top: 1px solid var(--rule);
+  }
+
+  .wa__intro {
+    font-size: 0.8rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .wa__topics {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+
+  .wa__topic {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding: 0 var(--s-3);
+    font-size: 0.62rem;
+    color: var(--fg-quiet);
+    text-decoration: none;
+    border: 1px solid var(--rule-bright);
+    border-radius: var(--radius);
+    background: var(--ink);
+  }
+
+  .wa__topic:hover,
+  .wa__topic[aria-pressed='true'] {
+    color: var(--ink);
+    background: var(--mint);
+    border-color: var(--mint);
+  }
+
+  .wa__label {
+    font-size: 0.62rem;
+    color: var(--fg-faint);
+  }
+
+  .wa__box {
+    width: 100%;
+    background: var(--ink);
+    color: var(--newsprint);
+    border: 1px solid var(--rule-bright);
+    border-radius: var(--radius);
+    padding: var(--s-3);
+    font-size: var(--step--1);
+    line-height: 1.5;
+    resize: vertical;
+    font-family: var(--sans);
+    font-variation-settings: var(--rec-sans);
+  }
+
+  .wa__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-3) var(--s-4);
+  }
+
+  .wa__send {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding: 0 var(--s-4);
+    background: var(--mint);
+    border: 1px solid var(--mint);
+    color: var(--ink);
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-size: 0.66rem;
+  }
+
+  .wa__send:hover {
+    background: var(--red);
+    border-color: var(--red);
+    color: var(--ink);
+  }
+
+  .wa__num {
+    font-size: 0.7rem;
+    margin: 0;
+    max-width: none;
+  }
+</style>
+
+<script>
+  // Upgrade the panel from four prefilled links into one composer. Everything
+  // below is additive: with this script blocked, the topics are still links that
+  // reach WhatsApp with a first line already in them.
+  document.querySelectorAll<HTMLDetailsElement>('[data-wa]').forEach((panel) => {
+    const box = panel.querySelector<HTMLTextAreaElement>('[data-wa-box]');
+    const send = panel.querySelector<HTMLAnchorElement>('[data-wa-send]');
+    const topics = Array.from(panel.querySelectorAll<HTMLAnchorElement>('[data-draft]'));
+    if (!box || !send || topics.length === 0) return;
+
+    const number = new URL(send.href).pathname.replace(/^\//, '');
+
+    const sync = () => {
+      const text = box.value.trim();
+      send.href = text
+        ? `https://wa.me/${number}?text=${encodeURIComponent(text)}`
+        : `https://wa.me/${number}`;
+    };
+
+    const select = (chosen: HTMLAnchorElement) => {
+      topics.forEach((t) => t.setAttribute('aria-pressed', String(t === chosen)));
+    };
+
+    // The first topic is the one already in the box on the server-rendered page,
+    // so it starts pressed rather than the panel opening with nothing selected.
+    select(topics[0]);
+
+    topics.forEach((topic) => {
+      topic.setAttribute('role', 'button');
+      topic.addEventListener('click', (event) => {
+        event.preventDefault();
+        box.value = topic.dataset.draft ?? '';
+        select(topic);
+        sync();
+        box.focus();
+        // Put the caret at the end, so typing continues the sentence rather
+        // than replacing it.
+        box.setSelectionRange(box.value.length, box.value.length);
+      });
+    });
+
+    box.addEventListener('input', () => {
+      // Once they have written their own words, no topic is the selected one.
+      const match = topics.find((t) => t.dataset.draft === box.value);
+      select(match ?? (null as unknown as HTMLAnchorElement));
+      sync();
+    });
+  });
+</script>

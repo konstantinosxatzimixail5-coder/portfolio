@@ -4,15 +4,35 @@ import Frame from '../components/Frame.astro';
 import WorkCard from '../components/WorkCard.astro';
 import Strip from '../components/Strip.astro';
 import RichText from '../components/RichText.astro';
-import { getHome, getSettings, getWork, getPipelines, getReel } from '../lib/content';
-import { fill, Words } from '../lib/text';
+import WhatsApp from '../components/WhatsApp.astro';
+import {
+  getHome,
+  getSettings,
+  getWork,
+  getPipelines,
+  getReel,
+  getSpecPage,
+  getSpecBrands,
+  morePipelines,
+  captures,
+  faqs,
+  featuredWriting,
+  writingSamples,
+  writingGroups,
+  profile,
+} from '../lib/content';
+import { composeSections } from '../data/sections';
+import { fill, words, Words } from '../lib/text';
+import { breadcrumbs, faqPage, graph, person, website } from '../lib/schema';
 
-const [home, site, work, pipelines, reel] = await Promise.all([
+const [home, site, work, pipelines, reel, specPage, specBrands] = await Promise.all([
   getHome(),
   getSettings(),
   getWork(),
   getPipelines(),
   getReel(),
+  getSpecPage(),
+  getSpecBrands(),
 ]);
 
 // The three frames from the cut belong to the reel, not to this page, so both
@@ -21,31 +41,60 @@ const reelTrio = reel.trio;
 
 // Numbers written into the copy are counted here instead of typed, because a
 // typed number stays a valid sentence long after it stops being true.
-const counts = { count: work.length };
+const counts = {
+  count: work.length,
+  samples: writingSamples.length,
+  frames: captures.length,
+  brands: Words(specBrands.length),
+  pipelines: Words(pipelines.length + morePipelines.length),
+};
 
-// The contents index and the labels down the left margin are the same six
-// sections, so they read from one list. Numbering them twice is how 02 in the
-// index ends up next to 03 in the margin.
-const byHref = new Map<string, any>((home.contents ?? []).map((c: any) => [c.href, c]));
-
+// The index down the front page and the labels down the left margin are the
+// same list, numbered from position rather than by hand. See src/data/sections.ts.
+const index = composeSections(home.contents);
 const mark = (href: string) => {
-  const row = byHref.get(href);
-  if (!row) {
-    throw new Error(
-      `The front page has a "${href}" section but no row for it in the contents index. Add one in the Studio, under Home page, Contents index.`
-    );
-  }
+  const row = index.find((s) => s.href === href);
+  if (!row) throw new Error(`No section defined for "${href}" in src/data/sections.ts.`);
   return row;
 };
+
+// Four of the eight on the front page. The rest are one click away, and a front
+// page that shows all of them has stopped choosing.
+const captureLead = captures.slice(0, 4);
+
+// The two written samples that stand here, and everything else as a plain list
+// underneath, so the shelf reads as a shelf rather than as two recommendations.
+const restOfWriting = writingSamples.filter((s) => !s.featured);
+
+// Sites built and shipped, shown as work rather than claimed as anything else.
+const shipped = [
+  {
+    label: 'talecrafters.studio',
+    href: 'https://talecrafters.studio/',
+    note: 'Studio site. Design, build and copy.',
+  },
+  {
+    label: 'mariposa.restaurant',
+    href: 'https://mariposa.restaurant/',
+    note: 'Restaurant site for the kitchen in the case study above.',
+  },
+];
+
+const jsonLd = graph([
+  person(site.domain, site),
+  website(site.domain, site),
+  faqPage(site.domain),
+  breadcrumbs(site.domain, [{ name: 'Home', path: '/' }]),
+]);
 ---
 
-<Base title={home.seoTitle} description={home.seoDescription} active="home">
+<Base title={home.seoTitle} description={home.seoDescription} active="home" jsonLd={jsonLd}>
   <!-- ============================================================ 00 open -->
   <section class="open shell">
-    <p class="mono open__slug faint">
-      {site.role}
+    <p class="mono open__slug">
+      <span class="open__role">{site.role}</span>
       <span class="open__sep" aria-hidden="true">/</span>
-      {site.base}
+      <span class="faint">{site.base}</span>
     </p>
 
     <div class="open__top">
@@ -53,6 +102,8 @@ const mark = (href: string) => {
         <h1 class="open__line">{home.headline}</h1>
 
         <p class="open__lede">{home.lede}</p>
+
+        <p class="open__claim">{site.claim}</p>
 
         <p class="open__note quiet">{home.note}</p>
       </div>
@@ -71,7 +122,7 @@ const mark = (href: string) => {
     <nav class="toc" aria-label="Contents">
       <ol class="toc__list">
         {
-          (home.contents ?? []).map((c: any) => (
+          index.map((c) => (
             <li class="toc__item">
               <a class="toc__row" href={c.href}>
                 <span class="toc__num mono">{c.num}</span>
@@ -145,10 +196,76 @@ const mark = (href: string) => {
       </div>
 
       <RichText value={home.workMore} class="quiet more" />
+
+      <!-- sites, as opposed to campaigns -->
+      <div class="shipped">
+        <p class="mono shipped__head faint">Also built and shipped</p>
+        <ul class="shipped__list">
+          {
+            shipped.map((s) => (
+              <li class="shipped__row">
+                <a class="shipped__link" href={s.href} rel="noopener">
+                  {s.label}
+                  <span aria-hidden="true"> ↗</span>
+                </a>
+                <span class="shipped__note quiet">{s.note}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
     </div>
   </section>
 
-  <!-- ======================================================= 03 pipelines -->
+  <!-- ============================================================ 03 spec -->
+  <section id="spec" class="section shell spread">
+    <div class="rail">
+      <span class="rail__num">{mark('#spec').num}</span>
+      <span class="rail__slug">{mark('#spec').rail}</span>
+    </div>
+
+    <div class="stack-block">
+      <h2 class="sec__h2">{specPage.heading}</h2>
+      <p class="spec__flag mono">{specPage.flag}</p>
+      <p class="spec__lede">
+        {
+          fill(specPage.lede, {
+            brands: Words(specBrands.length),
+            count: specBrands.reduce((n: number, b: any) => n + b.shots.length, 0),
+          })
+        }
+      </p>
+
+      <ul class="shelf">
+        {
+          specBrands.map((b: any) => (
+            <li class="shelf__brand">
+              <a class="shelf__link" href={`/spec/#${b.id}`}>
+                {b.shots[0] && (
+                  <Frame
+                    image={b.shots[0]}
+                    num={b.num}
+                    ratio="4 / 5"
+                    sizes="(max-width: 620px) 45vw, (max-width: 1000px) 30vw, 22vw"
+                  />
+                )}
+                <span class="shelf__name">{b.name}</span>
+              </a>
+              <p class="shelf__what mono mono--lower faint">{b.product}</p>
+              <p class="shelf__proves quiet">{b.proves}</p>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="quiet more">
+        Every frame, the arguments in full and the gate each brand was built to break.
+        <a href="/spec/">Open the spec shelf</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======================================================= 04 pipelines -->
   <section id="pipelines" class="section shell spread">
     <div class="rail">
       <span class="rail__num">{mark('#pipelines').num}</span>
@@ -162,10 +279,80 @@ const mark = (href: string) => {
       <div class="pipes">
         {pipelines.map((p: any) => <Strip {...p} />)}
       </div>
+
+      <!-- the other four -->
+      <aside class="more-pipes">
+        <p class="mono more-pipes__head">
+          The other {words(morePipelines.length)}
+        </p>
+        <p class="more-pipes__lede quiet">
+          Same shape, different problem. Voice at volume, three feeds from one idea, one article
+          turned into nine assets, and a cast that holds across an episode.
+        </p>
+        <ol class="more-pipes__list">
+          {
+            morePipelines.map((p) => (
+              <li>
+                <a class="more-pipes__row" href={`/pipelines/#${p.id}`}>
+                  <span class="more-pipes__num mono">{p.num}</span>
+                  <span class="more-pipes__title">{p.title}</span>
+                  <span class="more-pipes__mech mono mono--lower faint">{p.mechanism}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+        <p class="quiet more">
+          <a href="/pipelines/">Read the other {words(morePipelines.length)} in full</a>, stages and
+          gates included.
+        </p>
+      </aside>
     </div>
   </section>
 
-  <!-- ========================================================= 04 writing -->
+  <!-- ======================================================== 05 captures -->
+  <section id="captures" class="section shell spread">
+    <div class="rail">
+      <span class="rail__num">{mark('#captures').num}</span>
+      <span class="rail__slug">{mark('#captures').rail}</span>
+    </div>
+
+    <div class="stack-block">
+      <h2 class="sec__h2">Photoreal captures</h2>
+      <p class="caps__lede">
+        Generated human frames, kept for one reason each. A face at rest is the easiest thing
+        these models make. Skin under unflattering daylight, hands doing skilled work, two people
+        with a real eyeline between them and wet ground throwing the light back up are not, and
+        those are what is on this shelf.
+      </p>
+
+      <ul class="caps">
+        {
+          captureLead.map((c, i) => (
+            <li class="cap">
+              <Frame
+                src={c.key}
+                alt={c.alt}
+                num={String(i + 1).padStart(2, '0')}
+                focus={c.focus}
+                ratio="4 / 3"
+                sizes="(max-width: 700px) 90vw, 42vw"
+              />
+              <p class="cap__title">{c.title}</p>
+              <p class="cap__proves quiet">{c.proves}</p>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="quiet more">
+        Every frame is generated and labelled as generated.
+        <a href="/captures/">See all {counts.frames}</a>, with what each one was built to break.
+      </p>
+    </div>
+  </section>
+
+  <!-- ========================================================= 06 writing -->
   <section id="writing" class="section shell spread">
     <div class="rail">
       <span class="rail__num">{mark('#writing').num}</span>
@@ -174,21 +361,54 @@ const mark = (href: string) => {
 
     <div class="stack-block">
       <h2 class="sec__h2">{home.writingHeading}</h2>
-      <dl class="write">
+      <p class="write__lede">
+        Published in full rather than offered on request. Scripts with their direction column
+        intact, feed writing as text rather than as a screenshot, and the long form described by
+        the argument it had to carry.
+      </p>
+
+      <div class="feature">
         {
-          (home.writingItems ?? []).map((w: any) => (
-            <div class="write__row">
-              <dt>{w.title}</dt>
-              <dd class="quiet">{w.note}</dd>
-            </div>
+          featuredWriting.map((s) => (
+            <article class="feature__card">
+              <a class="feature__link" href={`/writing/${s.slug}/`}>
+                <p class="feature__meta mono">
+                  <span class={s.kind === 'Client work' ? 'feature__kind' : 'feature__kind feature__kind--spec'}>
+                    {s.kind}
+                  </span>
+                  <span class="faint" aria-hidden="true"> · </span>
+                  <span class="faint">{s.year}</span>
+                </p>
+                <h3 class="feature__title">{s.title}</h3>
+              </a>
+              <p class="feature__stand quiet">{s.standfirst}</p>
+              <p class="feature__format mono mono--lower faint">{s.format}</p>
+            </article>
           ))
         }
-      </dl>
-      {home.writingMore && <p class="quiet more">{home.writingMore}</p>}
+      </div>
+
+      <ul class="write">
+        {
+          restOfWriting.map((s) => (
+            <li>
+              <a class="write__row" href={`/writing/${s.slug}/`}>
+                <span class="write__title">{s.title}</span>
+                <span class="write__stand quiet">{s.standfirst}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="quiet more">
+        <a href="/writing/">Open the writing shelf</a>. All {counts.samples} samples, in
+        {' '}{words(writingGroups.length)} groups, each one published whole.
+      </p>
     </div>
   </section>
 
-  <!-- =========================================================== 05 about -->
+  <!-- =========================================================== 07 about -->
   <section id="about" class="section shell spread">
     <div class="rail">
       <span class="rail__num">{mark('#about').num}</span>
@@ -201,6 +421,11 @@ const mark = (href: string) => {
       <div class="about__prose">
         <RichText value={home.aboutBody} />
       </div>
+
+      <p class="about__off quiet">
+        {site.base}. Off duty it goes on {profile.offDuty.slice(0, -1).join(', ')} and
+        {' '}{profile.offDuty.at(-1)}, roughly in that order and rarely in that proportion.
+      </p>
 
       <ul class="contact">
         <li><a class="btn mono" href={`mailto:${site.email}`}>Email me</a></li>
@@ -224,6 +449,35 @@ const mark = (href: string) => {
           )
         }
       </ul>
+
+      <WhatsApp class="about__wa" />
+    </div>
+  </section>
+
+  <!-- ============================================================= 08 faq -->
+  <section id="faq" class="section shell spread">
+    <div class="rail">
+      <span class="rail__num">{mark('#faq').num}</span>
+      <span class="rail__slug">{mark('#faq').rail}</span>
+    </div>
+
+    <div class="stack-block">
+      <h2 class="sec__h2">Questions</h2>
+      <ul class="faq">
+        {
+          faqs.map((f, i) => (
+            <li>
+              <details class="faq__item" open={i === 0}>
+                <summary class="faq__q">
+                  <span>{f.q}</span>
+                  <span class="faq__sign" aria-hidden="true">+</span>
+                </summary>
+                <p class="faq__a quiet">{f.a}</p>
+              </details>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 </Base>
@@ -236,15 +490,24 @@ const mark = (href: string) => {
     padding-bottom: var(--s-7);
   }
 
+  /* The role line is a sentence now rather than a label, so it is allowed to
+     wrap and the two halves stay on their own lines when it does. */
   .open__slug {
     font-size: 0.66rem;
     max-width: none;
     margin-bottom: var(--s-6);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.35rem;
+    color: var(--fg-quiet);
+  }
+
+  .open__role {
+    color: var(--newsprint-dim);
   }
 
   .open__sep {
     color: var(--red);
-    padding-inline: 0.35rem;
   }
 
   /* Headline left, one trained creator on the right, so the first screen
@@ -280,8 +543,21 @@ const mark = (href: string) => {
     color: var(--newsprint-dim);
   }
 
+  /* The positioning line. Set against a rule rather than in a box, because it
+     is a claim about the person and boxes make claims look like features. */
+  .open__claim {
+    margin-top: var(--s-4);
+    padding-left: var(--s-4);
+    border-left: 2px solid var(--cyan);
+    font-family: var(--display);
+    font-size: var(--step-0);
+    line-height: 1.4;
+    color: var(--newsprint);
+    max-width: 46ch;
+  }
+
   .open__note {
-    margin-top: var(--s-3);
+    margin-top: var(--s-4);
     font-size: var(--step--1);
     max-width: 46ch;
   }
@@ -450,7 +726,125 @@ const mark = (href: string) => {
     }
   }
 
-  /* --- 03 pipelines ------------------------------------------------------- */
+  .shipped {
+    border-top: 1px solid var(--rule);
+    padding-top: var(--s-4);
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .shipped__head {
+    font-size: 0.64rem;
+    max-width: none;
+  }
+
+  .shipped__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .shipped__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 var(--s-3);
+  }
+
+  /* Full tap height. These sit on their own row rather than inside a sentence,
+     so the WCAG inline exception does not cover them. */
+  .shipped__link {
+    font-family: var(--mono);
+    font-variation-settings: var(--rec-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    border-bottom: 1px solid var(--rule-bright);
+  }
+
+  .shipped__link:hover {
+    border-bottom-color: var(--red);
+  }
+
+  .shipped__note {
+    font-size: var(--step--1);
+  }
+
+  /* --- 03 spec ------------------------------------------------------------ */
+
+  .spec__flag {
+    color: var(--gold);
+    font-size: 0.66rem;
+    max-width: none;
+    margin-top: calc(var(--s-5) * -0.6);
+  }
+
+  .spec__lede {
+    font-size: var(--step-0);
+    color: var(--newsprint-dim);
+    max-width: 48ch;
+  }
+
+  .shelf {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: var(--s-5) var(--s-4);
+  }
+
+  .shelf__brand {
+    display: grid;
+    gap: var(--s-2);
+    align-content: start;
+    min-width: 0;
+  }
+
+  .shelf__link {
+    display: grid;
+    gap: var(--s-3);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .shelf__link :global(.frame__plate) {
+    transition: border-color var(--dur) var(--ease);
+  }
+
+  .shelf__link:hover :global(.frame__plate) {
+    border-color: var(--gold);
+  }
+
+  .shelf__name {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.15;
+    color: var(--newsprint);
+  }
+
+  .shelf__link:hover .shelf__name {
+    color: var(--gold);
+  }
+
+  .shelf__what {
+    font-size: 0.64rem;
+    max-width: none;
+    margin: 0;
+  }
+
+  .shelf__proves {
+    font-size: var(--step--1);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* --- 04 pipelines ------------------------------------------------------- */
 
   .pipes__intro {
     font-size: var(--step-0);
@@ -463,33 +857,249 @@ const mark = (href: string) => {
     gap: var(--s-8);
   }
 
-  /* --- 04 writing --------------------------------------------------------- */
-
-  .write {
-    margin: 0;
+  .more-pipes {
+    border-top: 1px solid var(--rule-bright);
+    padding-top: var(--s-5);
     display: grid;
-    gap: 0;
+    gap: var(--s-4);
+  }
+
+  .more-pipes__head {
+    color: var(--cyan);
+    font-size: 0.7rem;
+    max-width: none;
+  }
+
+  .more-pipes__lede {
+    font-size: var(--step--1);
+    max-width: 56ch;
+  }
+
+  .more-pipes__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .more-pipes__row {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 18rem) minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--s-4);
+    padding-block: var(--s-3);
+    min-height: var(--tap);
+    border-bottom: 1px solid var(--rule);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .more-pipes__num {
+    color: var(--cyan);
+    font-size: 0.66rem;
+  }
+
+  .more-pipes__title {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.15;
+    color: var(--newsprint);
+    transition: color var(--dur) var(--ease);
+  }
+
+  .more-pipes__row:hover .more-pipes__title {
+    color: var(--cyan);
+  }
+
+  .more-pipes__mech {
+    font-size: 0.66rem;
+    max-width: none;
+  }
+
+  @media (max-width: 760px) {
+    .more-pipes__row {
+      grid-template-columns: 2.2rem minmax(0, 1fr);
+      gap: 0.15rem var(--s-3);
+    }
+    .more-pipes__num {
+      grid-row: span 2;
+    }
+    .more-pipes__mech {
+      grid-column: 2;
+    }
+  }
+
+  /* --- 05 captures -------------------------------------------------------- */
+
+  .caps__lede {
+    font-size: var(--step-0);
+    color: var(--newsprint-dim);
+    max-width: 58ch;
+  }
+
+  .caps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-6) var(--s-5);
+  }
+
+  @media (max-width: 700px) {
+    .caps {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .cap {
+    display: grid;
+    gap: var(--s-2);
+    min-width: 0;
+  }
+
+  .cap__title {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.2;
+    color: var(--newsprint);
+    margin-top: var(--s-1);
+  }
+
+  .cap__proves {
+    font-size: var(--step--1);
+    line-height: 1.5;
+    max-width: 44ch;
+  }
+
+  /* --- 06 writing --------------------------------------------------------- */
+
+  .write__lede {
+    font-size: var(--step-0);
+    color: var(--newsprint-dim);
+    max-width: 56ch;
+  }
+
+  .feature {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-5);
+  }
+
+  @media (max-width: 760px) {
+    .feature {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .feature__card {
+    display: grid;
+    gap: var(--s-3);
+    align-content: start;
+    padding: var(--s-5);
+    background: var(--ink-raised);
+    border: 1px solid var(--rule);
+    border-top: 2px solid var(--red);
+    border-radius: var(--radius);
+  }
+
+  .feature__link {
+    text-decoration: none;
+    color: inherit;
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .feature__meta {
+    font-size: 0.62rem;
+    margin: 0;
+    max-width: none;
+  }
+
+  .feature__kind {
+    color: var(--cyan);
+  }
+
+  .feature__kind--spec {
+    color: var(--gold);
+  }
+
+  .feature__title {
+    font-size: var(--step-2);
+    line-height: 1.14;
+    color: var(--newsprint);
+  }
+
+  .feature__link:hover .feature__title {
+    color: var(--cyan);
+  }
+
+  .feature__stand {
+    font-size: var(--step--1);
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .feature__format {
+    font-size: 0.64rem;
+    margin: 0;
+    max-width: none;
+  }
+
+  /* The whole row is the link, the same way the contents index and the pipeline
+     list are. A title-only anchor inside a wider row leaves a 20px target with
+     dead space either side of it, and the row already reads as one thing. */
+  .write {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     border-top: 1px solid var(--rule);
   }
 
   .write__row {
     display: grid;
-    grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+    align-items: baseline;
     gap: var(--s-4);
     padding-block: var(--s-3);
+    min-height: var(--tap);
     border-bottom: 1px solid var(--rule);
+    text-decoration: none;
+    color: inherit;
+    position: relative;
   }
 
-  .write__row dt {
+  .write__row::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    height: 1px;
+    width: 0;
+    background: var(--red);
+    transition: width 340ms var(--ease);
+  }
+
+  .write__row:hover::after,
+  .write__row:focus-visible::after {
+    width: 100%;
+  }
+
+  .write__title {
     font-family: var(--display);
     font-size: var(--step-1);
     color: var(--newsprint);
     line-height: 1.2;
+    transition: color var(--dur) var(--ease);
   }
 
-  .write__row dd {
-    margin: 0;
+  .write__row:hover .write__title {
+    color: var(--cyan);
+  }
+
+  .write__stand {
     font-size: var(--step--1);
+    line-height: 1.5;
   }
 
   @media (max-width: 620px) {
@@ -499,7 +1109,7 @@ const mark = (href: string) => {
     }
   }
 
-  /* --- 05 about ----------------------------------------------------------- */
+  /* --- 07 about ----------------------------------------------------------- */
 
   /* The paragraphs here are rendered inside RichText, so they never carry this
      component's scope attribute and cannot be selected by class from out here.
@@ -515,6 +1125,15 @@ const mark = (href: string) => {
      third one without being told to know that. */
   .about__prose :global(p ~ p) {
     color: var(--fg-quiet);
+  }
+
+  .about__off {
+    font-size: var(--step--1);
+    max-width: var(--measure);
+  }
+
+  .about__wa {
+    margin-top: var(--s-2);
   }
 
   .contact {
@@ -548,5 +1167,61 @@ const mark = (href: string) => {
     background: var(--red);
     border-color: var(--red);
     color: var(--ink);
+  }
+
+  /* --- 08 faq ------------------------------------------------------------- */
+
+  .faq {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .faq__item {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .faq__q {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding-block: var(--s-3);
+    min-height: var(--tap);
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.25;
+    color: var(--newsprint);
+  }
+
+  .faq__q::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq__q:hover {
+    color: var(--cyan);
+  }
+
+  .faq__sign {
+    font-family: var(--mono);
+    font-variation-settings: var(--rec-mono);
+    font-size: 0.9rem;
+    color: var(--red);
+    transition: transform var(--dur) var(--ease);
+    flex: none;
+  }
+
+  .faq__item[open] .faq__sign {
+    transform: rotate(45deg);
+  }
+
+  .faq__a {
+    font-size: var(--step--1);
+    line-height: 1.6;
+    max-width: 62ch;
+    padding-bottom: var(--s-4);
   }
 </style>

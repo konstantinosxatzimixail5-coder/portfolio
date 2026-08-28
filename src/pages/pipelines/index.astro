@@ -1,0 +1,355 @@
+---
+import Base from '../../layouts/Base.astro';
+import Strip from '../../components/Strip.astro';
+import { getSettings, getPipelines, morePipelines } from '../../lib/content';
+import { breadcrumbs, collection, graph, person } from '../../lib/schema';
+import { words, Words } from '../../lib/text';
+
+const [site, onTheFrontPage] = await Promise.all([getSettings(), getPipelines()]);
+
+const total = onTheFrontPage.length + morePipelines.length;
+
+const title = `The other ${words(morePipelines.length)} pipelines | ${site.name}`;
+const description =
+  'Brand voice at volume, one idea split across three feeds, one article turned into nine assets, and a cast that holds across an episode. Stages, tools and the control gates that stop a frame shipping.';
+
+const jsonLd = graph([
+  person(site.domain, site),
+  collection(site.domain, '/pipelines/', 'Pipelines', description),
+  breadcrumbs(site.domain, [
+    { name: 'Home', path: '/' },
+    { name: 'Pipelines', path: '/pipelines/' },
+  ]),
+  {
+    '@type': 'ItemList',
+    numberOfItems: morePipelines.length,
+    itemListElement: morePipelines.map((p, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: p.title,
+      url: new URL(`/pipelines/#${p.id}`, site.domain).href,
+    })),
+  },
+]);
+---
+
+<Base title={title} description={description} active="pipelines" jsonLd={jsonLd}>
+  <article class="lines">
+    <header class="lines__head shell">
+      <p class="mono lines__flag">Pipelines, {words(total)} of {words(total)}</p>
+      <h1 class="lines__title">The other {words(morePipelines.length)}</h1>
+      <p class="lines__lede">
+        {Words(onTheFrontPage.length)} of the seven are on the front page in full, because three is
+        as many as anyone reads standing up. These are the rest, transcribed from the sheets and
+        set the same way: the stage line, what runs each stage, how long it takes, and the gates
+        that stop a frame from shipping.
+      </p>
+      <p class="lines__note quiet">
+        The tools are named. So are the ways each line fails, which is the half a deck usually
+        leaves out and the half that decides whether the work is repeatable.
+      </p>
+    </header>
+
+    <nav class="lines__toc shell" aria-label="Pipelines">
+      <ol class="toc__list">
+        {
+          morePipelines.map((p) => (
+            <li>
+              <a class="toc__row" href={`#${p.id}`}>
+                <span class="toc__num mono">{p.num}</span>
+                <span class="toc__name">{p.title}</span>
+                <span class="toc__what mono mono--lower faint">{p.discipline}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+
+    {
+      morePipelines.map((p) => (
+        <section class="line shell spread" id={p.id}>
+          <div class="rail">
+            <span class="rail__num">{p.num}</span>
+            <span class="rail__slug">{p.mechanism}</span>
+          </div>
+
+          <div class="line__body">
+            <p class="mono line__discipline">{p.discipline}</p>
+
+            {/* The section owns the anchor, so the strip inside it takes a
+                derived id rather than a duplicate of one already on the page. */}
+            <Strip {...p} id={`${p.id}-line`} />
+
+            <div class="line__panels">
+              <div class="panel">
+                <p class="mono panel__head">The desire it channels</p>
+                <p class="panel__body">{p.desire}</p>
+              </div>
+              <div class="panel">
+                <p class="mono panel__head panel__head--warm">The objection it answers</p>
+                <p class="panel__body">{p.objection}</p>
+              </div>
+            </div>
+
+            <div class="line__panels">
+              <div class="panel">
+                <p class="mono panel__head">What lands in the folder</p>
+                <ul class="panel__list">
+                  {(p.delivers ?? []).map((d) => (
+                    <li>{d}</li>
+                  ))}
+                </ul>
+              </div>
+              <div class="panel">
+                <p class="mono panel__head">The stack</p>
+                <ul class="stack">
+                  {(p.stack ?? []).map((t) => (
+                    <li class="stack__tool mono">{t}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+      ))
+    }
+
+    <nav class="lines__back shell" aria-label="Back">
+      <a class="mono" href="/#pipelines">← The three on the front page</a>
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .lines__head {
+    padding-top: var(--s-8);
+    padding-bottom: var(--s-6);
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .lines__flag {
+    color: var(--cyan);
+    font-size: 0.68rem;
+    max-width: none;
+  }
+
+  .lines__title {
+    font-size: var(--step-5);
+    letter-spacing: -0.03em;
+  }
+
+  .lines__lede {
+    font-size: var(--step-1);
+    line-height: 1.42;
+    max-width: 50ch;
+    color: var(--newsprint-dim);
+  }
+
+  .lines__note {
+    font-size: var(--step--1);
+    max-width: 56ch;
+  }
+
+  /* --- contents ----------------------------------------------------------- */
+
+  .lines__toc {
+    padding-bottom: var(--s-7);
+  }
+
+  .toc__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--rule-bright);
+  }
+
+  .toc__row {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 18rem) minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--s-4);
+    padding-block: var(--s-3);
+    min-height: var(--tap);
+    border-bottom: 1px solid var(--rule);
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+  }
+
+  .toc__row::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    height: 1px;
+    width: 0;
+    background: var(--cyan);
+    transition: width 340ms var(--ease);
+  }
+
+  .toc__row:hover::after,
+  .toc__row:focus-visible::after {
+    width: 100%;
+  }
+
+  .toc__num {
+    color: var(--cyan);
+    font-size: 0.66rem;
+  }
+
+  .toc__name {
+    font-family: var(--display);
+    font-size: var(--step-2);
+    line-height: 1.1;
+    color: var(--newsprint);
+    transition: color var(--dur) var(--ease);
+  }
+
+  .toc__row:hover .toc__name {
+    color: var(--cyan);
+  }
+
+  .toc__what {
+    font-size: 0.66rem;
+    max-width: none;
+  }
+
+  @media (max-width: 760px) {
+    .toc__row {
+      grid-template-columns: 2.2rem minmax(0, 1fr);
+      gap: 0.15rem var(--s-3);
+    }
+    .toc__num {
+      grid-row: span 2;
+    }
+    .toc__what {
+      grid-column: 2;
+    }
+  }
+
+  /* --- one line ----------------------------------------------------------- */
+
+  .line {
+    padding-block: var(--s-7);
+    border-top: 1px solid var(--rule);
+  }
+
+  .line__body {
+    display: grid;
+    gap: var(--s-5);
+    min-width: 0;
+  }
+
+  .line__discipline {
+    color: var(--fg-faint);
+    font-size: 0.66rem;
+    max-width: none;
+  }
+
+  /* Strip already draws its own rule above itself, and a second one directly
+     under the discipline label reads as a mistake rather than as structure. */
+  .line__body :global(.strip) {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .line__panels {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-4);
+  }
+
+  @media (max-width: 760px) {
+    .line__panels {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .panel {
+    background: var(--ink-sunk);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: var(--s-4);
+    display: grid;
+    gap: var(--s-3);
+    align-content: start;
+  }
+
+  .panel__head {
+    font-size: 0.64rem;
+    color: var(--mint);
+    max-width: none;
+  }
+
+  .panel__head--warm {
+    color: var(--red);
+  }
+
+  .panel__body {
+    font-size: var(--step--1);
+    line-height: 1.55;
+    color: var(--fg-quiet);
+    margin: 0;
+  }
+
+  .panel__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .panel__list li {
+    position: relative;
+    padding-left: var(--s-4);
+    font-size: var(--step--1);
+    line-height: 1.5;
+    color: var(--fg-quiet);
+  }
+
+  .panel__list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.6em;
+    width: 0.5rem;
+    height: 1px;
+    background: var(--mint);
+  }
+
+  .stack {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+
+  .stack__tool {
+    font-size: 0.6rem;
+    color: var(--fg-quiet);
+    border: 1px solid var(--rule-bright);
+    border-radius: var(--radius);
+    padding: 0.25rem var(--s-3);
+    background: var(--ink);
+  }
+
+  /* --- back --------------------------------------------------------------- */
+
+  .lines__back {
+    padding-block: var(--s-6);
+    border-top: 1px solid var(--rule);
+  }
+
+  .lines__back a {
+    text-decoration: none;
+    font-size: 0.68rem;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+</style>

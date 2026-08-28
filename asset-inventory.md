@@ -265,3 +265,67 @@ Kept for the record. All answered above.
 **Studio link.**
 
 20. The brief mentions "a link to the studio". Is that talecrafters.studio, or do you have your own studio identity I have not found? Your own palette reference (cyan, pink-red, mint-teal, gold on near-black) suggests there is a K/C identity somewhere, and the pipeline PDFs use a `K/C` mark.
+
+---
+
+## Published 2026-08-28
+
+What went onto the site in the content pass, and where each thing came from.
+
+### Writing, now published in full at `/writing/`
+
+Eight samples, in three groups. The rule applied throughout: a script keeps its
+direction column, feed writing is set as text rather than shown as a screenshot,
+and a client's document is described rather than republished.
+
+| # from above | Item | Where it landed | Treatment |
+|---|---|---|---|
+| 114, 115 | X-ALL VSL script and hook battery | `/writing/x-all-mini-vsl/` | Full. Six hooks, then the selected hook built out to ninety seconds |
+| 116 | Three 90s DR scripts, espresso | `/writing/three-espresso-scripts/` | Full, and featured on the front page |
+| 7 | Mariposa 90s VSL, The Truck | `/writing/mariposa-vsl/` | Full. The restaurant's booking number is left off |
+| 117 | LinkedIn ghostwriting samples | `/writing/linkedin-posts/` | Full, set as text. Item 118, the screenshots of performing posts, stays out: a picture of a post is not a writing sample |
+| 119 | Money laundering in video games | `/writing/money-laundering-in-video-games/` | Full, and featured. The client's closing product paragraph is dropped, since the sample is the argument rather than the pitch |
+| new | Compliance ebook | `/writing/compliance-ebook/` | Described, not reproduced. Client property |
+| new | Customs knowledge assistant brochure | `/writing/knowledge-assistant-brochure/` | Described, not reproduced. Client property |
+| new | Logistics compliance case study brochure | `/writing/compliance-case-study/` | Described, not reproduced. The client's performance figures stay theirs and are not restated as results |
+
+Still out: the five screenplays, per the standing instruction, and items 112, 113
+and 120, which are working documents rather than samples.
+
+### Pipelines, all seven now on the site
+
+| # from above | Sheet | Where |
+|---|---|---|
+| 100, 102, 104 | Identity Lock, Phantom Set, Operator Stack | Front page, in full. In the CMS |
+| 98 | Voice Vault | `/pipelines/#voice-vault`. In `src/data/pipelines.ts` |
+| 99 | Split at Source | `/pipelines/#split-at-source` |
+| 101 | Multiplier | `/pipelines/#multiplier` |
+| 103 | Continuity Spine | `/pipelines/#continuity-spine` |
+
+Item 105, the camera movement reference, and item 106, the treatment, stay off:
+one is a reference sheet rather than a pipeline, and the other is still marked
+unclear above.
+
+### Photoreal captures, new to the inventory
+
+Eight generated human frames, supplied 2026-08-28, not previously in this
+document. Masters committed to `source-assets/site/`, published at `/captures/`
+and four of them on the front page. Every one is labelled as generated, on the
+card and in the section opening.
+
+| Master | Frame | What it was kept for |
+|---|---|---|
+| `capture-sunday-league.jpg` | Sunday league | Sponsor type on a moving garment, legible, creasing with the fabric |
+| `capture-runway.jpg` | Runway | Depth with two rows of a seated crowd falling into the dark |
+| `capture-saddler.jpg` | The stitch | Hands doing skilled work, with a thimble and a thread under tension |
+| `capture-kitchen.png` | The kitchen | Two people in one frame with a real eyeline between them |
+| `capture-crossing.jpg` | The crossing | Wet ground at night, every light source appearing twice and agreeing |
+| `capture-doorstep.png` | The doorstep | The register a creator advert lives in, unlit skin, no grade |
+| `capture-bus-stop.jpg` | The wait | Age written into a face under raking sun |
+| `capture-late-shift.jpg` | The late shift | A reflection that has to be the same face at the correct angle |
+
+`capture-crossing.jpg` is also the plate behind `public/og.jpg`, the link preview.
+
+### Still open
+
+Nothing new. The two open items at the top of this document are unchanged.

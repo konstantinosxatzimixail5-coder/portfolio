@@ -6,12 +6,18 @@
 // `npm run content`. `top-up` is the incremental pass that runs before every
 // build, including on the deploy host.
 
-import { mkdir, writeFile, readFile, stat } from 'node:fs/promises';
-import { join, dirname } from 'node:path';
+import { mkdir, writeFile, readFile, stat, readdir } from 'node:fs/promises';
+import { join, dirname, extname, basename } from 'node:path';
 import sharp from 'sharp';
 import { projectId, dataset } from '../sanity-env.mjs';
 
 export const SRC = 'source-assets/cms';
+// Pictures this repository owns rather than the CMS. They are committed here as
+// masters, keyed `site/<filename>`, and they go through exactly the same ladder
+// as everything else, so a page cannot tell the two apart. The prefix is what
+// keeps them from colliding with a Sanity hash and what stops the full pass
+// pruning them as orphans.
+export const SITE_SRC = 'source-assets/site';
 export const OUT = 'public/img';
 export const MANIFEST = 'src/image-manifest.json';
 export const WIDTHS = [480, 960, 1600];
@@ -78,6 +84,21 @@ export async function usedAssets(sanity) {
   return { assets, unreadable };
 }
 
+// The input formats sharp is asked to read. Kept here rather than in one script
+// because both the full pass and the top-up pass now enumerate the same folder.
+export const INPUT_FORMATS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif', '.tif', '.tiff']);
+
+// Everything under source-assets/site/, as {file, key} pairs. The key is the
+// filename without its extension, so renaming the file renames the picture and
+// the build says so instead of serving a stale one.
+export async function localAssets() {
+  const names = await readdir(SITE_SRC).catch(() => []);
+  return names
+    .filter((name) => INPUT_FORMATS.has(extname(name).toLowerCase()))
+    .sort()
+    .map((name) => ({ file: join(SITE_SRC, name), key: `site/${basename(name, extname(name))}` }));
+}
+
 export async function readManifest() {
   try {
     return JSON.parse(await readFile(MANIFEST, 'utf8'));
@@ -100,6 +121,11 @@ export function entryFiles(entry) {
 
 const exists = (p) => stat(p).then(() => true, () => false);
 
+// Does this derivative need writing? Missing, or older than the source it was
+// made from. A content-addressed key passes 0 and so only the first test runs.
+const stale = (p, sourceTime) =>
+  stat(p).then((st) => st.mtimeMs < sourceTime, () => true);
+
 // Is this picture already built and on disk? The manifest alone is not enough,
 // because the entry can survive a file that was never committed.
 export async function isBuilt(manifest, key) {
@@ -111,9 +137,18 @@ export async function isBuilt(manifest, key) {
 
 // Turn one source file into the ladder of AVIF and WebP files, and return its
 // manifest entry. Returns null for a file sharp cannot read dimensions from.
-export async function derive(file, key) {
+//
+// `contentAddressed` says whether the key is a digest of the file. A Sanity key
+// is, so a file already sitting at the output path is by definition the right
+// file and re-encoding it would be waste. A repository picture keyed by filename
+// is not, so replacing capture-runway.jpg with a different photograph has to
+// rebuild rather than serve last week's frame under this week's name. Comparing
+// timestamps is what tells those two cases apart.
+export async function derive(file, key, { contentAddressed = true } = {}) {
   const outPath = join(OUT, key);
   await mkdir(dirname(outPath), { recursive: true });
+
+  const sourceTime = contentAddressed ? 0 : (await stat(file)).mtimeMs;
 
   const meta = await sharp(file, { failOn: 'none' }).metadata();
   const srcW = meta.width ?? 0;
@@ -129,12 +164,9 @@ export async function derive(file, key) {
   for (const w of widths) {
     for (const fmt of ['avif', 'webp']) {
       const dest = `${outPath}-${w}.${fmt}`;
-      // A file already at this path is the right file. These names carry the
-      // Sanity hash, which is a digest of the source, so a derivative cannot go
-      // stale: replacing the picture in the Studio produces a new hash and a new
-      // name. This is what keeps a deploy from re-encoding sixty-four images to
-      // publish a one-word change.
-      if (!(await exists(dest))) {
+      // Skipping a derivative that is already on disk is what keeps a deploy from
+      // re-encoding sixty-four images to publish a one-word change.
+      if (await stale(dest, sourceTime)) {
         const pipe = sharp(file, { failOn: 'none' }).resize({ width: w, withoutEnlargement: true });
         if (fmt === 'avif') await pipe.avif({ quality: 58, effort: 6 }).toFile(dest);
         else await pipe.webp({ quality: 78 }).toFile(dest);

@@ -1,0 +1,296 @@
+---
+// Renders one writing sample.
+//
+// A script is not an essay and setting it as one throws away the thing that
+// makes it a script: two columns that disagree. What is said and what is on
+// screen are written against each other, and a reader has to be able to hold
+// both at once. So the beat block is a real three-column object on a wide
+// screen, and on a phone it becomes a stack where the spoken line still leads
+// and the direction still reads as direction.
+//
+// Everything renders with no JavaScript, because there is none on this page.
+
+import type { Block } from '../lib/types';
+
+interface Props {
+  blocks: Block[];
+}
+
+const { blocks } = Astro.props;
+
+// A block type this file does not know how to set would otherwise vanish
+// silently, and a missing paragraph is the hardest kind of bug to notice.
+const KNOWN = new Set(['lead', 'p', 'h', 'quote', 'list', 'spec', 'beats', 'note']);
+const unknown = blocks.filter((b: any) => !KNOWN.has(b?.t));
+if (unknown.length) {
+  throw new Error(
+    `Prose: no renderer for block type(s) ${[...new Set(unknown.map((b: any) => b?.t))].join(', ')}. ` +
+      `Add one here, or fix the block in src/data/writing/.`
+  );
+}
+---
+
+<div class="prose">
+  {
+    blocks.map((b) => {
+      switch (b.t) {
+        case 'lead':
+          return <p class="prose__lead">{b.text}</p>;
+
+        case 'p':
+          return <p class="prose__p">{b.text}</p>;
+
+        case 'h':
+          return <h2 class="prose__h">{b.text}</h2>;
+
+        case 'quote':
+          return (
+            <blockquote class="prose__quote">
+              <p>{b.text}</p>
+              {b.cite && <cite class="mono mono--lower faint">{b.cite}</cite>}
+            </blockquote>
+          );
+
+        case 'list':
+          return (
+            <ul class="prose__list">
+              {b.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          );
+
+        case 'spec':
+          return (
+            <dl class="prose__spec">
+              {b.rows.map((r) => (
+                <div class="prose__spec-row">
+                  <dt class="mono">{r.key}</dt>
+                  <dd>{r.value}</dd>
+                </div>
+              ))}
+            </dl>
+          );
+
+        case 'beats':
+          return (
+            <ol class="beats">
+              {b.rows.map((r) => (
+                <li class="beat">
+                  {r.time && <p class="beat__time mono">{r.time}</p>}
+                  <p class="beat__spoken">{r.spoken}</p>
+                  <p class="beat__visual quiet">{r.visual}</p>
+                </li>
+              ))}
+            </ol>
+          );
+
+        case 'note':
+          return <p class="prose__note faint">{b.text}</p>;
+      }
+    })
+  }
+</div>
+
+<style>
+  .prose {
+    display: grid;
+    gap: var(--s-5);
+    min-width: 0;
+  }
+
+  .prose__lead {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.38;
+    color: var(--newsprint);
+    max-width: 46ch;
+  }
+
+  .prose__p {
+    color: var(--newsprint-dim);
+  }
+
+  /* The section headings inside a sample are set as mono rules rather than as
+     display type, because the sample already has a display title at the top and
+     two competing display sizes on one page reads as two documents. */
+  .prose__h {
+    font-family: var(--mono);
+    font-variation-settings: var(--rec-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    font-weight: 500;
+    padding-top: var(--s-5);
+    margin-top: var(--s-2);
+    border-top: 1px solid var(--rule);
+    max-width: none;
+  }
+
+  .prose__h:first-child {
+    padding-top: 0;
+    margin-top: 0;
+    border-top: 0;
+  }
+
+  /* Spoken word, pulled out. This is the one place on a writing page that gets
+     to be loud, and it is loud because it is the copy itself rather than a
+     description of it. */
+  .prose__quote {
+    margin: 0;
+    padding-left: var(--s-5);
+    border-left: 2px solid var(--red);
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .prose__quote p {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.36;
+    color: var(--newsprint);
+    max-width: 42ch;
+  }
+
+  .prose__quote cite {
+    font-style: normal;
+    font-size: 0.66rem;
+  }
+
+  .prose__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--s-3);
+    max-width: var(--measure);
+  }
+
+  .prose__list li {
+    position: relative;
+    padding-left: var(--s-5);
+    color: var(--fg-quiet);
+    font-size: var(--step--1);
+    line-height: 1.55;
+  }
+
+  .prose__list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 0.6rem;
+    height: 1px;
+    background: var(--red);
+  }
+
+  /* --- the brief block ---------------------------------------------------- */
+
+  .prose__spec {
+    margin: 0;
+    display: grid;
+    border-top: 1px solid var(--rule);
+  }
+
+  .prose__spec-row {
+    display: grid;
+    grid-template-columns: minmax(0, 9rem) minmax(0, 1fr);
+    gap: var(--s-4);
+    padding-block: var(--s-3);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .prose__spec-row dt {
+    color: var(--fg-faint);
+    font-size: 0.66rem;
+    padding-top: 0.15rem;
+  }
+
+  .prose__spec-row dd {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--fg-quiet);
+    line-height: 1.55;
+  }
+
+  @media (max-width: 620px) {
+    .prose__spec-row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.2rem;
+    }
+  }
+
+  /* --- beats -------------------------------------------------------------- */
+
+  /* The signature object of a writing page. Timecode down the left, the spoken
+     line in the display face because it is meant to be heard, the direction
+     beside it in the quiet sans because it is meant to be executed. */
+  .beats {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    border-top: 1px solid var(--rule-bright);
+  }
+
+  .beat {
+    display: grid;
+    grid-template-columns: minmax(0, 9rem) minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: var(--s-4) var(--s-5);
+    padding-block: var(--s-5);
+    border-bottom: 1px solid var(--rule);
+    align-items: start;
+  }
+
+  .beat__time {
+    font-size: 0.64rem;
+    color: var(--red);
+    max-width: none;
+    padding-top: 0.3rem;
+  }
+
+  .beat__spoken {
+    font-family: var(--display);
+    font-size: var(--step-0);
+    line-height: 1.42;
+    color: var(--newsprint);
+    max-width: 38ch;
+  }
+
+  .beat__visual {
+    font-size: var(--step--1);
+    line-height: 1.55;
+    max-width: 46ch;
+  }
+
+  /* Below the two-column breakpoint the timecode moves above the pair and the
+     spoken line keeps the top of the stack, because that is the order a reader
+     scanning for a beat is looking in. */
+  @media (max-width: 900px) {
+    .beat {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-3);
+      padding-block: var(--s-4);
+    }
+    .beat__time {
+      padding-top: 0;
+    }
+    .beat__visual {
+      padding-left: var(--s-4);
+      border-left: 1px solid var(--rule);
+    }
+  }
+
+  /* --- note --------------------------------------------------------------- */
+
+  .prose__note {
+    font-size: 0.8rem;
+    line-height: 1.55;
+    padding: var(--s-4);
+    background: var(--ink-sunk);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    max-width: var(--measure);
+  }
+</style>

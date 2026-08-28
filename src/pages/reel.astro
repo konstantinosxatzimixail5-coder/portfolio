@@ -2,16 +2,45 @@
 import Base from '../layouts/Base.astro';
 import Frame from '../components/Frame.astro';
 import VideoFacade from '../components/VideoFacade.astro';
-import { getReel } from '../lib/content';
+import { getReel, getSettings } from '../lib/content';
+import { breadcrumbs, collection, graph, person } from '../lib/schema';
 
 // Everything on this page is edited in the Studio. While the cut is unhosted
 // the video id is empty and the three frames stand in for the poster, because
 // the source frames are portrait and a single wide still would crop them.
-const reel = await getReel();
+const [reel, site] = await Promise.all([getReel(), getSettings()]);
 const shots = reel.shots ?? [];
+
+// A VideoObject only goes in once there is a video. Describing an unhosted cut
+// as one is the structured-data version of a page that pretends the reel exists,
+// and the rest of this page is careful not to.
+const jsonLd = graph([
+  person(site.domain, site),
+  collection(site.domain, '/reel/', reel.heading, reel.seoDescription),
+  breadcrumbs(site.domain, [
+    { name: 'Home', path: '/' },
+    { name: 'Reel', path: '/reel/' },
+  ]),
+  ...(reel.videoId
+    ? [
+        {
+          '@type': 'VideoObject',
+          '@id': new URL('/reel/#video', site.domain).href,
+          name: reel.title,
+          description: reel.seoDescription,
+          ...(reel.duration ? { duration: `PT${reel.duration.replace(':', 'M')}S` } : {}),
+          embedUrl:
+            reel.host === 'youtube'
+              ? `https://www.youtube-nocookie.com/embed/${reel.videoId}`
+              : `https://player.vimeo.com/video/${reel.videoId}`,
+          creator: { '@id': new URL('/', site.domain).href + '#person' },
+        },
+      ]
+    : []),
+]);
 ---
 
-<Base title={reel.seoTitle} description={reel.seoDescription} active="reel">
+<Base title={reel.seoTitle} description={reel.seoDescription} active="reel" jsonLd={jsonLd}>
   <article class="reelpage">
     <header class="reelpage__head shell">
       <p class="mono faint">{reel.duration} · {reel.title}</p>

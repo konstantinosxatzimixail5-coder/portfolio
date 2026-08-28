@@ -1,0 +1,348 @@
+---
+import Base from '../../layouts/Base.astro';
+import Prose from '../../components/Prose.astro';
+import WhatsApp from '../../components/WhatsApp.astro';
+import { getSettings, writingSamples } from '../../lib/content';
+import { breadcrumbs, graph, person, writingArticle } from '../../lib/schema';
+
+export function getStaticPaths() {
+  return writingSamples.map((sample) => ({
+    params: { slug: sample.slug },
+    props: { sample },
+  }));
+}
+
+const { sample } = Astro.props;
+const site = await getSettings();
+
+// Previous and next inside the shelf, so a reader who finished one has somewhere
+// to go that is not the back button.
+const i = writingSamples.findIndex((s) => s.slug === sample.slug);
+const prev = writingSamples[i - 1];
+const next = writingSamples[i + 1];
+
+const title = `${sample.title} | Writing | ${site.name}`;
+const description = sample.standfirst;
+
+const jsonLd = graph([
+  person(site.domain, site),
+  writingArticle(site.domain, sample),
+  breadcrumbs(site.domain, [
+    { name: 'Home', path: '/' },
+    { name: 'Writing', path: '/writing/' },
+    { name: sample.title, path: `/writing/${sample.slug}/` },
+  ]),
+]);
+
+const spec = sample.kind !== 'Client work';
+---
+
+<Base title={title} description={description} active="writing" jsonLd={jsonLd}>
+  <article class="piece">
+    <header class="piece__head shell">
+      <p class="mono piece__meta">
+        <a class="piece__up" href="/writing/">Writing</a>
+        <span class="faint" aria-hidden="true">·</span>
+        <span class={spec ? 'piece__kind piece__kind--spec' : 'piece__kind'}>{sample.kind}</span>
+        {
+          sample.client && (
+            <>
+              <span class="faint" aria-hidden="true">·</span>
+              <span class="faint">{sample.client}</span>
+            </>
+          )
+        }
+        <span class="faint" aria-hidden="true">·</span>
+        <span class="faint">{sample.year}</span>
+      </p>
+
+      <h1 class="piece__title">{sample.title}</h1>
+      <p class="piece__stand">{sample.standfirst}</p>
+      <p class="piece__format mono mono--lower faint">{sample.format}</p>
+
+      {
+        sample.extractOnly && (
+          <p class="piece__flag mono">
+            Described, not reproduced. The document belongs to the client.
+          </p>
+        )
+      }
+    </header>
+
+    <div class="piece__body shell spread">
+      <div class="rail">
+        <span class="rail__num">{String(i + 1).padStart(2, '0')}</span>
+        <span class="rail__slug">{spec ? 'Spec' : 'Client'}</span>
+      </div>
+
+      <div class="piece__col">
+        {
+          sample.meta && sample.meta.length > 0 && (
+            <dl class="brief">
+              {sample.meta.map((m) => (
+                <div class="brief__row">
+                  <dt class="mono">{m.key}</dt>
+                  <dd>{m.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )
+        }
+
+        <Prose blocks={sample.body} />
+      </div>
+    </div>
+
+    <!-- next and previous -->
+    <nav class="piece__nav shell spread" aria-label="More writing">
+      <div class="rail" aria-hidden="true"></div>
+      <div class="piece__nav-row">
+        {
+          prev ? (
+            <a class="piece__step" href={`/writing/${prev.slug}/`}>
+              <span class="mono faint">← Previous</span>
+              <span class="piece__step-title">{prev.title}</span>
+            </a>
+          ) : (
+            <span />
+          )
+        }
+        {
+          next ? (
+            <a class="piece__step piece__step--next" href={`/writing/${next.slug}/`}>
+              <span class="mono faint">Next →</span>
+              <span class="piece__step-title">{next.title}</span>
+            </a>
+          ) : (
+            <span />
+          )
+        }
+      </div>
+    </nav>
+
+    <aside class="piece__ask shell spread">
+      <div class="rail" aria-hidden="true"></div>
+      <div class="piece__ask-body">
+        <p class="piece__ask-line">
+          If you want something written like this, the fastest route is a message rather than a
+          form.
+        </p>
+        <WhatsApp heading="Message me about a script" />
+      </div>
+    </aside>
+
+    <nav class="piece__back shell" aria-label="Back">
+      <a class="mono" href="/writing/">← All writing samples</a>
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .piece__head {
+    padding-top: var(--s-8);
+    padding-bottom: var(--s-6);
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  /* Centred rather than baseline-aligned, because the one link in this row is a
+     control with a real target height and baseline alignment would hang the
+     other items off the top of it. */
+  .piece__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+    font-size: 0.66rem;
+    max-width: none;
+  }
+
+  .piece__up {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding-right: 0.2rem;
+  }
+
+  .piece__kind {
+    color: var(--cyan);
+  }
+
+  .piece__kind--spec {
+    color: var(--gold);
+  }
+
+  .piece__title {
+    font-size: var(--step-4);
+    letter-spacing: -0.03em;
+    max-width: 22ch;
+  }
+
+  .piece__stand {
+    font-size: var(--step-1);
+    line-height: 1.4;
+    color: var(--newsprint-dim);
+    max-width: 50ch;
+  }
+
+  .piece__format {
+    font-size: 0.66rem;
+    max-width: none;
+  }
+
+  /* The one label on this page that is allowed to interrupt. A reader who thinks
+     they are about to get a whole ebook should find out here, not four
+     paragraphs in. */
+  .piece__flag {
+    font-size: 0.66rem;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    border-radius: var(--radius);
+    padding: var(--s-3) var(--s-4);
+    max-width: max-content;
+    margin-top: var(--s-2);
+  }
+
+  .piece__body {
+    padding-block: var(--s-6) var(--s-8);
+    border-top: 1px solid var(--rule);
+  }
+
+  .piece__col {
+    display: grid;
+    gap: var(--s-6);
+    min-width: 0;
+  }
+
+  /* --- the brief ---------------------------------------------------------- */
+
+  .brief {
+    margin: 0;
+    display: grid;
+    border-top: 1px solid var(--rule-bright);
+    border-bottom: 1px solid var(--rule-bright);
+  }
+
+  .brief__row {
+    display: grid;
+    grid-template-columns: minmax(0, 10rem) minmax(0, 1fr);
+    gap: var(--s-4);
+    padding-block: var(--s-3);
+  }
+
+  .brief__row + .brief__row {
+    border-top: 1px solid var(--rule);
+  }
+
+  .brief__row dt {
+    color: var(--red);
+    font-size: 0.64rem;
+    padding-top: 0.15rem;
+  }
+
+  .brief__row dd {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--newsprint-dim);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 620px) {
+    .brief__row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.2rem;
+    }
+  }
+
+  /* --- next and previous -------------------------------------------------- */
+
+  .piece__nav {
+    padding-block: var(--s-6);
+    border-top: 1px solid var(--rule);
+  }
+
+  .piece__nav-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-5);
+  }
+
+  @media (max-width: 620px) {
+    .piece__nav-row {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .piece__step {
+    display: grid;
+    gap: var(--s-2);
+    text-decoration: none;
+    color: inherit;
+    min-height: var(--tap);
+    align-content: start;
+  }
+
+  .piece__step--next {
+    text-align: right;
+  }
+
+  .piece__step .mono {
+    font-size: 0.62rem;
+    max-width: none;
+  }
+
+  .piece__step-title {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.2;
+    color: var(--newsprint);
+    transition: color var(--dur) var(--ease);
+  }
+
+  .piece__step:hover .piece__step-title {
+    color: var(--cyan);
+  }
+
+  @media (max-width: 620px) {
+    .piece__step--next {
+      text-align: left;
+    }
+  }
+
+  /* --- the ask ------------------------------------------------------------ */
+
+  .piece__ask {
+    padding-block: var(--s-6);
+    border-top: 1px solid var(--rule);
+  }
+
+  .piece__ask-body {
+    display: grid;
+    gap: var(--s-4);
+    min-width: 0;
+  }
+
+  .piece__ask-line {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.35;
+    color: var(--newsprint);
+    max-width: 40ch;
+  }
+
+  /* --- back --------------------------------------------------------------- */
+
+  .piece__back {
+    padding-block: var(--s-6);
+    border-top: 1px solid var(--rule);
+  }
+
+  .piece__back a {
+    text-decoration: none;
+    font-size: 0.68rem;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+</style>

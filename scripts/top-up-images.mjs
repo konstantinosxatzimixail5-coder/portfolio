@@ -14,19 +14,28 @@
 // Run: happens on its own via `prebuild`. `npm run top-up` to do it by hand.
 
 import { client } from './sanity-env.mjs';
-import { derive, download, isBuilt, readManifest, usedAssets, writeManifest } from './lib/images.mjs';
+import {
+  derive,
+  download,
+  isBuilt,
+  localAssets,
+  readManifest,
+  usedAssets,
+  writeManifest,
+} from './lib/images.mjs';
 
 const manifest = await readManifest();
 const { assets, unreadable } = await usedAssets(client());
 
+// The repository's own pictures are already on disk, so they never need
+// downloading. They are still checked here, because a fresh clone has the
+// masters and not necessarily the derivatives, and because a replaced master
+// has to reach the deploy even though its filename did not change.
+const site = await localAssets();
+
 const missing = [];
 for (const asset of assets) {
   if (!(await isBuilt(manifest, asset.key))) missing.push(asset);
-}
-
-if (missing.length === 0 && unreadable.length === 0) {
-  console.log(`images: ${assets.length} in use, all built.`);
-  process.exit(0);
 }
 
 const failed = unreadable.map((id) => `${id} (unreadable asset id)`);
@@ -48,9 +57,30 @@ for (const asset of missing) {
   }
 }
 
-if (added > 0) await writeManifest(manifest);
+for (const asset of site) {
+  try {
+    // Not guarded by isBuilt: derive decides per file whether the master is
+    // newer than the derivative, which is the check a hand-named key needs.
+    const result = await derive(asset.file, asset.key, { contentAddressed: false });
+    if (!result) {
+      failed.push(`${asset.key} (no readable dimensions)`);
+      continue;
+    }
+    manifest[asset.key] = result.entry;
+    if (result.written > 0) {
+      added++;
+      console.log(`  built  ${asset.key}`);
+    }
+  } catch (err) {
+    failed.push(`${asset.key} (${err.message})`);
+  }
+}
 
-console.log(`images: ${assets.length} in use, ${added} newly built.`);
+await writeManifest(manifest);
+
+console.log(
+  `images: ${assets.length} from the CMS and ${site.length} from the repo, ${added} newly built.`
+);
 
 if (failed.length) {
   console.error(`\n${failed.length} could not be built:`);

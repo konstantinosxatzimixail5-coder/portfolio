@@ -1,10 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
 import Frame from '../components/Frame.astro';
-import { getSpecPage, getSpecBrands } from '../lib/content';
+import { getSpecPage, getSpecBrands, getSettings } from '../lib/content';
 import { fill, Words } from '../lib/text';
+import { breadcrumbs, collection, graph, person } from '../lib/schema';
 
-const [page, specBrands] = await Promise.all([getSpecPage(), getSpecBrands()]);
+const [page, specBrands, site] = await Promise.all([getSpecPage(), getSpecBrands(), getSettings()]);
 
 // "Runs on" is left off a brand that has no pipeline set, the same way the reel
 // falls back when the cut is unhosted. A brand being written in the Studio
@@ -18,9 +19,29 @@ const counts = {
   count: specBrands.reduce((n, b) => n + b.shots.length, 0),
   brands: Words(specBrands.length),
 };
+
+const jsonLd = graph([
+  person(site.domain, site),
+  collection(site.domain, '/spec/', page.heading, page.seoDescription),
+  breadcrumbs(site.domain, [
+    { name: 'Home', path: '/' },
+    { name: page.heading, path: '/spec/' },
+  ]),
+  {
+    '@type': 'ItemList',
+    numberOfItems: specBrands.length,
+    itemListElement: specBrands.map((b: any, i: number) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: b.name,
+      description: b.proves,
+      url: new URL(`/spec/#${b.id}`, site.domain).href,
+    })),
+  },
+]);
 ---
 
-<Base title={page.seoTitle} description={page.seoDescription} active="spec">
+<Base title={page.seoTitle} description={page.seoDescription} active="spec" jsonLd={jsonLd}>
   <article class="shelf">
     <!-- header -->
     <header class="shelf__head shell">

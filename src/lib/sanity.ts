@@ -1,26 +1,51 @@
 import { createClient } from '@sanity/client';
+import { fetchFixture } from './fixture';
 
-const projectId = import.meta.env.SANITY_PROJECT_ID;
-const dataset = import.meta.env.SANITY_DATASET || 'production';
-const token = import.meta.env.SANITY_READ_TOKEN || undefined;
+// Vite inlines the keys it knows about from .env at build time, and leaves the
+// ones that only exist in the shell to process.env. A deploy host sets its
+// variables the second way and a checkout sets them the first, so both are read
+// or the same value is present in one place and missing in the other.
+//
+// Coerced to a string on the way out. Vite inlines a bare numeric value as a
+// number rather than as the string the shell actually held, so SANITY_FIXTURE=1
+// arrives here as 1 and a strict comparison against '1' silently fails.
+const env = (key: string): string | undefined => {
+  const raw = (import.meta.env as Record<string, unknown>)[key] ?? process.env[key];
+  return raw === undefined || raw === null || raw === '' ? undefined : String(raw);
+};
 
-if (!projectId) {
+const projectId = env('SANITY_PROJECT_ID');
+const dataset = env('SANITY_DATASET') || 'production';
+const token = env('SANITY_READ_TOKEN') || undefined;
+
+// Opt in, never inferred. A checkout with no credentials can render the site
+// against src/lib/fixture.ts, which is what makes the layout workable without a
+// project id. It has to be asked for explicitly: a deploy that lost its
+// environment variables must fail loudly rather than quietly ship placeholder
+// prose that looks almost like the real thing.
+const useFixture = env('SANITY_FIXTURE') === '1';
+
+if (!projectId && !useFixture) {
   throw new Error(
-    'SANITY_PROJECT_ID is not set. Copy .env.example to .env and fill it in, or add the variable in the deploy host settings.'
+    'SANITY_PROJECT_ID is not set. Copy .env.example to .env and fill it in, or add the variable in the deploy host settings. ' +
+      'To work on the layout without credentials, set SANITY_FIXTURE=1 instead.'
   );
 }
 
-export const sanity = createClient({
-  projectId,
-  dataset,
-  apiVersion: '2024-10-01',
-  // The site is built once and served as files, so there is no request to keep
-  // fresh and every read is a build-time read. The CDN copy is cheaper and it
-  // lags the live dataset by seconds, which does not matter to a static build.
-  useCdn: !token,
-  token,
-  perspective: 'published',
-});
+export const sanity = useFixture
+  ? { fetch: async <T,>(query: string): Promise<T> => fetchFixture<T>(query) }
+  : createClient({
+      projectId,
+      dataset,
+      apiVersion: '2024-10-01',
+      // The site is built once and served as files, so there is no request to
+      // keep fresh and every read is a build-time read. The CDN copy is cheaper
+      // and it lags the live dataset by seconds, which does not matter to a
+      // static build.
+      useCdn: !token,
+      token,
+      perspective: 'published',
+    });
 
 // --- types ------------------------------------------------------------------
 
