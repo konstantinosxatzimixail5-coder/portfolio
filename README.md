@@ -17,15 +17,18 @@ The exceptions are in `src/data/`, and they are exceptions on purpose. See
 
 ## First run
 
-The content already lives in the Sanity dataset. All a fresh checkout needs is
-the project id.
+The content already lives in the Sanity dataset, and both example files carry the
+project id, so copying them is the whole setup.
 
 ```bash
 cp .env.example .env                # SANITY_PROJECT_ID, SANITY_DATASET
 cp studio/.env.example studio/.env  # SANITY_STUDIO_PROJECT_ID, same value
 ```
 
-Both files are gitignored. Neither needs a token while the dataset is public.
+Both copies are gitignored. Neither needs a token while the dataset is public.
+The project id is `y9oyffjn` and it is not a secret: it appears in every Studio
+URL and in the compiled Studio bundle, and on its own it grants read access to a
+dataset whose entire contents are already a public website.
 
 ```bash
 npm install
@@ -205,7 +208,8 @@ The build is a folder of static files. Any host that serves a directory will do.
 **Build command:** `npm run build`
 **Publish directory:** `dist`
 **Node version:** 22 or newer
-**Environment variables:** `SANITY_PROJECT_ID` and `SANITY_DATASET`
+**Environment variables:** `SANITY_PROJECT_ID=y9oyffjn` and
+`SANITY_DATASET=production`
 
 Both of those are public values. The project id is in every Studio URL and the
 dataset name is printed on the front of the Sanity dashboard. No token belongs
