@@ -27,7 +27,7 @@ export const complianceEbook: WritingSample = {
     },
     {
       t: 'p',
-      text: 'The structural problem was that international trade compliance is not one topic. It is at least eight, and every one of them has its own vocabulary: growing rule volume, sanctions and export controls, import controls, national and regional variation, documentation, licences and permits, the cost of getting it wrong, and a landscape that moves whenever international relations do. Presented as a list, it reads as a wall. The fix was to give each one a page of its own and a single governing sentence, so a reader can stop after any page and still have gained something.',
+      text: 'The structural problem was that international trade compliance is not one topic. It is at least eight, and every one of them has its own vocabulary: growing rule volume, sanctions and export controls, import controls, national and regional variation, documentation, licences and permits, the cost of getting it wrong, and a set of rules that moves whenever international relations do. Presented as a list, it reads as a wall. The fix was to give each one a page of its own and a single governing sentence, so a reader can stop after any page and still have gained something.',
     },
     {
       t: 'h', text: 'The two ideas the document is built on',
@@ -38,7 +38,7 @@ export const complianceEbook: WritingSample = {
     },
     {
       t: 'p',
-      text: 'The second is silos. Fragmented data and fragmented process make a complete view of compliance activity impossible, which is where the real exposure sits: not in a missed rule, but in nobody being able to see that the rule was missed. That framing let a legacy-systems section do actual work rather than read as a vendor complaining about incumbents.',
+      text: 'The second is silos. Fragmented data and fragmented process make a complete view of compliance activity impossible, which is where the real exposure sits. The danger is never the missed rule on its own. It is that nobody can see it was missed. That framing let a legacy-systems section do real work instead of reading as a vendor complaining about incumbents.',
     },
     {
       t: 'quote',
@@ -50,7 +50,7 @@ export const complianceEbook: WritingSample = {
     },
     {
       t: 'note',
-      text: 'Client property. Described here rather than reproduced. The figures in the original are the client’s and their sources are printed in the document itself.',
+      text: 'Client property. Described here, not reproduced. The figures in the original are the client’s and their sources are printed in the document itself.',
     },
   ],
 };
@@ -88,7 +88,7 @@ export const knowledgeAssistantBrochure: WritingSample = {
     },
     {
       t: 'p',
-      text: 'The second is the cost case. It is built from stated parameters, hours per analyst per week and cost per review, so it reads as arithmetic rather than as a promise. A reader who disputes the hours can substitute their own and still follow the page.',
+      text: 'The second is the cost case. It is built from stated parameters, hours per analyst per week and cost per review, so it reads as arithmetic and not as a promise. A reader who disputes the hours can substitute their own and still follow the page.',
     },
     {
       t: 'quote',
@@ -100,7 +100,7 @@ export const knowledgeAssistantBrochure: WritingSample = {
     },
     {
       t: 'note',
-      text: 'Client property, produced under a co-funded programme. Described here rather than reproduced.',
+      text: 'Client property, produced under a co-funded programme. Described here, not reproduced.',
     },
   ],
 };
@@ -146,7 +146,7 @@ export const caseStudyBrochure: WritingSample = {
     },
     {
       t: 'p',
-      text: 'The commitments page is the other half of the argument and it is written in a flatter register on purpose. After seven sections of narrative, a plain grid of what the platform undertakes to do reads as candour rather than as another sales page.',
+      text: 'The commitments page is the other half of the argument and it is written in a flatter register on purpose. After seven sections of narrative, a plain grid of what the platform undertakes to do reads as candour and not as another sales page.',
     },
     {
       t: 'note',

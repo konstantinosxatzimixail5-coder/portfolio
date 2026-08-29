@@ -25,7 +25,7 @@ export const xAllVsl: WritingSample = {
     },
     {
       t: 'p',
-      text: 'The six below were written against one objection file. Every note underneath a hook says which objection it is answering, so a hook that loses can be replaced with something aimed at the same fear rather than with whatever comes to mind next.',
+      text: 'The six below were written against one objection file. Every note underneath a hook says which objection it is answering, so a hook that loses can be replaced with something aimed at the same fear, and not with whatever comes to mind next.',
     },
 
     { t: 'h', text: 'Hook one, The Grab' },

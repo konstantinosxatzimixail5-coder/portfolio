@@ -97,7 +97,7 @@ export const videoGameLaundering: WritingSample = {
     },
     {
       t: 'p',
-      text: 'Part of the answer is regulatory: bringing some elements of the gaming economy under the same compliance umbrella as financial services, with player verification, monitoring of high-risk transactions, and clearer guidance on how platforms let people cash out. But regulation alone is not enough. What is missing is a coordinated authority that can watch the intersection of gaming and financial crime, and whose job is to help platforms build better systems and share intelligence rather than only to hand out penalties.',
+      text: 'Part of the answer is regulatory: bringing some elements of the gaming economy under the same compliance umbrella as financial services, with player verification, monitoring of high-risk transactions, and clearer guidance on how platforms let people cash out. But regulation alone is not enough. What is missing is a coordinated authority that can watch the intersection of gaming and financial crime, and whose job is to help platforms build better systems and share intelligence, and not only to hand out penalties.',
     },
 
     { t: 'h', text: 'The final word' },
@@ -111,7 +111,7 @@ export const videoGameLaundering: WritingSample = {
     },
     {
       t: 'note',
-      text: 'Written for a compliance and screening firm and published under their name. The closing product paragraph in the original has been left off here, since the sample is the argument rather than the pitch.',
+      text: 'Written for a compliance and screening firm and published under their name. The closing product paragraph in the original has been left off here, since the sample is the argument and not the pitch.',
     },
   ],
 };

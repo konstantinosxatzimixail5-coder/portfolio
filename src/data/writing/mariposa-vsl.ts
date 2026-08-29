@@ -92,11 +92,11 @@ export const mariposaVsl: WritingSample = {
     { t: 'h', text: 'Why the call to action is a message and not a booking form' },
     {
       t: 'p',
-      text: 'The scarcity is real rather than manufactured, and the restaurant already takes bookings this way. The viewer is on a sun lounger holding the phone the message would be sent from, which puts the action one tap away instead of behind a form, a confirmation email and a decision to make later.',
+      text: 'The scarcity is real and not manufactured, and the restaurant already takes bookings this way. The viewer is on a sun lounger holding the phone the message would be sent from, which puts the action one tap away instead of behind a form, a confirmation email and a decision to make later.',
     },
     {
       t: 'note',
-      text: 'The silence works as hard as the copy. Most of it sits in the buffet hold at twelve seconds and on the terrace at seventy-eight, and both were written in rather than found in the edit.',
+      text: 'The silence works as hard as the copy. Most of it sits in the buffet hold at twelve seconds and on the terrace at seventy-eight, and both were written in, never found in the edit.',
     },
   ],
 };

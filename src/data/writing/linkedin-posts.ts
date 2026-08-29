@@ -21,7 +21,7 @@ export const linkedinPosts: WritingSample = {
   body: [
     {
       t: 'lead',
-      text: 'Three posts from a longer run. Each opens on something the reader already believes, then moves the belief one step, and closes on a question that is answerable rather than rhetorical.',
+      text: 'Three posts from a longer run. Each opens on something the reader already believes, then moves the belief one step, and closes on a question that is answerable and not rhetorical.',
     },
 
     { t: 'h', text: 'One. Glossaries, the SEO weapon nobody defends' },
@@ -40,7 +40,7 @@ export const linkedinPosts: WritingSample = {
     },
     {
       t: 'p',
-      text: 'So how do you build one without it being dull? Structured taxonomies. Filters by category and by letter. A rich question widget. Popovers that actually help rather than interrupt. And a rule that empty terms never publish, because one blank definition teaches a reader that the rest are not worth clicking either.',
+      text: 'So how do you build one without it being dull? Structured taxonomies. Filters by category and by letter. A rich question widget. Popovers that actually help instead of interrupting. And a rule that empty terms never publish, because one blank definition teaches a reader that the rest are not worth clicking either.',
     },
     {
       t: 'quote',

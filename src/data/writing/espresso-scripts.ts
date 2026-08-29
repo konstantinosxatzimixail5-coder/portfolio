@@ -121,7 +121,7 @@ export const espressoScripts: WritingSample = {
         },
         {
           time: '0:11',
-          spoken: 'Grandson: the beans are really good though, they’re from — Yiayia: it’s not the beans.',
+          spoken: 'Grandson: the beans are really good though, they’re from … Yiayia: it’s not the beans.',
           visual: 'Cut to the grandson, thirties, defensive, holding a bag of expensive single-origin.',
         },
         {
@@ -152,7 +152,7 @@ export const espressoScripts: WritingSample = {
         },
         {
           time: '1:08',
-          spoken: 'Grandson: Yiayia — Yiayia: it was never the beans.',
+          spoken: 'Grandson: Yiayia … Yiayia: it was never the beans.',
           visual: 'She drinks it. Nods once. Pushes the cheap machine off the edge of the table. It lands off screen.',
         },
         {

@@ -40,7 +40,7 @@ export const faqs: Faq[] = [
   },
   {
     q: 'Do you write, or only produce?',
-    a: 'Write first. Direct response and VSL scripts, hook batteries, long-form editorial and ghostwritten posts in a founder’s voice. Samples of each are published on this site in full rather than offered on request.',
+    a: 'Write first. Direct response and VSL scripts, hook batteries, long-form editorial and ghostwritten posts in a founder’s voice. Samples of each are published on this site in full. Nothing here is offered on request.',
   },
   {
     q: 'Where are you based, and do you work with teams elsewhere?',
@@ -48,6 +48,6 @@ export const faqs: Faq[] = [
   },
   {
     q: 'How does an engagement usually start?',
-    a: 'With a conversation about the constraint rather than the deliverable. Then either a single piece of work with a fixed scope, or a mapping session that ends in a pipeline your team owns. Both start the same way, and the fastest route to one is a message.',
+    a: 'With a conversation about the constraint. The deliverable comes out of that. Then either a single piece of work with a fixed scope, or a mapping session that ends in a pipeline your team owns. Both start the same way, and the fastest route to one is a message.',
   },
 ];

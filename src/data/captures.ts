@@ -28,7 +28,7 @@ export const captures: Capture[] = [
     title: 'Sunday league',
     alt: 'A young footballer in a blue kit with a sponsor name across the chest stands with her hands on her hips on an artificial pitch, hair damp with sweat, a grazed knee, a wheelie bin and three parked cars behind the fence.',
     proves:
-      'Sponsor type on a moving garment, held legible across the chest, with the fabric creasing under it rather than the letters floating on top.',
+      'Sponsor type on a moving garment, held legible across the chest, with the fabric creasing under it and the letters creasing with it.',
     register: 'Grassroots sport documentary, harsh midday sun, no fill',
     focus: '55% 35%',
   },

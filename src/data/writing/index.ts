@@ -45,7 +45,7 @@ const GROUPS: { key: WritingCategory; title: string; note: string }[] = [
   {
     key: 'social',
     title: 'Feed writing',
-    note: 'Ghostwritten posts, written against a voice file rather than from a blank page.',
+    note: 'Ghostwritten posts, written against a voice file, never from a blank page.',
   },
   {
     key: 'longform',
