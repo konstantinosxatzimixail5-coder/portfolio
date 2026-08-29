@@ -4,6 +4,7 @@ import Frame from '../../components/Frame.astro';
 import ShotSheet from '../../components/ShotSheet.astro';
 import DocReader from '../../components/DocReader.astro';
 import { getSettings, films } from '../../lib/content';
+import { docExists } from '../../lib/docs';
 import { breadcrumbs, graph, person } from '../../lib/schema';
 
 export function getStaticPaths() {
@@ -16,18 +17,9 @@ const site = await getSettings();
 const title = `${film.title}, an original short | ${site.name}`;
 const description = film.logline;
 
-// Sections that arrive with the process document. Each one renders only when it
-// has something in it, so the page is short and true instead of long and full of
-// placeholders.
-const has = {
-  spine: film.spine.length > 0,
-  pipeline: film.pipeline.length > 0,
-  look: film.look.length > 0,
-  locks: film.locks.length > 0,
-  route: Boolean(film.route),
-  routeBody: Boolean(film.route?.body.length),
-  prompts: film.beats.some((b) => b.prompt),
-};
+// The process document is committed, so the reader renders. docExists keeps the
+// section honest if the file is ever moved or dropped.
+const hasDoc = docExists(film.doc.path);
 
 const jsonLd = graph([
   person(site.domain, site),
@@ -40,7 +32,12 @@ const jsonLd = graph([
     genre: 'Original short, self-initiated',
     inLanguage: 'en',
     creator: { '@id': new URL('/', site.domain).href + '#person' },
-    keywords: film.stack.flatMap((g) => g.items).join(', '),
+    keywords: [...film.tools, ...film.skills].map((t) => t.name).join(', '),
+    // The document is the evidence for everything on the page, so it is named
+    // in the data as well as linked at the foot of it.
+    ...(hasDoc
+      ? { associatedMedia: { '@type': 'MediaObject', contentUrl: new URL(film.doc.path, site.domain).href, encodingFormat: 'application/pdf', name: film.doc.title } }
+      : {}),
   },
   breadcrumbs(site.domain, [
     { name: 'Home', path: '/' },
@@ -55,12 +52,7 @@ const jsonLd = graph([
     <!-- 1. hero -->
     <header class="film__hero">
       <div class="film__plate">
-        <Frame
-          src={film.hero}
-          alt={film.heroAlt}
-          sizes="100vw"
-          loading="eager"
-        />
+        <Frame src={film.hero} alt={film.heroAlt} sizes="100vw" loading="eager" />
       </div>
 
       <div class="shell film__head">
@@ -70,14 +62,15 @@ const jsonLd = graph([
           <span class="faint">{film.runtime}</span>
         </p>
         <h1 class="film__title">{film.title}</h1>
+        <p class="film__strap">{film.strapline}</p>
         <p class="film__logline">{film.logline}</p>
 
         <dl class="specrow">
           {
-            film.spec.map((s) => (
+            film.spec.map((row) => (
               <div class="specrow__cell">
-                <dt class="mono">{s.key}</dt>
-                <dd>{s.value}</dd>
+                <dt class="mono">{row.key}</dt>
+                <dd>{row.value}</dd>
               </div>
             ))
           }
@@ -86,27 +79,43 @@ const jsonLd = graph([
     </header>
 
     <!-- 2. the film -->
-    {
-      has.spine && (
-        <section class="film__sec shell spread" id="the-film">
-          <div class="rail">
-            <span class="rail__num">01</span>
-            <span class="rail__slug">The film</span>
-          </div>
-          <div class="film__col">
-            <h2 class="film__h2">The film</h2>
-            <dl class="spine">
-              {film.spine.map((row) => (
-                <div class="spine__row">
-                  <dt class="mono">{row.key}</dt>
-                  <dd>{row.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        </section>
-      )
-    }
+    <section class="film__sec shell spread" id="the-film">
+      <div class="rail">
+        <span class="rail__num">01</span>
+        <span class="rail__slug">The film</span>
+      </div>
+      <div class="film__col">
+        <h2 class="film__h2">The film</h2>
+        <p class="film__lede">
+          The spine was beaten out with the tig-scene-engine skill before a single frame was
+          generated. A short cut still needs a chain, otherwise it is only a reel of pretty motion.
+        </p>
+
+        <dl class="spine">
+          {
+            film.spine.map((row) => (
+              <div class="spine__row">
+                <dt class="mono">{row.key}</dt>
+                <dd>{row.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+
+        <p class="pullquote">{film.spineNote}</p>
+
+        <dl class="delivery">
+          {
+            film.delivery.map((row) => (
+              <div class="delivery__row">
+                <dt class="mono">{row.key}</dt>
+                <dd>{row.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </section>
 
     <!-- 3. beat map -->
     <section class="film__sec shell spread" id="beat-map">
@@ -117,7 +126,8 @@ const jsonLd = graph([
       <div class="film__col">
         <h2 class="film__h2">Beat map</h2>
         <p class="film__lede">
-          {film.beats.length} generation blocks, in order, with the timecode each one lands on.
+          {film.beats.length} generation blocks, cut internally where the model was asked for a hard
+          cut.
         </p>
         <ol class="beatmap">
           {
@@ -143,11 +153,7 @@ const jsonLd = graph([
       </div>
       <div class="film__col">
         <h2 class="film__h2">Cast and world</h2>
-        <p class="film__lede">
-          Every character, vehicle and location the shot prompts call by name. The tag is the
-          handle the control layer holds them by, which is what keeps a face the same face across
-          {' '}{film.beats.length} blocks.
-        </p>
+        <p class="film__lede">{film.castIntro}</p>
         <ul class="cast">
           {
             film.cast.map((c) => (
@@ -157,24 +163,23 @@ const jsonLd = graph([
                 )}
                 <p class="cast__tag mono">{c.tag}</p>
                 <p class="cast__name">{c.name}</p>
-                {c.note && <p class="cast__note quiet">{c.note}</p>}
               </li>
             ))
           }
         </ul>
+        <p class="film__note mono">{film.castNote}</p>
       </div>
     </section>
 
     <!-- 4b. the route, Skyrunner only -->
     {
       film.route && (
-        <section class="film__sec film__sec--wide shell" id="route">
+        <section class="film__sec shell" id="route">
           <div class="film__routehead">
             <h2 class="film__h2">The route</h2>
             <p class="film__lede">
-              The one step nobody else documents. The flight path was drawn onto the city plate
-              before a single frame was generated, so the camera had somewhere to be at every
-              second of the run.
+              The one step that made the flight read as a flight, and the only stage of the whole
+              build that left the screen.
             </p>
           </div>
 
@@ -183,41 +188,77 @@ const jsonLd = graph([
             <figcaption class="route__cap mono mono--lower faint">{film.route.caption}</figcaption>
           </figure>
 
-          <ol class="waypoints">
-            {film.route.waypoints.map((w) => (
-              <li class="waypoint">
-                <span class="waypoint__num mono">{w.num}</span>
-                <span class="waypoint__name">{w.name}</span>
-              </li>
-            ))}
-          </ol>
+          <div class="route__body">
+            <div class="route__why">
+              <p class="mono route__h">Why draw on the plate</p>
+              {film.route.why.map((para) => (
+                <p class="route__p">{para}</p>
+              ))}
+
+              <p class="mono route__h">How it is written into the prompt</p>
+              <div class="panel panel--code">
+                <div class="panel__bar">
+                  <span class="panel__label mono">Position reference</span>
+                  <button class="panel__copy mono" type="button" data-copy hidden>
+                    Copy
+                  </button>
+                </div>
+                <pre class="panel__text" data-prompt>{film.route.positionReference}</pre>
+              </div>
+            </div>
+
+            <div class="route__order">
+              <p class="mono route__h">Waypoint order</p>
+              <ol class="waypoints">
+                {film.route.waypoints.map((w) => (
+                  <li class="waypoint">
+                    <span class="waypoint__num mono">{w.num}</span>
+                    <span class="waypoint__body">
+                      <span class="waypoint__name">{w.name}</span>
+                      <span class="waypoint__cue mono mono--lower faint">{w.cue}</span>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+
+              <p class="mono route__h">Locks</p>
+              <ul class="route__locks">
+                {film.route.locks.map((l) => (
+                  <li>{l}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <p class="pullquote">{film.route.result}</p>
         </section>
       )
     }
 
     <!-- 5. pipeline -->
-    {
-      has.pipeline && (
-        <section class="film__sec shell spread" id="pipeline">
-          <div class="rail">
-            <span class="rail__num">04</span>
-            <span class="rail__slug">Pipeline</span>
-          </div>
-          <div class="film__col">
-            <h2 class="film__h2">Pipeline</h2>
-            <ol class="stages">
-              {film.pipeline.map((s) => (
-                <li class="stage">
-                  <p class="stage__num mono">{s.num}</p>
-                  <p class="stage__name">{s.name}</p>
-                  <p class="stage__body quiet">{s.body}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-      )
-    }
+    <section class="film__sec shell spread" id="pipeline">
+      <div class="rail">
+        <span class="rail__num">04</span>
+        <span class="rail__slug">Pipeline</span>
+      </div>
+      <div class="film__col">
+        <h2 class="film__h2">Pipeline</h2>
+        <p class="film__lede">From beat sheet to graded cut, inside one chat window.</p>
+        <ol class="stages">
+          {
+            film.pipeline.map((stage) => (
+              <li class="stage">
+                <p class="stage__num mono">{stage.num}</p>
+                <p class="stage__name">{stage.name}</p>
+                <p class="stage__tool mono mono--lower">{stage.tool}</p>
+                <p class="stage__body quiet">{stage.body}</p>
+              </li>
+            ))
+          }
+        </ol>
+        <p class="film__note mono">{film.pipelineNote}</p>
+      </div>
+    </section>
 
     <!-- 6. the stack -->
     <section class="film__sec shell spread" id="stack">
@@ -227,22 +268,34 @@ const jsonLd = graph([
       </div>
       <div class="film__col">
         <h2 class="film__h2">The stack</h2>
-        <dl class="stack">
+        <p class="film__lede">Four tools, three custom skills, one operator.</p>
+
+        <ul class="tools">
           {
-            film.stack.map((g) => (
-              <div class="stack__group">
-                <dt class="mono">{g.group}</dt>
-                <dd>
-                  <ul class="stack__list">
-                    {g.items.map((t) => (
-                      <li class="stack__tool mono">{t}</li>
-                    ))}
-                  </ul>
-                </dd>
-              </div>
+            film.tools.map((t) => (
+              <li class="tool">
+                <p class="tool__name">{t.name}</p>
+                <p class="tool__role mono">{t.role}</p>
+                <p class="tool__body quiet">{t.body}</p>
+              </li>
             ))
           }
-        </dl>
+        </ul>
+
+        <p class="mono film__sub">Custom Claude skills</p>
+        <ul class="tools">
+          {
+            film.skills.map((t) => (
+              <li class="tool tool--skill">
+                <p class="tool__name tool__name--mono">{t.name}</p>
+                <p class="tool__role mono">{t.role}</p>
+                <p class="tool__body quiet">{t.body}</p>
+              </li>
+            ))
+          }
+        </ul>
+
+        <p class="pullquote">{film.stackNote}</p>
       </div>
     </section>
 
@@ -254,19 +307,10 @@ const jsonLd = graph([
       </div>
       <div class="film__col">
         <h2 class="film__h2">Shot sheets</h2>
-        {
-          has.prompts ? (
-            <p class="film__lede">
-              One block per generation, each with the still it produced and the prompt that made
-              it. Every prompt is here in full.
-            </p>
-          ) : (
-            <p class="film__lede">
-              One block per generation, each with the still it produced. The prompt text sits in
-              the process document and lands here with it.
-            </p>
-          )
-        }
+        <p class="film__lede">
+          One block per generation, each with the still it produced and the prompt that made it, as
+          written for Seedance 2.0 and built with the cinedance skill. Every prompt is here in full.
+        </p>
 
         <div class="shots">
           {
@@ -274,13 +318,12 @@ const jsonLd = graph([
               <ShotSheet
                 id={`block-${b.letter.toLowerCase()}`}
                 letter={b.letter}
-                time={b.time}
+                time={b.span}
                 name={b.name}
                 image={b.image}
                 alt={b.alt}
                 note={b.note}
                 prompt={b.prompt}
-                pendingNote={has.prompts}
               />
             ))
           }
@@ -289,54 +332,64 @@ const jsonLd = graph([
     </section>
 
     <!-- 8. the look -->
-    {
-      has.look && (
-        <section class="film__sec shell spread" id="look">
-          <div class="rail">
-            <span class="rail__num">07</span>
-            <span class="rail__slug">Look</span>
-          </div>
-          <div class="film__col">
-            <h2 class="film__h2">The look</h2>
-            <dl class="prose__spec look">
-              {film.look.map((row) => (
-                <div class="look__row">
-                  <dt class="mono">{row.key}</dt>
-                  <dd>{row.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        </section>
-      )
-    }
+    <section class="film__sec shell spread" id="look">
+      <div class="rail">
+        <span class="rail__num">07</span>
+        <span class="rail__slug">Look</span>
+      </div>
+      <div class="film__col">
+        <h2 class="film__h2">The look</h2>
+        <p class="film__lede">
+          What was asked for every time, so that {film.beats.length} blocks read as one film.
+        </p>
+        <dl class="look">
+          {
+            film.look.map((row) => (
+              <div class="look__row">
+                <dt class="mono">{row.key}</dt>
+                <dd>
+                  {row.lines.map((line) => (
+                    <span class="look__line">{line}</span>
+                  ))}
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+        <p class="pullquote">{film.lookNote}</p>
+      </div>
+    </section>
 
     <!-- 9. locks -->
-    {
-      has.locks && (
-        <section class="film__sec shell spread" id="locks">
-          <div class="rail">
-            <span class="rail__num">08</span>
-            <span class="rail__slug">Locks</span>
-          </div>
-          <div class="film__col">
-            <h2 class="film__h2">Locks</h2>
-            <p class="film__lede">
-              What went wrong, and the instruction that closed it. A generated sequence loses its
-              cast somewhere around the third block, and these are the lines that stopped it.
-            </p>
-            <ul class="locks">
-              {film.locks.map((l) => (
-                <li class="lock">
-                  <p class="lock__fail mono">{l.failure}</p>
-                  <p class="lock__fix">{l.fix}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      )
-    }
+    <section class="film__sec shell spread" id="locks">
+      <div class="rail">
+        <span class="rail__num">08</span>
+        <span class="rail__slug">Locks</span>
+      </div>
+      <div class="film__col">
+        <h2 class="film__h2">Locks and quality control</h2>
+        <p class="film__lede">
+          The failure modes that cost generations, and the instruction that closed each one.
+        </p>
+        <ul class="locks">
+          {
+            film.locks.map((l) => (
+              <li class="lock">
+                <p class="lock__name">{l.name}</p>
+                <p class="lock__row">
+                  <span class="lock__key mono">Symptom</span>
+                  <span class="lock__val">{l.symptom}</span>
+                </p>
+                <p class="lock__row">
+                  <span class="lock__key mono lock__key--fix">Lock</span>
+                  <span class="lock__val">{l.lock}</span>
+                </p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
 
     <!-- closing frame -->
     <div class="film__closing shell">
@@ -345,7 +398,7 @@ const jsonLd = graph([
 
     <!-- 10. the process document -->
     {
-      film.doc && (
+      hasDoc && (
         <section class="film__sec shell spread" id="process">
           <div class="rail">
             <span class="rail__num">09</span>
@@ -358,7 +411,7 @@ const jsonLd = graph([
               summary={film.doc.summary}
               poster={film.strip}
               posterAlt={film.stripAlt}
-              shape="a wide-format process sheet"
+              shape="a set of eleven wide-format sheets"
               id="process-doc"
             />
           </div>
@@ -403,6 +456,14 @@ const jsonLd = graph([
     letter-spacing: -0.03em;
   }
 
+  .film__strap {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.35;
+    color: var(--newsprint);
+    max-width: 40ch;
+  }
+
   .film__logline {
     font-size: var(--step-1);
     line-height: 1.42;
@@ -439,7 +500,9 @@ const jsonLd = graph([
     border-top: 1px solid var(--rule);
   }
 
-  .film__sec--wide {
+  /* The route section runs the full content column instead of the rail layout,
+     because the map is the argument and it needs the width. */
+  #route {
     display: grid;
     gap: var(--s-5);
   }
@@ -465,6 +528,59 @@ const jsonLd = graph([
     line-height: 1.6;
     color: var(--newsprint-dim);
     max-width: 60ch;
+  }
+
+  .film__sub {
+    font-size: 0.64rem;
+    color: var(--mint);
+    max-width: none;
+    margin-top: var(--s-3);
+  }
+
+  /* The all-caps straplines the sheets set under a block. They are the
+     document's own voice, so they keep its register. */
+  .film__note {
+    font-size: 0.62rem;
+    color: var(--fg-faint);
+    max-width: none;
+    padding-top: var(--s-3);
+    border-top: 1px solid var(--rule);
+  }
+
+  /* The sheets pull one line out of each page and set it large. Worth keeping:
+     it is the sentence that says what the page was for. */
+  .pullquote {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.36;
+    color: var(--newsprint);
+    max-width: 44ch;
+    padding-left: var(--s-5);
+    border-left: 2px solid var(--red);
+  }
+
+  /* --- delivery ----------------------------------------------------------- */
+
+  .delivery {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: var(--s-4);
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--rule);
+  }
+
+  .delivery__row dt {
+    font-size: 0.62rem;
+    color: var(--fg-faint);
+    margin-bottom: 0.2rem;
+  }
+
+  .delivery__row dd {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--newsprint-dim);
+    line-height: 1.4;
   }
 
   /* --- spine -------------------------------------------------------------- */
@@ -621,19 +737,58 @@ const jsonLd = graph([
     font-size: 0.7rem;
   }
 
+  .route__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: var(--s-6);
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .route__body {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-5);
+    }
+  }
+
+  .route__why,
+  .route__order {
+    display: grid;
+    gap: var(--s-3);
+    min-width: 0;
+  }
+
+  .route__h {
+    font-size: 0.64rem;
+    color: var(--gold);
+    max-width: none;
+  }
+
+  .route__h + .route__h,
+  .route__p + .route__h {
+    margin-top: var(--s-3);
+  }
+
+  .route__p {
+    font-size: var(--step--1);
+    line-height: 1.6;
+    color: var(--newsprint-dim);
+    max-width: var(--measure);
+  }
+
   .waypoints {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-    gap: var(--s-3);
+    gap: var(--s-2);
   }
 
   .waypoint {
-    display: flex;
-    align-items: baseline;
+    display: grid;
+    grid-template-columns: 1.4rem minmax(0, 1fr);
     gap: var(--s-3);
+    align-items: baseline;
     padding: var(--s-3) var(--s-4);
     background: var(--ink-sunk);
     border: 1px solid var(--rule);
@@ -646,10 +801,118 @@ const jsonLd = graph([
     font-size: 0.72rem;
   }
 
+  .waypoint__body {
+    display: grid;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+
   .waypoint__name {
     font-family: var(--display);
     font-size: var(--step-0);
+    line-height: 1.2;
     color: var(--newsprint);
+  }
+
+  .waypoint__cue {
+    font-size: 0.64rem;
+  }
+
+  .route__locks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .route__locks li {
+    position: relative;
+    padding-left: var(--s-4);
+    font-size: var(--step--1);
+    line-height: 1.5;
+    color: var(--fg-quiet);
+  }
+
+  .route__locks li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.6em;
+    width: 0.5rem;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  /* --- the position reference panel, same object as a shot prompt --------- */
+
+  .panel {
+    background: var(--ink-sunk);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+  }
+
+  .panel--code {
+    border-left: 2px solid var(--cyan);
+    overflow: hidden;
+  }
+
+  .panel__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    padding: 0 var(--s-3);
+    border-bottom: 1px solid var(--rule);
+    min-height: var(--tap);
+  }
+
+  .panel__label {
+    font-size: 0.62rem;
+    color: var(--cyan);
+    max-width: none;
+  }
+
+  .panel__copy {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--rule-bright);
+    border-radius: var(--radius);
+    color: var(--fg-quiet);
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-family: var(--mono);
+    font-variation-settings: var(--rec-mono);
+    padding-inline: var(--s-3);
+    min-height: 32px;
+    cursor: pointer;
+  }
+
+  .panel__copy:hover {
+    color: var(--ink);
+    background: var(--cyan);
+    border-color: var(--cyan);
+  }
+
+  .panel__copy[data-state='done'] {
+    color: var(--ink);
+    background: var(--mint);
+    border-color: var(--mint);
+  }
+
+  .panel__text {
+    margin: 0;
+    padding: var(--s-4);
+    font-family: var(--mono);
+    font-variation-settings: var(--rec-mono);
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: var(--newsprint-dim);
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    overflow: auto;
   }
 
   /* --- pipeline stages ---------------------------------------------------- */
@@ -687,6 +950,12 @@ const jsonLd = graph([
     color: var(--newsprint);
   }
 
+  .stage__tool {
+    font-size: 0.64rem;
+    color: var(--mint);
+    max-width: none;
+  }
+
   .stage__body {
     font-size: var(--step--1);
     line-height: 1.55;
@@ -694,54 +963,55 @@ const jsonLd = graph([
 
   /* --- stack -------------------------------------------------------------- */
 
-  .stack {
-    margin: 0;
-    display: grid;
-    gap: var(--s-4);
-  }
-
-  .stack__group {
-    display: grid;
-    grid-template-columns: minmax(0, 9rem) minmax(0, 1fr);
-    gap: var(--s-4);
-    align-items: start;
-  }
-
-  .stack__group dt {
-    font-size: 0.64rem;
-    color: var(--fg-faint);
-    padding-top: 0.35rem;
-  }
-
-  .stack__group dd {
-    margin: 0;
-  }
-
-  .stack__list {
+  .tools {
     list-style: none;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--s-4);
+  }
+
+  .tool {
+    display: grid;
     gap: var(--s-2);
-  }
-
-  .stack__tool {
-    font-size: 0.62rem;
-    color: var(--fg-quiet);
-    border: 1px solid var(--rule-bright);
+    align-content: start;
+    padding: var(--s-4);
+    background: var(--ink-sunk);
+    border: 1px solid var(--rule);
+    border-top: 2px solid var(--cyan);
     border-radius: var(--radius);
-    padding: 0.3rem var(--s-3);
-    background: var(--ink);
-    text-transform: none;
-    letter-spacing: 0.02em;
+    min-width: 0;
   }
 
-  @media (max-width: 620px) {
-    .stack__group {
-      grid-template-columns: minmax(0, 1fr);
-      gap: var(--s-2);
-    }
+  .tool--skill {
+    border-top-color: var(--mint);
+  }
+
+  .tool__name {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.2;
+    color: var(--newsprint);
+  }
+
+  /* A skill is a directory name, so it is set as one. */
+  .tool__name--mono {
+    font-family: var(--mono);
+    font-variation-settings: var(--rec-mono);
+    font-size: 0.9rem;
+    letter-spacing: 0.01em;
+  }
+
+  .tool__role {
+    font-size: 0.6rem;
+    color: var(--fg-faint);
+    max-width: none;
+  }
+
+  .tool__body {
+    font-size: var(--step--1);
+    line-height: 1.5;
   }
 
   /* --- look --------------------------------------------------------------- */
@@ -768,6 +1038,11 @@ const jsonLd = graph([
 
   .look__row dd {
     margin: 0;
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .look__line {
     font-size: var(--step--1);
     line-height: 1.55;
     color: var(--newsprint-dim);
@@ -790,9 +1065,17 @@ const jsonLd = graph([
     gap: var(--s-3);
   }
 
+  /* min() is doing real work here. A bare minmax(19rem, 1fr) cannot shrink
+     below 19rem, and 19rem is wider than the content column at 320px, so the
+     section pushed the page sideways. */
+  .locks {
+    grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
+  }
+
   .lock {
     display: grid;
     gap: var(--s-2);
+    align-content: start;
     padding: var(--s-4);
     background: var(--ink-sunk);
     border: 1px solid var(--rule);
@@ -800,16 +1083,35 @@ const jsonLd = graph([
     border-radius: var(--radius);
   }
 
-  .lock__fail {
-    font-size: 0.64rem;
-    color: var(--red);
+  .lock__name {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.2;
+    color: var(--newsprint);
+  }
+
+  .lock__row {
+    display: grid;
+    grid-template-columns: 3.6rem minmax(0, 1fr);
+    gap: var(--s-3);
+    margin: 0;
     max-width: none;
   }
 
-  .lock__fix {
+  .lock__key {
+    font-size: 0.6rem;
+    color: var(--fg-faint);
+    padding-top: 0.2rem;
+  }
+
+  .lock__key--fix {
+    color: var(--mint);
+  }
+
+  .lock__val {
     font-size: var(--step--1);
-    line-height: 1.55;
-    color: var(--newsprint-dim);
+    line-height: 1.5;
+    color: var(--fg-quiet);
   }
 
   /* --- closing and back --------------------------------------------------- */
@@ -832,3 +1134,26 @@ const jsonLd = graph([
     min-height: var(--tap);
   }
 </style>
+
+<script>
+  // The position reference panel gets the same copy control as a shot prompt.
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((button) => {
+    const text =
+      button.closest('.panel')?.querySelector<HTMLElement>('[data-prompt]')?.textContent ?? '';
+    if (!text || !navigator.clipboard) return;
+    button.hidden = false;
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(text);
+        button.dataset.state = 'done';
+        button.textContent = 'Copied';
+      } catch {
+        button.textContent = 'Select and copy';
+      }
+      window.setTimeout(() => {
+        delete button.dataset.state;
+        button.textContent = 'Copy';
+      }, 2000);
+    });
+  });
+</script>

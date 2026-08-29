@@ -214,7 +214,16 @@ in every state, including failure.
 
 A reader pointing at a missing file is the one thing that must never happen, so
 `docExists()` in `src/lib/docs.ts` checks at build time and the section is
-omitted until the file is there. See `public/docs/README.md` for what goes where.
+omitted until the file is there. Drop a PDF in and the next build grows the
+section back.
+
+Where documents go:
+
+| Path | What |
+|---|---|
+| `public/docs/TwinMoons_Process_TaleCrafters.pdf` | The Twin Moons process document, eleven sheets |
+| `public/docs/Skyrunner_Process_TaleCrafters.pdf` | The Skyrunner process document, eleven sheets |
+| `public/docs/pipelines/<slug>.pdf` | One KC pipeline sheet, named for the pipeline slug: `voice-vault`, `split-at-source`, `identity-lock`, `multiplier`, `phantom-set`, `continuity-spine`, `operator-stack`. None of these are here yet |
 
 ---
 
