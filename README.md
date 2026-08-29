@@ -124,8 +124,9 @@ and a rich text box loses the thing that made them one.
 | `src/data/pipelines.ts` | The four pipelines not on the front page | Each is a transcription of a sheet with a revision number on it. The honest version changes when the sheet changes |
 | `src/data/writing/` | Every writing sample | A script has a direction column. Retyping one into a rich text box throws away the only thing that makes it a script rather than an essay |
 | `src/data/captures.ts` | The photoreal captures, their alt text and what each proves | The pictures are committed here, so the words about them belong beside them |
+| `src/data/films.ts` | The two original shorts: spec rows, beat maps, cast tags, stills and the route | Each is a process document with a fixed shape, and the shot prompts have to be reproducible character for character |
 | `src/data/faq.ts` | The questions and answers | Read by the page and by `/llms.txt` and the FAQ schema. One source or three answers that drift |
-| `src/data/sections.ts` | Front page order, numbering, and the nav merge | Numbering is counted from position. It used to be typed, and the index and the margin had already disagreed once |
+| `src/data/sections.ts` | Front page order, numbering, the seven navigation labels and the two fixed section titles | Numbering is counted from position; it used to be typed, and the index and the margin had already disagreed once. The bar is here too: seven labels in a fixed order is a constraint with a test attached |
 
 `src/lib/content.ts` composes the two. The CMS still owns the name, the
 monogram, the domain, the footer, the navigation order, the case studies, the
@@ -167,6 +168,53 @@ somebody chose and the file behind it can change without the name changing.
 `derive()` is told which it is and compares timestamps for the second kind, so
 replacing a master rebuilds it rather than serving last week's frame under this
 week's name.
+
+### Adding a film
+
+`src/data/films.ts`, then the page renders itself at `/films/<slug>/`. Ten
+sections in a fixed order, and each one that depends on the process document
+renders only when it has content, so a film with no sheet yet is short and true
+instead of long and full of placeholders.
+
+The shot prompts are the reason the page exists. They are transcribed character
+for character, including timecodes and reference tags, and they get a copy
+control each. A paraphrased prompt is not a prompt.
+
+### Adding a pipeline page
+
+Nothing to do. Every pipeline in `getAllPipelines()` gets a page at
+`/pipelines/<slug>/`, whether it is edited in the Studio or transcribed here, and
+`/pipelines/` lists all of them. The front page shows exactly one, named by
+`HOME_PIPELINE` in `src/data/pipelines.ts`, and fails the build if that slug
+matches nothing.
+
+---
+
+## Reading a document in place
+
+`src/components/DocReader.astro` puts a PDF on its own detail page, readable
+without leaving the site. It appears on detail pages only; on the front page a
+document is a cover and a link.
+
+**No PDF library.** The smallest credible one is several hundred kilobytes, on a
+site whose entire shipped script is under two kilobytes. This is an `object` with
+an `iframe` fallback and the browser's own viewer, which costs nothing over the
+wire and is better than anything that could be shipped. The document itself is
+not fetched until somebody presses the control.
+
+What that trade costs, stated plainly: the page count, the zoom and the full
+screen come from the viewer's chrome, so they cannot be restyled and they differ
+a little between browsers. Measured cost of the component: **1,133 bytes** of
+inline JavaScript on a page that renders it, and no library.
+
+Below 760px no viewer mounts at all. A landscape sheet crammed into a phone
+viewport is worse than the link that opens it, so the narrow case is the cover, a
+line saying what the document is, and two controls. The download link is present
+in every state, including failure.
+
+A reader pointing at a missing file is the one thing that must never happen, so
+`docExists()` in `src/lib/docs.ts` checks at build time and the section is
+omitted until the file is there. See `public/docs/README.md` for what goes where.
 
 ---
 
@@ -310,19 +358,24 @@ labels survive cannot ship a cut label.
 
 ---
 
-## Adding to the spec shelf
+## Adding to the product shelf
 
 In the Studio, **Spec brand**. Each brand is a gallery with a short argument
 attached, which is why it is not a case study.
+
+The section is called **AI Product Photography** and lives at `/product`. The old
+`/spec` address redirects and should stay redirecting. The rename is the section
+heading and the route only: every brand still carries its **SPEC** chip, because
+that label is the honesty rule and not the branding, and softening it to make the
+shelf read more like client work is the one edit nobody gets to make.
 
 Every brand needs a **What it proves** line saying which control gate it was
 built to break. That line is the reason a made up brand is allowed on the site
 at all, and the schema requires it. A brand without one is just decoration.
 
-Everything on `/spec` is labelled from the **Flag** field on the Spec shelf
+Everything on `/product` is labelled from the **Flag** field on the Spec shelf
 document, and it reads "Spec, self-initiated" in both places it appears. That
-labelling is not styling, it is the honesty rule, and it should not be softened
-to make the shelf read more like client work.
+labelling is not styling, it is the honesty rule.
 
 The lede counts its own numbers. Write `{brands}` and `{count}` and the build
 fills in how many brands and how many frames are actually published.
@@ -331,17 +384,20 @@ fills in how many brands and how many frames are actually published.
 
 ## Editing the pipelines
 
-Split across both halves, and which half depends on where the pipeline appears.
+Split across both halves. Three are in the Studio, under **Pipeline**. The other
+four are `src/data/pipelines.ts`. `getAllPipelines()` merges them into one list
+ordered by sheet number, and every page that lists or looks one up reads that,
+so a reader has no reason to care which half a pipeline came from.
 
-The three on the front page are in the Studio, under **Pipeline**. The other
-four are `src/data/pipelines.ts` and render on `/pipelines/`. Both go through
-the same `Strip` component, so they are the same object with the same rules; the
-repository copies simply carry five extra fields the front page has no room for
-(the discipline, the desire, the objection, the stack and what lands in the
-folder), and `Strip` ignores anything it was not given.
+Both go through the same `Strip` component. The repository copies carry extra
+fields the Studio has no schema for: the discipline, the desire, the objection,
+the stack, what lands in the folder, the prompt architecture and the delivery
+rhythm. `Strip` ignores anything it was not given, and each page section renders
+only when it has content.
 
-The front page counts what it shows, so moving one from the second list into the
-Studio updates the sentence that says how many there are.
+One appears on the front page in full, named by `HOME_PIPELINE`. Point it at a
+slug nothing matches and the build stops, which is the right outcome: the
+alternative is a front page that quietly loses its only diagram.
 
 Each one has stages and gates. A stage says what runs it, what gets fixed there
 and how long it takes. A gate says what the test is and what happens on a fail.
@@ -406,6 +462,12 @@ These are not style preferences. They are the reason the site is credible.
 8. **Structured data never says more than the page.** `src/lib/schema.ts` only
    emits claims the visible page already makes. A rich result you cannot defend
    is worse than no rich result.
+9. **House voice, checked by script.** British spelling. No em dashes. Never the
+   bare word "AI" in body copy: write synthetic media, generative video, GenAI
+   pipeline, or name the tool. The two section titles are the exception, since
+   they are fixed navigation labels. No "not X, but Y". No "rather than". No
+   invented metrics and no claims a document does not support. The banned word
+   list is in the site update brief and enforced by the check below.
 
 ---
 
@@ -431,7 +493,16 @@ Then, on the built output:
   term AI. Zero hits is the only passing score
 - Run Lighthouse on mobile
 
-Add three to that list now that the site publishes generated files:
+Add these now that the site publishes generated files and carries a voice rule:
+
+- Run the voice check over the built output. Banned words, em dashes, American
+  spellings, "rather than", "not X, but Y" and any bare "AI" outside the two
+  section titles. Zero hits is the only passing score
+- Resize the navigation from 320 to 1440 and confirm all seven items are visible
+  at every width. It must never scroll sideways: a link behind a gesture nobody
+  knows about is a link nobody uses
+- Measure the front page height before and after any change that adds a section.
+  Anything new is paid for by moving detail onto a detail page
 
 - Fetch `/robots.txt`, `/sitemap.xml` and `/llms.txt` from the built output and
   confirm the absolute URLs in them carry the real domain rather than a
@@ -441,12 +512,17 @@ Add three to that list now that the site publishes generated files:
 - Open the WhatsApp panel with scripting off. The four topics have to still be
   links that reach WhatsApp with a first line already written
 
-Current state of those checks: 20 pages, 72 images, every one with alt text and
-intrinsic dimensions. No contrast failures, no sideways scroll and no undersized
-tap target at 320, 390, 768 or 1920, on the front page and on all four page
-types added since. Every interactive element has a visible focus ring, every
-page carries a valid JSON-LD graph, and with JavaScript disabled every pipeline
-stage detail, every FAQ answer and every WhatsApp topic is still reachable.
+Current state of those checks: 29 pages, 94 images, every one with alt text and
+intrinsic dimensions. No contrast failures and no undersized tap target at 390,
+768 or 1440 across eleven page types. No sideways scroll from 320 to 2560. Every
+interactive element has a visible focus ring, every page carries a valid JSON-LD
+graph, and the voice check comes back clean. With JavaScript disabled every
+pipeline stage, every shot block, every prompt, every question and every WhatsApp
+topic is still reachable, and the copy controls stay hidden instead of lying.
+
+Shipped JavaScript, whole site: **1,242 bytes** at most on any page, and no
+external script file. That is the budget. Anything that needs a library needs a
+better reason than the feature.
 
 Inline links inside a sentence are under 44px tall. That is the WCAG 2.5.8
 inline exception and it is deliberate, so do not go chasing those in an audit.
