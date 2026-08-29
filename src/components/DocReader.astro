@@ -1,0 +1,274 @@
+---
+// A document, readable in place.
+//
+// Which renderer: none. The brief allows an object with an iframe fallback if a
+// PDF library does not fit the performance budget, and on this site it does not.
+// pdf.js is the smallest credible option and it is still several hundred
+// kilobytes of JavaScript, on a site whose entire shipped script is a few
+// hundred bytes of progressive enhancement. The browser already has a PDF
+// viewer, it is better than anything shipped over the wire, and it brings its
+// own page count, zoom and full screen. Cost of this component: no library, and
+// the document itself is not fetched until somebody asks for it.
+//
+// What that trade costs, stated plainly: the page number and total, the zoom and
+// the full screen come from the viewer's own chrome and not from controls this
+// page draws, so they cannot be restyled and they differ a little between
+// browsers.
+//
+// Three states, and none of them is an empty frame:
+//   wide, before the click   the cover, a summary, and a read control
+//   wide, after the click    the embedded viewer, with the download beside it
+//   narrow, or no script     the cover and two links, open and download
+//
+// A landscape sheet crammed into a phone viewport is worse than a link, so the
+// narrow case never mounts a viewer at all.
+
+import Frame from './Frame.astro';
+
+interface Props {
+  // Path under public/, e.g. /docs/TwinMoons_Process_TaleCrafters.pdf
+  path: string;
+  title: string;
+  // Two or three sentences saying what is inside, so the page is not blank to a
+  // search engine or to somebody listening to it.
+  summary: string;
+  poster?: string; // manifest key
+  posterAlt?: string;
+  // What the document is, for the line shown on a phone.
+  shape?: string;
+  id?: string;
+}
+
+const {
+  path,
+  title,
+  summary,
+  poster,
+  posterAlt,
+  shape = 'a wide-format sheet',
+  id = 'document',
+} = Astro.props;
+
+const file = path.split('/').pop() ?? 'document.pdf';
+---
+
+<section class="doc" id={id} data-doc data-src={path}>
+  <h2 class="doc__title">{title}</h2>
+  <p class="doc__summary">{summary}</p>
+
+  <div class="doc__plate">
+    {
+      poster && posterAlt ? (
+        <Frame src={poster} alt={posterAlt} sizes="(max-width: 900px) 92vw, 70vw" />
+      ) : (
+        <p class="doc__cover mono" aria-hidden="true">
+          {file}
+        </p>
+      )
+    }
+
+    <div class="doc__controls">
+      <!-- Hidden until the script confirms this is a wide viewport. Without it
+           the reader is never offered, and the two links below carry the page. -->
+      <button class="doc__read mono" type="button" data-doc-read hidden>
+        Read it here
+      </button>
+      <a class="doc__link mono" href={path} target="_blank" rel="noopener">
+        Open in a new tab<span aria-hidden="true"> ↗</span>
+      </a>
+      <a class="doc__link mono" href={path} download>
+        Download<span aria-hidden="true"> ↓</span>
+      </a>
+    </div>
+
+    <p class="doc__shape mono faint" data-doc-shape>
+      This document is {shape}. On a small screen it reads better opened on its own.
+    </p>
+  </div>
+
+  <!-- Mounted on request, never on first paint. -->
+  <div class="doc__frame" data-doc-frame hidden></div>
+</section>
+
+<style>
+  .doc {
+    display: grid;
+    gap: var(--s-3);
+    min-width: 0;
+  }
+
+  .doc__title {
+    font-size: var(--step-2);
+    letter-spacing: -0.02em;
+  }
+
+  .doc__summary {
+    font-size: var(--step--1);
+    line-height: 1.6;
+    color: var(--newsprint-dim);
+    max-width: var(--measure);
+  }
+
+  .doc__plate {
+    display: grid;
+    gap: var(--s-3);
+    padding: var(--s-4);
+    background: var(--ink-sunk);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+  }
+
+  .doc__cover {
+    display: grid;
+    place-items: center;
+    min-height: 12rem;
+    margin: 0;
+    max-width: none;
+    font-size: 0.7rem;
+    color: var(--fg-faint);
+    background: var(--ink);
+    border: 1px dashed var(--rule-bright);
+    border-radius: var(--radius);
+  }
+
+  .doc__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+  }
+
+  .doc__read {
+    -webkit-appearance: none;
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding: 0 var(--s-4);
+    background: var(--cyan);
+    border: 1px solid var(--cyan);
+    color: var(--ink);
+    border-radius: var(--radius);
+    font-size: 0.66rem;
+    font-family: var(--mono);
+    font-variation-settings: var(--rec-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .doc__read:hover {
+    background: var(--red);
+    border-color: var(--red);
+  }
+
+  .doc__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding: 0 var(--s-4);
+    border: 1px solid var(--rule-bright);
+    border-radius: var(--radius);
+    color: var(--cyan);
+    text-decoration: none;
+    font-size: 0.66rem;
+  }
+
+  .doc__link:hover {
+    border-color: var(--red);
+    color: var(--red);
+  }
+
+  .doc__shape {
+    font-size: 0.64rem;
+    margin: 0;
+    max-width: none;
+  }
+
+  /* On a wide viewport the reader is offered, so the line explaining why it is
+     not offered would be a contradiction. The script removes it there. */
+  .doc__shape[hidden] {
+    display: none;
+  }
+
+  .doc__frame {
+    border: 1px solid var(--rule-bright);
+    border-radius: var(--radius);
+    background: var(--ink-sunk);
+    overflow: hidden;
+  }
+
+  .doc__frame object,
+  .doc__frame iframe {
+    display: block;
+    width: 100%;
+    height: min(85vh, 900px);
+    border: 0;
+  }
+</style>
+
+<script>
+  // Everything below is an upgrade on a page that already works. With this
+  // script blocked, every document shows its cover and two links that open it.
+  const WIDE = window.matchMedia('(min-width: 760px)');
+
+  document.querySelectorAll<HTMLElement>('[data-doc]').forEach((doc) => {
+    const read = doc.querySelector<HTMLButtonElement>('[data-doc-read]');
+    const frame = doc.querySelector<HTMLElement>('[data-doc-frame]');
+    const shape = doc.querySelector<HTMLElement>('[data-doc-shape]');
+    const src = doc.dataset.src;
+    if (!read || !frame || !src) return;
+
+    // Offer the reader only where it is worth having. A landscape sheet inside a
+    // 390px viewport is a worse experience than the link that opens it.
+    const offer = () => {
+      const wide = WIDE.matches;
+      read.hidden = !wide;
+      if (shape) shape.hidden = wide;
+      // Going narrow with the viewer already open would leave the sheet
+      // squeezed into the width it was built to avoid.
+      if (!wide && !frame.hidden) {
+        frame.hidden = true;
+        frame.replaceChildren();
+        read.dataset.state = '';
+      }
+    };
+
+    offer();
+    WIDE.addEventListener('change', offer);
+
+    read.addEventListener('click', () => {
+      if (read.dataset.state === 'open') {
+        frame.hidden = true;
+        frame.replaceChildren();
+        read.dataset.state = '';
+        read.textContent = 'Read it here';
+        return;
+      }
+
+      // object first, iframe inside it as the fallback, and inside that the
+      // sentence a browser sees when it can render neither. The download link
+      // above never moves, so there is always a way through.
+      const object = document.createElement('object');
+      object.data = src;
+      object.type = 'application/pdf';
+
+      const iframe = document.createElement('iframe');
+      iframe.src = src;
+      iframe.title = doc.querySelector('.doc__title')?.textContent ?? 'Document';
+
+      const note = document.createElement('p');
+      note.className = 'doc__shape mono faint';
+      note.style.padding = 'var(--s-4)';
+      note.textContent =
+        'This browser will not display the document in place. The download link above still works.';
+
+      iframe.append(note);
+      object.append(iframe);
+      frame.replaceChildren(object);
+      frame.hidden = false;
+      read.dataset.state = 'open';
+      read.textContent = 'Close the reader';
+      frame.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  });
+</script>

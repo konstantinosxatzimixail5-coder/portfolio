@@ -1,20 +1,22 @@
-// The front page in order, and the navigation that has to agree with it.
+// The front page in order, the navigation, and the section titles that are
+// fixed labels rather than editable copy.
 //
-// The contents index used to be a list in the CMS, numbered by hand, and the
-// numbering had already drifted once: the index said 05 Writing while the margin
-// said 04. Numbering from position removes that failure mode entirely, so the
-// `num` field in the Studio is no longer read.
+// Numbering is counted from position. It used to be typed into the CMS, and the
+// index and the left margin had already disagreed once because of it.
 //
-// The CMS still owns the words. If Home page, Contents index has a row for a
-// section, its label and its note win. These are the defaults for the sections
-// that have no row yet, which is how a new section can ship without waiting for
-// somebody to open a Studio.
+// The navigation is defined here rather than in the Studio. The seven labels and
+// their order are a design constraint with a test attached (seven items, no wrap
+// between 320px and 1440px), and a bar that any editor can add an eighth item to
+// is a bar that fails that test on a Tuesday afternoon with nobody watching.
 
 export interface SectionDef {
-  href: string; // the anchor, and the key the CMS row is matched on
+  href: string; // the anchor, and the key a CMS row is matched on
   label: string;
   rail: string; // the slug set sideways down the left margin
   note: string; // may carry {count} and friends, filled at render
+  // Sections whose heading is a fixed navigation label own it here. The CMS
+  // still supplies the lede and the note underneath.
+  heading?: string;
 }
 
 export const sections: SectionDef[] = [
@@ -31,22 +33,30 @@ export const sections: SectionDef[] = [
     note: '{count} client projects, brief to delivery',
   },
   {
-    href: '#spec',
-    label: 'Spec shelf',
-    rail: 'Spec shelf',
-    note: 'Invented brands, product sets and creator ads, labelled as spec',
+    href: '#films',
+    label: 'AI Filmmaking Workflows',
+    rail: 'Films',
+    note: 'Two original shorts, with the process sheets behind them',
+    heading: 'AI Filmmaking Workflows',
+  },
+  {
+    href: '#captures',
+    label: 'Photoreal captures',
+    rail: 'Captures',
+    note: '{frames} generated human frames, and what each one was built to break',
   },
   {
     href: '#pipelines',
     label: 'Pipelines',
     rail: 'Pipelines',
-    note: 'Seven of them, stage by stage, with the gates that stop a frame',
+    note: '{pipelines} of them, stage by stage, with the gates that stop a frame',
   },
   {
-    href: '#captures',
-    label: 'Captures',
-    rail: 'Captures',
-    note: 'Photoreal human frames, and what each one was built to break',
+    href: '#product',
+    label: 'AI Product Photography',
+    rail: 'Product',
+    note: 'Invented brands and product sets, labelled as spec throughout',
+    heading: 'AI Product Photography',
   },
   {
     href: '#writing',
@@ -68,30 +78,25 @@ export const sections: SectionDef[] = [
   },
 ];
 
-// The one destination the front page index cannot offer, because it is a page
-// rather than a section of one. /pipelines/ and /captures/ are deliberately not
-// here: both are linked from their own section on the front page, and a bar with
-// eight items in it has stopped being navigation.
-export const navExtras = [{ label: 'Writing', href: '/writing/', key: 'writing' }];
-
-// Merge the two, keeping the order the Studio put its own links in.
-//
-// Matched on the label rather than on the href, because the collision that
-// actually happens is one label pointing at two addresses: the Studio has
-// Writing at /#writing and this file has it at /writing/. Comparing hrefs calls
-// those different links and puts Writing in the bar twice, which is worse than
-// either of them being the one that wins.
-export function mergeNav(fromCms: any[] | null | undefined): any[] {
-  const cms = fromCms ?? [];
-  const seen = new Set(cms.map((l: any) => String(l?.label ?? '').trim().toLowerCase()));
-  return [...cms, ...navExtras.filter((l) => !seen.has(l.label.toLowerCase()))];
-}
+// Seven links, and the Reel button the header adds on its own. Writing and
+// Product point at pages; the rest are sections of the front page.
+export const navLinks = [
+  { label: 'Work', href: '/#work', key: 'work' },
+  { label: 'Films', href: '/#films', key: 'films' },
+  { label: 'Captures', href: '/#captures', key: 'captures' },
+  { label: 'Pipelines', href: '/pipelines/', key: 'pipelines' },
+  { label: 'Product', href: '/product/', key: 'product' },
+  { label: 'Writing', href: '/writing/', key: 'writing' },
+  { label: 'About', href: '/#about', key: 'about' },
+];
 
 // Compose the front page index: repo order and repo numbering, CMS words where
 // the CMS has any. A row in the Studio for a section that no longer exists is
 // ignored rather than fatal, because deleting a section from this file should
 // not require a Studio edit before the site will build again.
-export function composeSections(fromCms: any[] | null | undefined): Required<SectionDef & { num: string }>[] {
+export function composeSections(
+  fromCms: any[] | null | undefined
+): (SectionDef & { num: string })[] {
   const rows = new Map<string, any>((fromCms ?? []).map((c: any) => [c.href, c]));
   return sections.map((s, i) => {
     const row = rows.get(s.href);
@@ -104,3 +109,9 @@ export function composeSections(fromCms: any[] | null | undefined): Required<Sec
     };
   });
 }
+
+// The heading a section prints above itself. A section that owns its heading
+// keeps it whatever the CMS says, because the heading and the navigation label
+// have to be the same words.
+export const headingFor = (href: string, fallback: string): string =>
+  sections.find((s) => s.href === href)?.heading ?? fallback;

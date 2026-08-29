@@ -1,0 +1,646 @@
+---
+import Base from '../../layouts/Base.astro';
+import Strip from '../../components/Strip.astro';
+import DocReader from '../../components/DocReader.astro';
+import { getSettings, getAllPipelines } from '../../lib/content';
+import { docExists, pipelineDoc } from '../../lib/docs';
+import { breadcrumbs, graph, person } from '../../lib/schema';
+
+export async function getStaticPaths() {
+  const all = await getAllPipelines();
+  return all.map((pipeline: any, i: number) => ({
+    params: { slug: pipeline.id },
+    props: {
+      pipeline,
+      prev: all[i - 1] ?? all[all.length - 1],
+      next: all[i + 1] ?? all[0],
+    },
+  }));
+}
+
+const { pipeline, prev, next } = Astro.props;
+const site = await getSettings();
+
+const title = `${pipeline.title}, pipeline ${pipeline.num} | ${site.name}`;
+const description = pipeline.summary;
+
+// Only the four transcribed in this repository carry the second sheet. The three
+// edited in the Studio have their stages and gates and nothing else, so those
+// blocks stay off their pages instead of rendering empty headings.
+const doc = pipelineDoc(pipeline.id);
+const hasDoc = docExists(doc);
+
+const jsonLd = graph([
+  person(site.domain, site),
+  {
+    '@type': 'HowTo',
+    '@id': new URL(`/pipelines/${pipeline.id}/`, site.domain).href + '#pipeline',
+    name: pipeline.title,
+    description: pipeline.summary,
+    inLanguage: 'en',
+    author: { '@id': new URL('/', site.domain).href + '#person' },
+    step: (pipeline.stages ?? []).map((s: any, i: number) => ({
+      '@type': 'HowToStep',
+      position: i + 1,
+      name: s.name,
+      text: s.fixes,
+    })),
+  },
+  breadcrumbs(site.domain, [
+    { name: 'Home', path: '/' },
+    { name: 'Pipelines', path: '/pipelines/' },
+    { name: pipeline.title, path: `/pipelines/${pipeline.id}/` },
+  ]),
+]);
+---
+
+<Base title={title} description={description} active="pipelines" jsonLd={jsonLd}>
+  <article class="line">
+    <header class="line__head shell">
+      <p class="mono line__flag">
+        Pipeline {pipeline.num} of 07
+        {
+          pipeline.discipline && (
+            <>
+              <span class="faint" aria-hidden="true"> · </span>
+              <span class="faint">{pipeline.discipline}</span>
+            </>
+          )
+        }
+      </p>
+      <p class="mono line__mech">{pipeline.mechanism}</p>
+      <h1 class="line__title">{pipeline.title}</h1>
+      <p class="line__summary">{pipeline.summary}</p>
+    </header>
+
+    <!-- the diagram, the stage notes and the gates -->
+    <section class="line__sec shell spread" id="diagram">
+      <div class="rail">
+        <span class="rail__num">{pipeline.num}</span>
+        <span class="rail__slug">The line</span>
+      </div>
+      <div class="line__col">
+        <Strip {...pipeline} id={`${pipeline.id}-line`} />
+      </div>
+    </section>
+
+    <!-- what it is for -->
+    {
+      (pipeline.desire || pipeline.objection) && (
+        <section class="line__sec shell spread" id="why">
+          <div class="rail">
+            <span class="rail__num">·</span>
+            <span class="rail__slug">Why</span>
+          </div>
+          <div class="line__col">
+            <div class="panels">
+              {pipeline.desire && (
+                <div class="panel">
+                  <p class="mono panel__head">The desire it channels</p>
+                  <p class="panel__body">{pipeline.desire}</p>
+                </div>
+              )}
+              {pipeline.objection && (
+                <div class="panel">
+                  <p class="mono panel__head panel__head--warm">The objection it answers</p>
+                  <p class="panel__body">{pipeline.objection}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    <!-- deliverables and stack -->
+    {
+      (pipeline.delivers?.length || pipeline.stack?.length) && (
+        <section class="line__sec shell spread" id="delivery">
+          <div class="rail">
+            <span class="rail__num">·</span>
+            <span class="rail__slug">Delivery</span>
+          </div>
+          <div class="line__col">
+            <div class="panels">
+              {pipeline.delivers?.length > 0 && (
+                <div class="panel">
+                  <p class="mono panel__head">What lands in the folder</p>
+                  <ul class="panel__list">
+                    {pipeline.delivers.map((d: string) => (
+                      <li>{d}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {pipeline.stack?.length > 0 && (
+                <div class="panel">
+                  <p class="mono panel__head">The stack</p>
+                  <ul class="tools">
+                    {pipeline.stack.map((t: string) => (
+                      <li class="tools__item mono">{t}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    <!-- the prompt library -->
+    {
+      pipeline.prompts?.length > 0 && (
+        <section class="line__sec shell spread" id="prompts">
+          <div class="rail">
+            <span class="rail__num">·</span>
+            <span class="rail__slug">Prompts</span>
+          </div>
+          <div class="line__col">
+            <h2 class="line__h2">Prompt architecture</h2>
+            <p class="line__lede">
+              What the line actually loads, transcribed from the sheet. Square brackets are the
+              slots a job fills in.
+            </p>
+            <div class="prompts">
+              {pipeline.prompts.map((block: any) => (
+                <article class="prompt">
+                  <p class="prompt__head">
+                    <span class="prompt__num mono">{block.num}</span>
+                    <span class="prompt__name">{block.name}</span>
+                  </p>
+                  <div class="panel panel--code">
+                    <div class="panel__bar">
+                      <span class="panel__label mono">Prompt</span>
+                      <button class="panel__copy mono" type="button" data-copy hidden>
+                        Copy
+                      </button>
+                    </div>
+                    <pre class="panel__text" data-prompt>{block.body}</pre>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    <!-- rhythm -->
+    {
+      pipeline.rhythm?.length > 0 && (
+        <section class="line__sec shell spread" id="rhythm">
+          <div class="rail">
+            <span class="rail__num">·</span>
+            <span class="rail__slug">Rhythm</span>
+          </div>
+          <div class="line__col">
+            <h2 class="line__h2">Output and rhythm</h2>
+            <dl class="rhythm">
+              {pipeline.rhythm.map((r: any) => (
+                <div class="rhythm__row">
+                  <dt class="mono">{r.key}</dt>
+                  <dd>{r.value}</dd>
+                </div>
+              ))}
+            </dl>
+            <p class="line__loop mono">
+              <span class="faint">Loop</span>
+              {pipeline.loop}
+            </p>
+          </div>
+        </section>
+      )
+    }
+
+    <!-- the sheet itself -->
+    {
+      hasDoc && (
+        <section class="line__sec shell spread" id="sheet">
+          <div class="rail">
+            <span class="rail__num">·</span>
+            <span class="rail__slug">Sheet</span>
+          </div>
+          <div class="line__col">
+            <DocReader
+              path={doc}
+              title={`${pipeline.title}, the sheet`}
+              summary={`The source document this page is transcribed from, two landscape sheets. The first carries the mechanism, the six stages and what runs each one. The second carries the prompt architecture, the control gates and the delivery rhythm, set out the way they are used on a job.`}
+              shape="a two-sheet landscape document"
+              id="pipeline-doc"
+            />
+          </div>
+        </section>
+      )
+    }
+
+    <nav class="line__nav shell spread" aria-label="More pipelines">
+      <div class="rail" aria-hidden="true"></div>
+      <div class="line__nav-row">
+        <a class="line__step" href={`/pipelines/${prev.id}/`}>
+          <span class="mono faint">← {prev.num}</span>
+          <span class="line__step-title">{prev.title}</span>
+        </a>
+        <a class="line__step line__step--next" href={`/pipelines/${next.id}/`}>
+          <span class="mono faint">{next.num} →</span>
+          <span class="line__step-title">{next.title}</span>
+        </a>
+      </div>
+    </nav>
+
+    <nav class="line__back shell" aria-label="Back">
+      <a class="mono" href="/pipelines/">← All seven pipelines</a>
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .line__head {
+    padding-top: var(--s-8);
+    padding-bottom: var(--s-6);
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .line__flag {
+    color: var(--fg-faint);
+    font-size: 0.66rem;
+    max-width: none;
+  }
+
+  .line__mech {
+    color: var(--red);
+    font-size: 0.7rem;
+    max-width: none;
+  }
+
+  .line__title {
+    font-size: var(--step-5);
+    letter-spacing: -0.03em;
+    margin-top: var(--s-2);
+  }
+
+  .line__summary {
+    font-size: var(--step-1);
+    line-height: 1.42;
+    max-width: 52ch;
+    color: var(--newsprint-dim);
+    margin-top: var(--s-2);
+  }
+
+  .line__sec {
+    padding-block: var(--s-6);
+    border-top: 1px solid var(--rule);
+  }
+
+  .line__col {
+    display: grid;
+    gap: var(--s-4);
+    min-width: 0;
+  }
+
+  .line__col :global(.strip) {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .line__h2 {
+    font-family: var(--mono);
+    font-variation-settings: var(--rec-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    font-weight: 500;
+  }
+
+  .line__lede {
+    font-size: var(--step--1);
+    line-height: 1.6;
+    color: var(--newsprint-dim);
+    max-width: 60ch;
+  }
+
+  /* --- panels ------------------------------------------------------------- */
+
+  .panels {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-4);
+  }
+
+  @media (max-width: 760px) {
+    .panels {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .panel {
+    background: var(--ink-sunk);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: var(--s-4);
+    display: grid;
+    gap: var(--s-3);
+    align-content: start;
+  }
+
+  .panel--code {
+    padding: 0;
+    border-left: 2px solid var(--cyan);
+    overflow: hidden;
+  }
+
+  .panel__head {
+    font-size: 0.64rem;
+    color: var(--mint);
+    max-width: none;
+  }
+
+  .panel__head--warm {
+    color: var(--red);
+  }
+
+  .panel__body {
+    font-size: var(--step--1);
+    line-height: 1.55;
+    color: var(--fg-quiet);
+    margin: 0;
+  }
+
+  .panel__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .panel__list li {
+    position: relative;
+    padding-left: var(--s-4);
+    font-size: var(--step--1);
+    line-height: 1.5;
+    color: var(--fg-quiet);
+  }
+
+  .panel__list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.6em;
+    width: 0.5rem;
+    height: 1px;
+    background: var(--mint);
+  }
+
+  .tools {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+
+  .tools__item {
+    font-size: 0.6rem;
+    color: var(--fg-quiet);
+    border: 1px solid var(--rule-bright);
+    border-radius: var(--radius);
+    padding: 0.25rem var(--s-3);
+    background: var(--ink);
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+
+  /* --- prompts ------------------------------------------------------------ */
+
+  .prompts {
+    display: grid;
+    gap: var(--s-5);
+  }
+
+  .prompt {
+    display: grid;
+    gap: var(--s-3);
+    min-width: 0;
+  }
+
+  .prompt__head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-3);
+    margin: 0;
+    max-width: none;
+  }
+
+  .prompt__num {
+    color: var(--red);
+    font-size: 0.7rem;
+  }
+
+  .prompt__name {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.2;
+    color: var(--newsprint);
+  }
+
+  .panel__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    padding: 0 var(--s-3);
+    border-bottom: 1px solid var(--rule);
+    min-height: var(--tap);
+  }
+
+  .panel__label {
+    font-size: 0.62rem;
+    color: var(--cyan);
+    max-width: none;
+  }
+
+  .panel__copy {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--rule-bright);
+    border-radius: var(--radius);
+    color: var(--fg-quiet);
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-family: var(--mono);
+    font-variation-settings: var(--rec-mono);
+    padding-inline: var(--s-3);
+    min-height: 32px;
+    cursor: pointer;
+  }
+
+  .panel__copy:hover {
+    color: var(--ink);
+    background: var(--cyan);
+    border-color: var(--cyan);
+  }
+
+  .panel__copy[data-state='done'] {
+    color: var(--ink);
+    background: var(--mint);
+    border-color: var(--mint);
+  }
+
+  .panel__text {
+    margin: 0;
+    padding: var(--s-4);
+    font-family: var(--mono);
+    font-variation-settings: var(--rec-mono);
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: var(--newsprint-dim);
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    max-height: 30rem;
+    overflow: auto;
+  }
+
+  /* --- rhythm ------------------------------------------------------------- */
+
+  .rhythm {
+    margin: 0;
+    display: grid;
+    border-top: 1px solid var(--rule);
+  }
+
+  .rhythm__row {
+    display: grid;
+    grid-template-columns: minmax(0, 9rem) minmax(0, 1fr);
+    gap: var(--s-4);
+    padding-block: var(--s-3);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .rhythm__row dt {
+    color: var(--gold);
+    font-size: 0.64rem;
+    padding-top: 0.2rem;
+  }
+
+  .rhythm__row dd {
+    margin: 0;
+    font-size: var(--step--1);
+    line-height: 1.5;
+    color: var(--newsprint-dim);
+  }
+
+  @media (max-width: 620px) {
+    .rhythm__row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.2rem;
+    }
+  }
+
+  .line__loop {
+    color: var(--gold);
+    display: flex;
+    gap: var(--s-3);
+    align-items: baseline;
+    font-size: 0.68rem;
+    max-width: none;
+  }
+
+  /* --- next and previous -------------------------------------------------- */
+
+  .line__nav {
+    padding-block: var(--s-6);
+    border-top: 1px solid var(--rule);
+  }
+
+  .line__nav-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-5);
+  }
+
+  @media (max-width: 620px) {
+    .line__nav-row {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .line__step {
+    display: grid;
+    gap: var(--s-2);
+    text-decoration: none;
+    color: inherit;
+    min-height: var(--tap);
+    align-content: start;
+  }
+
+  .line__step--next {
+    text-align: right;
+  }
+
+  .line__step .mono {
+    font-size: 0.62rem;
+    max-width: none;
+  }
+
+  .line__step-title {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.2;
+    color: var(--newsprint);
+    transition: color var(--dur) var(--ease);
+  }
+
+  .line__step:hover .line__step-title {
+    color: var(--cyan);
+  }
+
+  @media (max-width: 620px) {
+    .line__step--next {
+      text-align: left;
+    }
+  }
+
+  .line__back {
+    padding-block: var(--s-6);
+    border-top: 1px solid var(--rule);
+  }
+
+  .line__back a {
+    text-decoration: none;
+    font-size: 0.68rem;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+</style>
+
+<script>
+  // Same copy control as the film shot sheets. Hidden in the markup until this
+  // runs, because a copy button on a page with no clipboard is a button that lies.
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((button) => {
+    const text =
+      button.closest('.panel')?.querySelector<HTMLElement>('[data-prompt]')?.textContent ?? '';
+    if (!text || !navigator.clipboard) return;
+
+    button.hidden = false;
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(text);
+        button.dataset.state = 'done';
+        button.textContent = 'Copied';
+      } catch {
+        button.textContent = 'Select and copy';
+      }
+      window.setTimeout(() => {
+        delete button.dataset.state;
+        button.textContent = 'Copy';
+      }, 2000);
+    });
+  });
+</script>

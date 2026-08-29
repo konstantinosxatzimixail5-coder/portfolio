@@ -16,6 +16,14 @@ export interface Gate {
   fail: string;
 }
 
+// A block from the prompt architecture half of a pipeline sheet. Transcribed
+// verbatim, because a paraphrased prompt is not a prompt.
+export interface PromptBlock {
+  num: string;
+  name: string;
+  body: string;
+}
+
 export interface Pipeline {
   id: string;
   num: string;
@@ -32,6 +40,10 @@ export interface Pipeline {
   objection?: string;
   stack?: string[];
   delivers?: string[];
+  prompts?: PromptBlock[];
+  rhythm?: { key: string; value: string }[];
+  // The sheet this was transcribed from, once it is in public/docs/.
+  doc?: { path: string; title: string; summary: string };
 }
 
 // --- writing -----------------------------------------------------------------

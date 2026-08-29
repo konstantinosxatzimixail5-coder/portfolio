@@ -65,7 +65,7 @@ export const settings = {
     { label: 'Work', href: '/#work', key: 'work' },
     { label: 'Pipelines', href: '/#pipelines', key: 'pipelines' },
     { label: 'Captures', href: '/#captures', key: 'captures' },
-    { label: 'Spec', href: '/#spec', key: 'spec' },
+    { label: 'Product', href: '/product/', key: 'product' },
     { label: 'Writing', href: '/writing/', key: 'writing' },
     { label: 'About', href: '/#about', key: 'about' },
   ],
@@ -73,17 +73,16 @@ export const settings = {
 
 export const home = {
   headline: 'Fixture headline, one line, set from the Studio.',
-  lede: 'Fixture lede. Two sentences of about the length the real one runs to, so the column width is exercised honestly rather than optimistically.',
+  lede: 'Fixture lede. Two sentences of about the length the real one runs to, so the column width is exercised honestly and not optimistically.',
   note: 'Fixture note, the quiet line under the lede.',
   openImage: img(A.tall, ALT, 'fixture'),
+  // Deliberately partial. The order and the numbering come from
+  // src/data/sections.ts, and a section with no row here falls back to the
+  // wording written there, so a short list is the case worth exercising.
   contents: [
-    { num: '01', href: '#reel', label: 'Reel', rail: 'Reel', note: 'Fixture note' },
-    { num: '02', href: '#work', label: 'Selected work', rail: 'Selected work', note: '{count} projects' },
-    { num: '03', href: '#pipelines', label: 'Pipelines', rail: 'Pipelines', note: 'Fixture note' },
-    { num: '04', href: '#captures', label: 'Captures', rail: 'Captures', note: 'Fixture note' },
-    { num: '05', href: '#spec', label: 'Spec shelf', rail: 'Spec shelf', note: 'Fixture note' },
-    { num: '06', href: '#writing', label: 'Writing', rail: 'Writing', note: 'Fixture note' },
-    { num: '07', href: '#about', label: 'About and contact', rail: 'About', note: 'Fixture note' },
+    { href: '#reel', label: 'Reel', rail: 'Reel', note: 'Fixture note' },
+    { href: '#work', label: 'Selected work', rail: 'Selected work', note: '{count} projects' },
+    { href: '#writing', label: 'Writing', rail: 'Writing', note: '{samples} samples' },
   ],
   reelHeading: 'Ninety seconds',
   reelBadgePlay: 'Play the cut',
@@ -164,10 +163,14 @@ export const work = [1, 2, 3, 4, 5, 6].map((n) => ({
   links: [{ label: 'Fixture link', href: 'https://example.com/' }],
 }));
 
+// The slugs are the real ones. Everything else about these is fixture prose, but
+// the identifiers are not decoration: HOME_PIPELINE points at one of them, the
+// per-pipeline routes are generated from them, and a fixture that invents its
+// own slugs would pass a build the real dataset fails.
 export const pipelines = [
-  { id: 'fixture-03', num: '03', title: 'Fixture pipeline three' },
-  { id: 'fixture-05', num: '05', title: 'Fixture pipeline five' },
-  { id: 'fixture-07', num: '07', title: 'Fixture pipeline seven' },
+  { id: 'identity-lock', num: '03', title: 'Fixture pipeline three' },
+  { id: 'phantom-set', num: '05', title: 'Fixture pipeline five' },
+  { id: 'operator-stack', num: '07', title: 'Fixture pipeline seven' },
 ].map((p) => ({
   ...p,
   mechanism: 'Fixture mechanism',

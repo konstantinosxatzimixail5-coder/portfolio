@@ -1846,5 +1846,775 @@
       }
     ],
     "fallback": "/img/site/capture-sunday-league-960.webp"
+  },
+  "site/skyrunner/sr-a-launch": {
+    "key": "site/skyrunner/sr-a-launch",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-a-launch-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-a-launch-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-a-launch-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-a-launch-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-a-launch-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-a-launch-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/skyrunner/sr-a-launch-1600.webp"
+  },
+  "site/skyrunner/sr-b-rings": {
+    "key": "site/skyrunner/sr-b-rings",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-b-rings-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-b-rings-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-b-rings-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-b-rings-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-b-rings-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-b-rings-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/skyrunner/sr-b-rings-1600.webp"
+  },
+  "site/skyrunner/sr-c-canyon": {
+    "key": "site/skyrunner/sr-c-canyon",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-c-canyon-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-c-canyon-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-c-canyon-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-c-canyon-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-c-canyon-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-c-canyon-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/skyrunner/sr-c-canyon-1600.webp"
+  },
+  "site/skyrunner/sr-d-vortex": {
+    "key": "site/skyrunner/sr-d-vortex",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-d-vortex-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-d-vortex-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-d-vortex-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-d-vortex-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-d-vortex-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-d-vortex-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/skyrunner/sr-d-vortex-1600.webp"
+  },
+  "site/skyrunner/sr-e-dismount": {
+    "key": "site/skyrunner/sr-e-dismount",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-e-dismount-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-e-dismount-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-e-dismount-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-e-dismount-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-e-dismount-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-e-dismount-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/skyrunner/sr-e-dismount-1600.webp"
+  },
+  "site/skyrunner/sr-e-touchdown": {
+    "key": "site/skyrunner/sr-e-touchdown",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-e-touchdown-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-e-touchdown-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-e-touchdown-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-e-touchdown-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-e-touchdown-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-e-touchdown-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/skyrunner/sr-e-touchdown-1600.webp"
+  },
+  "site/skyrunner/sr-f-terrace": {
+    "key": "site/skyrunner/sr-f-terrace",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-f-terrace-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-f-terrace-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-f-terrace-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-f-terrace-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-f-terrace-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-f-terrace-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/skyrunner/sr-f-terrace-1600.webp"
+  },
+  "site/skyrunner/sr-final": {
+    "key": "site/skyrunner/sr-final",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-final-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-final-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-final-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-final-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-final-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-final-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/skyrunner/sr-final-1600.webp"
+  },
+  "site/skyrunner/sr-hero": {
+    "key": "site/skyrunner/sr-hero",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-hero-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-hero-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-hero-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-hero-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-hero-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-hero-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/skyrunner/sr-hero-1600.webp"
+  },
+  "site/skyrunner/sr-route-map": {
+    "key": "site/skyrunner/sr-route-map",
+    "width": 1600,
+    "height": 834,
+    "aspect": 1.9187,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-route-map-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-route-map-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-route-map-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-route-map-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-route-map-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-route-map-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/skyrunner/sr-route-map-1600.webp"
+  },
+  "site/skyrunner/sr-strip": {
+    "key": "site/skyrunner/sr-strip",
+    "width": 1600,
+    "height": 225,
+    "aspect": 7.1146,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-strip-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-strip-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-strip-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-strip-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-strip-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-strip-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/skyrunner/sr-strip-1600.webp"
+  },
+  "site/twin-moons/tm-a-contact": {
+    "key": "site/twin-moons/tm-a-contact",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-a-contact-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-a-contact-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-a-contact-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-a-contact-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-a-contact-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-a-contact-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/twin-moons/tm-a-contact-1600.webp"
+  },
+  "site/twin-moons/tm-b-brute": {
+    "key": "site/twin-moons/tm-b-brute",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-b-brute-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-b-brute-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-b-brute-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-b-brute-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-b-brute-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-b-brute-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/twin-moons/tm-b-brute-1600.webp"
+  },
+  "site/twin-moons/tm-c-mound": {
+    "key": "site/twin-moons/tm-c-mound",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-c-mound-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-c-mound-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-c-mound-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-c-mound-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-c-mound-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-c-mound-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/twin-moons/tm-c-mound-1600.webp"
+  },
+  "site/twin-moons/tm-d-shockwave": {
+    "key": "site/twin-moons/tm-d-shockwave",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-d-shockwave-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-d-shockwave-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-d-shockwave-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-d-shockwave-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-d-shockwave-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-d-shockwave-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/twin-moons/tm-d-shockwave-1600.webp"
+  },
+  "site/twin-moons/tm-e-tracer": {
+    "key": "site/twin-moons/tm-e-tracer",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-e-tracer-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-e-tracer-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-e-tracer-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-e-tracer-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-e-tracer-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-e-tracer-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/twin-moons/tm-e-tracer-1600.webp"
+  },
+  "site/twin-moons/tm-f-fireball": {
+    "key": "site/twin-moons/tm-f-fireball",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-f-fireball-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-f-fireball-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-f-fireball-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-f-fireball-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-f-fireball-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-f-fireball-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/twin-moons/tm-f-fireball-1600.webp"
+  },
+  "site/twin-moons/tm-final": {
+    "key": "site/twin-moons/tm-final",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-final-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-final-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-final-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-final-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-final-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-final-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/twin-moons/tm-final-1600.webp"
+  },
+  "site/twin-moons/tm-g-meeting": {
+    "key": "site/twin-moons/tm-g-meeting",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-g-meeting-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-g-meeting-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-g-meeting-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-g-meeting-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-g-meeting-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-g-meeting-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/twin-moons/tm-g-meeting-1600.webp"
+  },
+  "site/twin-moons/tm-h-lock": {
+    "key": "site/twin-moons/tm-h-lock",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-h-lock-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-h-lock-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-h-lock-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-h-lock-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-h-lock-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-h-lock-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/twin-moons/tm-h-lock-1600.webp"
+  },
+  "site/twin-moons/tm-hero": {
+    "key": "site/twin-moons/tm-hero",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-hero-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-hero-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-hero-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-hero-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-hero-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-hero-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/twin-moons/tm-hero-1600.webp"
+  },
+  "site/twin-moons/tm-strip": {
+    "key": "site/twin-moons/tm-strip",
+    "width": 1600,
+    "height": 225,
+    "aspect": 7.1146,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-strip-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-strip-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-strip-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-strip-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-strip-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-strip-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/twin-moons/tm-strip-1600.webp"
   }
 }

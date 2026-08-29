@@ -1,0 +1,834 @@
+---
+import Base from '../../layouts/Base.astro';
+import Frame from '../../components/Frame.astro';
+import ShotSheet from '../../components/ShotSheet.astro';
+import DocReader from '../../components/DocReader.astro';
+import { getSettings, films } from '../../lib/content';
+import { breadcrumbs, graph, person } from '../../lib/schema';
+
+export function getStaticPaths() {
+  return films.map((film) => ({ params: { slug: film.slug }, props: { film } }));
+}
+
+const { film } = Astro.props;
+const site = await getSettings();
+
+const title = `${film.title}, an original short | ${site.name}`;
+const description = film.logline;
+
+// Sections that arrive with the process document. Each one renders only when it
+// has something in it, so the page is short and true instead of long and full of
+// placeholders.
+const has = {
+  spine: film.spine.length > 0,
+  pipeline: film.pipeline.length > 0,
+  look: film.look.length > 0,
+  locks: film.locks.length > 0,
+  route: Boolean(film.route),
+  routeBody: Boolean(film.route?.body.length),
+  prompts: film.beats.some((b) => b.prompt),
+};
+
+const jsonLd = graph([
+  person(site.domain, site),
+  {
+    '@type': 'CreativeWork',
+    '@id': new URL(`/films/${film.slug}/`, site.domain).href + '#film',
+    name: film.title,
+    description: film.logline,
+    url: new URL(`/films/${film.slug}/`, site.domain).href,
+    genre: 'Original short, self-initiated',
+    inLanguage: 'en',
+    creator: { '@id': new URL('/', site.domain).href + '#person' },
+    keywords: film.stack.flatMap((g) => g.items).join(', '),
+  },
+  breadcrumbs(site.domain, [
+    { name: 'Home', path: '/' },
+    { name: 'Films', path: '/#films' },
+    { name: film.title, path: `/films/${film.slug}/` },
+  ]),
+]);
+---
+
+<Base title={title} description={description} active="films" jsonLd={jsonLd}>
+  <article class="film">
+    <!-- 1. hero -->
+    <header class="film__hero">
+      <div class="film__plate">
+        <Frame
+          src={film.hero}
+          alt={film.heroAlt}
+          sizes="100vw"
+          loading="eager"
+        />
+      </div>
+
+      <div class="shell film__head">
+        <p class="mono film__flag">
+          Original short
+          <span class="faint" aria-hidden="true"> · </span>
+          <span class="faint">{film.runtime}</span>
+        </p>
+        <h1 class="film__title">{film.title}</h1>
+        <p class="film__logline">{film.logline}</p>
+
+        <dl class="specrow">
+          {
+            film.spec.map((s) => (
+              <div class="specrow__cell">
+                <dt class="mono">{s.key}</dt>
+                <dd>{s.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </header>
+
+    <!-- 2. the film -->
+    {
+      has.spine && (
+        <section class="film__sec shell spread" id="the-film">
+          <div class="rail">
+            <span class="rail__num">01</span>
+            <span class="rail__slug">The film</span>
+          </div>
+          <div class="film__col">
+            <h2 class="film__h2">The film</h2>
+            <dl class="spine">
+              {film.spine.map((row) => (
+                <div class="spine__row">
+                  <dt class="mono">{row.key}</dt>
+                  <dd>{row.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+      )
+    }
+
+    <!-- 3. beat map -->
+    <section class="film__sec shell spread" id="beat-map">
+      <div class="rail">
+        <span class="rail__num">02</span>
+        <span class="rail__slug">Beat map</span>
+      </div>
+      <div class="film__col">
+        <h2 class="film__h2">Beat map</h2>
+        <p class="film__lede">
+          {film.beats.length} generation blocks, in order, with the timecode each one lands on.
+        </p>
+        <ol class="beatmap">
+          {
+            film.beats.map((b) => (
+              <li>
+                <a class="beatmap__row" href={`#block-${b.letter.toLowerCase()}`}>
+                  <span class="beatmap__letter mono">{b.letter}</span>
+                  <span class="beatmap__time mono faint">{b.time}</span>
+                  <span class="beatmap__name">{b.name}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+
+    <!-- 4. cast and world -->
+    <section class="film__sec shell spread" id="cast">
+      <div class="rail">
+        <span class="rail__num">03</span>
+        <span class="rail__slug">Cast</span>
+      </div>
+      <div class="film__col">
+        <h2 class="film__h2">Cast and world</h2>
+        <p class="film__lede">
+          Every character, vehicle and location the shot prompts call by name. The tag is the
+          handle the control layer holds them by, which is what keeps a face the same face across
+          {' '}{film.beats.length} blocks.
+        </p>
+        <ul class="cast">
+          {
+            film.cast.map((c) => (
+              <li class="cast__item">
+                {c.image && c.alt && (
+                  <Frame src={c.image} alt={c.alt} sizes="(max-width: 700px) 90vw, 30vw" />
+                )}
+                <p class="cast__tag mono">{c.tag}</p>
+                <p class="cast__name">{c.name}</p>
+                {c.note && <p class="cast__note quiet">{c.note}</p>}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <!-- 4b. the route, Skyrunner only -->
+    {
+      film.route && (
+        <section class="film__sec film__sec--wide shell" id="route">
+          <div class="film__routehead">
+            <h2 class="film__h2">The route</h2>
+            <p class="film__lede">
+              The one step nobody else documents. The flight path was drawn onto the city plate
+              before a single frame was generated, so the camera had somewhere to be at every
+              second of the run.
+            </p>
+          </div>
+
+          <figure class="route">
+            <Frame src={film.route.image} alt={film.route.alt} sizes="100vw" />
+            <figcaption class="route__cap mono mono--lower faint">{film.route.caption}</figcaption>
+          </figure>
+
+          <ol class="waypoints">
+            {film.route.waypoints.map((w) => (
+              <li class="waypoint">
+                <span class="waypoint__num mono">{w.num}</span>
+                <span class="waypoint__name">{w.name}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )
+    }
+
+    <!-- 5. pipeline -->
+    {
+      has.pipeline && (
+        <section class="film__sec shell spread" id="pipeline">
+          <div class="rail">
+            <span class="rail__num">04</span>
+            <span class="rail__slug">Pipeline</span>
+          </div>
+          <div class="film__col">
+            <h2 class="film__h2">Pipeline</h2>
+            <ol class="stages">
+              {film.pipeline.map((s) => (
+                <li class="stage">
+                  <p class="stage__num mono">{s.num}</p>
+                  <p class="stage__name">{s.name}</p>
+                  <p class="stage__body quiet">{s.body}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      )
+    }
+
+    <!-- 6. the stack -->
+    <section class="film__sec shell spread" id="stack">
+      <div class="rail">
+        <span class="rail__num">05</span>
+        <span class="rail__slug">Stack</span>
+      </div>
+      <div class="film__col">
+        <h2 class="film__h2">The stack</h2>
+        <dl class="stack">
+          {
+            film.stack.map((g) => (
+              <div class="stack__group">
+                <dt class="mono">{g.group}</dt>
+                <dd>
+                  <ul class="stack__list">
+                    {g.items.map((t) => (
+                      <li class="stack__tool mono">{t}</li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </section>
+
+    <!-- 7. shot sheets -->
+    <section class="film__sec shell spread" id="shots">
+      <div class="rail">
+        <span class="rail__num">06</span>
+        <span class="rail__slug">Shot sheets</span>
+      </div>
+      <div class="film__col">
+        <h2 class="film__h2">Shot sheets</h2>
+        {
+          has.prompts ? (
+            <p class="film__lede">
+              One block per generation, each with the still it produced and the prompt that made
+              it. Every prompt is here in full.
+            </p>
+          ) : (
+            <p class="film__lede">
+              One block per generation, each with the still it produced. The prompt text sits in
+              the process document and lands here with it.
+            </p>
+          )
+        }
+
+        <div class="shots">
+          {
+            film.beats.map((b) => (
+              <ShotSheet
+                id={`block-${b.letter.toLowerCase()}`}
+                letter={b.letter}
+                time={b.time}
+                name={b.name}
+                image={b.image}
+                alt={b.alt}
+                note={b.note}
+                prompt={b.prompt}
+                pendingNote={has.prompts}
+              />
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. the look -->
+    {
+      has.look && (
+        <section class="film__sec shell spread" id="look">
+          <div class="rail">
+            <span class="rail__num">07</span>
+            <span class="rail__slug">Look</span>
+          </div>
+          <div class="film__col">
+            <h2 class="film__h2">The look</h2>
+            <dl class="prose__spec look">
+              {film.look.map((row) => (
+                <div class="look__row">
+                  <dt class="mono">{row.key}</dt>
+                  <dd>{row.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+      )
+    }
+
+    <!-- 9. locks -->
+    {
+      has.locks && (
+        <section class="film__sec shell spread" id="locks">
+          <div class="rail">
+            <span class="rail__num">08</span>
+            <span class="rail__slug">Locks</span>
+          </div>
+          <div class="film__col">
+            <h2 class="film__h2">Locks</h2>
+            <p class="film__lede">
+              What went wrong, and the instruction that closed it. A generated sequence loses its
+              cast somewhere around the third block, and these are the lines that stopped it.
+            </p>
+            <ul class="locks">
+              {film.locks.map((l) => (
+                <li class="lock">
+                  <p class="lock__fail mono">{l.failure}</p>
+                  <p class="lock__fix">{l.fix}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )
+    }
+
+    <!-- closing frame -->
+    <div class="film__closing shell">
+      <Frame src={film.closing} alt={film.closingAlt} sizes="100vw" />
+    </div>
+
+    <!-- 10. the process document -->
+    {
+      film.doc && (
+        <section class="film__sec shell spread" id="process">
+          <div class="rail">
+            <span class="rail__num">09</span>
+            <span class="rail__slug">Process</span>
+          </div>
+          <div class="film__col">
+            <DocReader
+              path={film.doc.path}
+              title={film.doc.title}
+              summary={film.doc.summary}
+              poster={film.strip}
+              posterAlt={film.stripAlt}
+              shape="a wide-format process sheet"
+              id="process-doc"
+            />
+          </div>
+        </section>
+      )
+    }
+
+    <nav class="film__back shell" aria-label="Back">
+      <a class="mono" href="/#films">← Both films</a>
+    </nav>
+  </article>
+</Base>
+
+<style>
+  /* --- hero --------------------------------------------------------------- */
+
+  .film__plate {
+    width: 100%;
+  }
+
+  .film__plate :global(.frame__plate) {
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+  }
+
+  .film__head {
+    padding-top: var(--s-6);
+    padding-bottom: var(--s-6);
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .film__flag {
+    color: var(--red);
+    font-size: 0.68rem;
+    max-width: none;
+  }
+
+  .film__title {
+    font-size: var(--step-5);
+    letter-spacing: -0.03em;
+  }
+
+  .film__logline {
+    font-size: var(--step-1);
+    line-height: 1.42;
+    max-width: 52ch;
+    color: var(--newsprint-dim);
+  }
+
+  .specrow {
+    margin: var(--s-3) 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: var(--s-4);
+    border-top: 1px solid var(--rule);
+    padding-top: var(--s-4);
+  }
+
+  .specrow__cell dt {
+    font-size: 0.62rem;
+    color: var(--fg-faint);
+    margin-bottom: 0.2rem;
+  }
+
+  .specrow__cell dd {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--newsprint);
+    line-height: 1.4;
+  }
+
+  /* --- shared section furniture ------------------------------------------- */
+
+  .film__sec {
+    padding-block: var(--s-7);
+    border-top: 1px solid var(--rule);
+  }
+
+  .film__sec--wide {
+    display: grid;
+    gap: var(--s-5);
+  }
+
+  .film__col {
+    display: grid;
+    gap: var(--s-4);
+    min-width: 0;
+  }
+
+  .film__h2 {
+    font-family: var(--mono);
+    font-variation-settings: var(--rec-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    font-weight: 500;
+  }
+
+  .film__lede {
+    font-size: var(--step--1);
+    line-height: 1.6;
+    color: var(--newsprint-dim);
+    max-width: 60ch;
+  }
+
+  /* --- spine -------------------------------------------------------------- */
+
+  .spine {
+    margin: 0;
+    display: grid;
+    border-top: 1px solid var(--rule);
+  }
+
+  .spine__row {
+    display: grid;
+    grid-template-columns: minmax(0, 9rem) minmax(0, 1fr);
+    gap: var(--s-4);
+    padding-block: var(--s-3);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .spine__row dt {
+    color: var(--red);
+    font-size: 0.64rem;
+    padding-top: 0.2rem;
+  }
+
+  .spine__row dd {
+    margin: 0;
+    font-size: var(--step-0);
+    line-height: 1.5;
+    color: var(--newsprint);
+  }
+
+  @media (max-width: 620px) {
+    .spine__row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.2rem;
+    }
+  }
+
+  /* --- beat map ----------------------------------------------------------- */
+
+  .beatmap {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--rule-bright);
+  }
+
+  .beatmap__row {
+    display: grid;
+    grid-template-columns: 2rem 3.5rem minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--s-3);
+    padding-block: var(--s-3);
+    min-height: var(--tap);
+    border-bottom: 1px solid var(--rule);
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+  }
+
+  .beatmap__row::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    height: 1px;
+    width: 0;
+    background: var(--red);
+    transition: width 340ms var(--ease);
+  }
+
+  .beatmap__row:hover::after,
+  .beatmap__row:focus-visible::after {
+    width: 100%;
+  }
+
+  .beatmap__letter {
+    color: var(--red);
+    font-size: 0.72rem;
+  }
+
+  .beatmap__time {
+    font-size: 0.66rem;
+  }
+
+  .beatmap__name {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.2;
+    color: var(--newsprint);
+    transition: color var(--dur) var(--ease);
+  }
+
+  .beatmap__row:hover .beatmap__name {
+    color: var(--cyan);
+  }
+
+  /* --- cast --------------------------------------------------------------- */
+
+  .cast {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: var(--s-4);
+  }
+
+  .cast__item {
+    display: grid;
+    gap: var(--s-2);
+    align-content: start;
+    padding: var(--s-4);
+    background: var(--ink-sunk);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    min-width: 0;
+  }
+
+  .cast__tag {
+    font-size: 0.66rem;
+    color: var(--mint);
+    text-transform: none;
+    letter-spacing: 0.02em;
+    max-width: none;
+  }
+
+  .cast__name {
+    font-family: var(--display);
+    font-size: var(--step-0);
+    line-height: 1.25;
+    color: var(--newsprint);
+  }
+
+  .cast__note {
+    font-size: var(--step--1);
+    line-height: 1.5;
+  }
+
+  /* --- route -------------------------------------------------------------- */
+
+  .film__routehead {
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .route {
+    margin: 0;
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .route__cap {
+    font-size: 0.7rem;
+  }
+
+  .waypoints {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: var(--s-3);
+  }
+
+  .waypoint {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-3);
+    padding: var(--s-3) var(--s-4);
+    background: var(--ink-sunk);
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--gold);
+    border-radius: var(--radius);
+  }
+
+  .waypoint__num {
+    color: var(--gold);
+    font-size: 0.72rem;
+  }
+
+  .waypoint__name {
+    font-family: var(--display);
+    font-size: var(--step-0);
+    color: var(--newsprint);
+  }
+
+  /* --- pipeline stages ---------------------------------------------------- */
+
+  .stages {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--s-4);
+  }
+
+  .stage {
+    display: grid;
+    gap: var(--s-2);
+    align-content: start;
+    padding: var(--s-4);
+    background: var(--ink-raised);
+    border: 1px solid var(--rule);
+    border-top: 2px solid var(--cyan);
+    border-radius: var(--radius);
+  }
+
+  .stage__num {
+    color: var(--cyan);
+    font-size: 0.66rem;
+    max-width: none;
+  }
+
+  .stage__name {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.2;
+    color: var(--newsprint);
+  }
+
+  .stage__body {
+    font-size: var(--step--1);
+    line-height: 1.55;
+  }
+
+  /* --- stack -------------------------------------------------------------- */
+
+  .stack {
+    margin: 0;
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  .stack__group {
+    display: grid;
+    grid-template-columns: minmax(0, 9rem) minmax(0, 1fr);
+    gap: var(--s-4);
+    align-items: start;
+  }
+
+  .stack__group dt {
+    font-size: 0.64rem;
+    color: var(--fg-faint);
+    padding-top: 0.35rem;
+  }
+
+  .stack__group dd {
+    margin: 0;
+  }
+
+  .stack__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+
+  .stack__tool {
+    font-size: 0.62rem;
+    color: var(--fg-quiet);
+    border: 1px solid var(--rule-bright);
+    border-radius: var(--radius);
+    padding: 0.3rem var(--s-3);
+    background: var(--ink);
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 620px) {
+    .stack__group {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-2);
+    }
+  }
+
+  /* --- look --------------------------------------------------------------- */
+
+  .look {
+    margin: 0;
+    display: grid;
+    border-top: 1px solid var(--rule);
+  }
+
+  .look__row {
+    display: grid;
+    grid-template-columns: minmax(0, 10rem) minmax(0, 1fr);
+    gap: var(--s-4);
+    padding-block: var(--s-3);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .look__row dt {
+    color: var(--fg-faint);
+    font-size: 0.64rem;
+    padding-top: 0.2rem;
+  }
+
+  .look__row dd {
+    margin: 0;
+    font-size: var(--step--1);
+    line-height: 1.55;
+    color: var(--newsprint-dim);
+  }
+
+  @media (max-width: 620px) {
+    .look__row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.2rem;
+    }
+  }
+
+  /* --- locks -------------------------------------------------------------- */
+
+  .locks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .lock {
+    display: grid;
+    gap: var(--s-2);
+    padding: var(--s-4);
+    background: var(--ink-sunk);
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--red);
+    border-radius: var(--radius);
+  }
+
+  .lock__fail {
+    font-size: 0.64rem;
+    color: var(--red);
+    max-width: none;
+  }
+
+  .lock__fix {
+    font-size: var(--step--1);
+    line-height: 1.55;
+    color: var(--newsprint-dim);
+  }
+
+  /* --- closing and back --------------------------------------------------- */
+
+  .film__closing {
+    padding-block: var(--s-7);
+    border-top: 1px solid var(--rule);
+  }
+
+  .film__back {
+    padding-block: var(--s-6);
+    border-top: 1px solid var(--rule);
+  }
+
+  .film__back a {
+    text-decoration: none;
+    font-size: 0.68rem;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+</style>

@@ -1,6 +1,7 @@
 import { sanity, QUERIES, toImage, toImages, toVideo } from './sanity';
 import { profile } from '../data/profile';
-import { mergeNav } from '../data/sections';
+import { navLinks } from '../data/sections';
+import { morePipelines } from '../data/pipelines';
 
 // Every page and both shared components need the settings, and Astro renders
 // each page in its own pass. Without a cache the navigation alone would be
@@ -35,10 +36,9 @@ export const getSettings = once(async () => {
   const doc = await singleton<any>(QUERIES.settings, 'siteSettings');
   return {
     ...doc,
-    // The pages the front page cannot link to from its own index have to be in
-    // the bar across the top or they are unreachable. Merged rather than
-    // replaced, so the Studio still owns the order of everything it lists.
-    navLinks: mergeNav(doc.navLinks),
+    // Defined in the repository, not the Studio. Seven labels, in this order,
+    // is a constraint the acceptance checks test; see src/data/sections.ts.
+    navLinks,
     role: profile.role,
     roleShort: profile.roleShort,
     base: profile.base,
@@ -75,6 +75,26 @@ export const getWork = once(async () => {
 
 export const getPipelines = once(() => sanity.fetch<any[]>(QUERIES.pipelines));
 
+// All seven, in one list, ordered by their sheet number. Three are edited in the
+// Studio and four are transcribed in src/data/pipelines.ts, and a reader has no
+// reason to care which is which: they are the same object with the same rules,
+// and the repository copies simply carry the extra fields the front page had no
+// room for. Every page that lists or looks one up reads this.
+export const getAllPipelines = once(async () => {
+  const fromCms = await getPipelines();
+  const all = [...fromCms, ...morePipelines];
+  const seen = new Set<string>();
+  for (const p of all) {
+    if (!p.id) throw new Error(`A pipeline has no slug: ${p.title ?? 'untitled'}`);
+    if (seen.has(p.id)) throw new Error(`Two pipelines share the slug "${p.id}".`);
+    seen.add(p.id);
+  }
+  return all.sort((a, b) => String(a.num).localeCompare(String(b.num)));
+});
+
+export const findPipeline = async (id: string) =>
+  (await getAllPipelines()).find((p: any) => p.id === id);
+
 export const getSpecBrands = once(async () => {
   const list = await sanity.fetch<any[]>(QUERIES.specBrands);
   return list.map((b) => ({ ...b, shots: toImages(b.shots) }));
@@ -88,7 +108,8 @@ export const getSpecBrands = once(async () => {
 // a script or a pipeline sheet into a rich text box loses the thing that made it
 // one.
 
-export { morePipelines } from '../data/pipelines';
+export { morePipelines, HOME_PIPELINE } from '../data/pipelines';
+export { films, findFilm } from '../data/films';
 export { captures } from '../data/captures';
 export { faqs } from '../data/faq';
 export {

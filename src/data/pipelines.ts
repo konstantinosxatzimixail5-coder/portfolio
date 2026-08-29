@@ -15,6 +15,12 @@
 
 import type { Pipeline } from '../lib/types';
 
+// The one pipeline the front page carries in full. It is the product photography
+// line, because the front page now runs it directly above the section it
+// produces and the two argue for each other when they sit together. Every other
+// pipeline is one row and one click away.
+export const HOME_PIPELINE = 'phantom-set';
+
 export const morePipelines: Pipeline[] = [
   {
     id: 'voice-vault',
@@ -103,6 +109,46 @@ export const morePipelines: Pipeline[] = [
         test: 'Put a competitor logo on the piece. Does it still make sense?',
         fail: 'Kill it and rebuild from the customer phrase.',
       },
+    ],
+    prompts: [
+      {
+        num: '01',
+        name: 'The brand skill, loaded before every job',
+        body: `---
+name: acme-voice
+description: Voice, proof and format rules for ACME. Load before any
+  copy, caption, script or landing page written for this brand.
+---
+VOICE: plain declaratives, British spelling, no hype adjectives
+BANNED: [the 40 words the founder cannot stand]
+PROOF: [three numbers we can defend] + [two named customers]
+BUYER: [role] who fears [risk] and is measured on [metric]
+FORMATS: post 90-120 words / article 900-1200 / advert 45 max`,
+      },
+      {
+        num: '02',
+        name: 'Angle mining, run once per quarter',
+        body: `The brand file is loaded. Read the 40 reviews and 12 support threads
+attached. Return 30 angles in a table: the angle, the exact customer
+phrase behind it, the desire it channels, the awareness state (1-5),
+and the single proof point that makes it credible.
+Rank by desire strength. No two angles may lean on the same phrase.`,
+      },
+      {
+        num: '03',
+        name: 'The draft call',
+        body: `Write [format] on angle [n]. Open on the customer phrase, never on
+the category. One idea per paragraph. Each claim earns its proof point
+within two sentences. Delete any line that could sit inside a
+competitor's copy with only the logo swapped.`,
+      },
+    ],
+    rhythm: [
+      { key: 'Week one', value: 'Intake, teardown, brand file, skill built and tested' },
+      { key: 'Week two', value: 'Angle bank, calendar, first drafts and first visuals' },
+      { key: 'Weekly', value: 'Three long-form pieces, fifteen posts, ten visuals' },
+      { key: 'Monthly', value: 'Performance read, rules updated, angles refreshed' },
+      { key: 'Handover', value: 'The skill directory belongs to the client and runs without me' },
     ],
   },
 
@@ -193,6 +239,49 @@ export const morePipelines: Pipeline[] = [
         fail: 'Swap it from the commercial library before upload.',
       },
     ],
+    prompts: [
+      {
+        num: '01',
+        name: 'LinkedIn carousel',
+        body: `SLIDES: 9. Slide 1 is the hook, slide 9 is the ask.
+OPENING: two lines maximum, since the rest sits behind the fold
+SLIDE RULE: one idea, six words of headline, one supporting line
+PROOF: [number] on slide 4, sourced on slide 9
+DESIGN: 4:5, house palette, geometric sans, no stock imagery
+CAPTION: the argument in 90 words, question at the end
+TAGS: #b2bmarketing #contentstrategy #creativedirection`,
+      },
+      {
+        num: '02',
+        name: 'TikTok script skeleton',
+        body: `0.0-1.5s HOOK: [the number or contradiction nobody expects]
+1.5-4s STAKE: what it costs to get this wrong
+4-9s PROOF: one demo, one screen, one face
+9-14s TURN: deliver the thing they came for, early
+14-18s ASK: [single verb] + [where]
+SHOOT: 9:16, handheld preset, caption on every beat,
+  brand mark held back until second 10
+TAGS: #smallbusiness #adcreative #behindthescenes`,
+      },
+      {
+        num: '03',
+        name: 'Instagram caption and hashtag tiers',
+        body: `LINE 1: the customer phrase, exactly as they said it
+LINES 2-4: context, then one question worth answering
+TIER 1 broad (2): #marketing #creativestudio
+TIER 2 niche (4): #generativevideo #brandfilm #productphotography
+  #ugccreator
+TIER 3 brand (2): [house tag] [campaign tag]
+ALT TEXT: describe the frame for someone who cannot see it`,
+      },
+    ],
+    rhythm: [
+      { key: 'Monday', value: 'Angle chosen, three briefs written and approved' },
+      { key: 'Tuesday', value: 'Stills, carousels and character plates generated' },
+      { key: 'Wednesday', value: 'Video renders, captions, hook variants' },
+      { key: 'Thursday', value: 'Approval, scheduling, tags and alt text' },
+      { key: 'Friday', value: 'Last week read, winners queued for a second run' },
+    ],
   },
 
   {
@@ -222,7 +311,7 @@ export const morePipelines: Pipeline[] = [
         name: 'Extract',
         model: 'Claims, figures, quotes',
         fixes:
-          'The spine comes back: the argument, the figures underneath it, the four lines worth quoting, and the one idea that deserves a whole video. Unsupported claims are flagged rather than smoothed over.',
+          'The spine comes back: the argument, the figures underneath it, the four lines worth quoting, and the one idea that deserves a whole video. Unsupported claims get flagged, never smoothed over.',
         time: 'Day one',
       },
       {
@@ -283,6 +372,46 @@ export const morePipelines: Pipeline[] = [
         fail: 'Add the link before scheduling.',
       },
     ],
+    prompts: [
+      {
+        num: '01',
+        name: 'Extraction call',
+        body: `Read the attached article and return, in this order:
+1. The single argument, in one sentence a stranger could repeat
+2. Every figure, quoted with the sentence it came from
+3. Four lines that stand up on their own
+4. Ten beats: [beat] / [what is on screen] / [one line of voice]
+Flag any claim the article never supports. Invent no figures.`,
+      },
+      {
+        num: '02',
+        name: 'Infographic frame',
+        body: `Editorial infographic frame, 16:9, flat vector, three colours:
+[ink] [bone] [signal orange]
+HEADLINE: "[eight words maximum]"
+DATA: [label] [value] drawn as [bar | ring | stacked block]
+TYPE: geometric sans, tight tracking, no shadow, no gradient
+LAYOUT: headline top left, data centred, source line bottom right
+RULE: render the figures exactly as supplied, no rounding
+OUTPUT: 4K, plus the same frame on a transparent background`,
+      },
+      {
+        num: '03',
+        name: 'Podcast dialogue',
+        body: `Turn the beat sheet into a two-host script, nine minutes read aloud.
+HOST A [warm, asks the obvious question deliberately]
+HOST B [the practitioner, answers with the figure]
+Open mid-argument. No welcome, no housekeeping, no sign-off.
+Every ninety seconds, one of them disagrees with the other.`,
+      },
+    ],
+    rhythm: [
+      { key: 'Day one', value: 'Extraction, beat sheet, script approved' },
+      { key: 'Day two', value: 'Frames rendered, motion built, audio recorded' },
+      { key: 'Day three', value: 'Assembly, cutdowns, upload pack delivered' },
+      { key: 'Monthly', value: 'Four source pieces, thirty-six assets' },
+      { key: 'Archive', value: 'Beat sheets stay live and re-run when the article changes' },
+    ],
   },
 
   {
@@ -339,7 +468,7 @@ export const morePipelines: Pipeline[] = [
         name: 'Motion',
         model: 'Cinema Studio',
         fixes:
-          'The camera gets driven rather than described: crash zoom, dolly in, orbit, crane, up to three moves stacked in one shot. Genre presets set the pacing before rendering starts.',
+          'The camera gets driven, never described: crash zoom, dolly in, orbit, crane, up to three moves stacked in one shot. Genre presets set the pacing before rendering starts.',
         time: 'Build, six to nine days',
       },
       {
@@ -371,6 +500,49 @@ export const morePipelines: Pipeline[] = [
         test: 'Watch the episode on mute. Does the story survive?',
         fail: 'Rebuild the beats that only work with dialogue.',
       },
+    ],
+    prompts: [
+      {
+        num: '01',
+        name: 'Character sheet entry',
+        body: `CHARACTER: [name], [age], [build]
+FACE: [three fixed features that must never move]
+WARDROBE: [garment], [colour], [wear state] for episodes 1-4
+EXPRESSIONS: neutral / suppressed anger / the smile she uses to lie
+BLOCKING: weight on the left leg, hands still, chin slightly down
+NEVER: sunglasses, hats, hair worn down, a changed earring`,
+      },
+      {
+        num: '02',
+        name: 'Shot prompt',
+        body: `SHOT 14
+SIZE: medium close
+LENS: 50mm
+MOVE: slow dolly in
+SUBJECT: [character] at the window, rain outside, a practical lamp
+  camera left as the only warm source in the room
+CONTINUITY: same coat as shot 09, the cut on her left cheek still
+  open, rain has not stopped since shot 06
+GRADE: series palette, cold ambient, warm practical, crushed blacks
+LENGTH: 6s, no cut inside the shot
+NEGATIVE: face drift, extra fingers, burned-in subtitles, lens flare`,
+      },
+      {
+        num: '03',
+        name: 'Voice and dub',
+        body: `VOICE [character]: [age], [register], [accent], speaks in
+  short bursts, breathes before the last word of a sentence
+PER LINE: [emotion tag] + [pace] + [what she is hiding]
+DUB: same performance in the second language, timing matched to
+  the locked cut, no reflow of the picture`,
+      },
+    ],
+    rhythm: [
+      { key: 'Pre-production', value: 'Bible, cast training and board: five working days' },
+      { key: 'Build', value: 'Plates and renders: six to nine days per episode' },
+      { key: 'Finish', value: 'Sound, grade, versions: three days' },
+      { key: 'Cadence', value: 'One episode every two to three weeks, sustainable' },
+      { key: 'Library', value: 'Cast and locations carry into the next season for free' },
     ],
   },
 ];

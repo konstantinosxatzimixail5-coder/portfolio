@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getSettings, getWork, writingSamples } from '../lib/content';
+import { getSettings, getWork, writingSamples, films, getAllPipelines } from '../lib/content';
 
 // Every URL the site publishes, enumerated from the same sources the pages are
 // built from. A sitemap typed by hand is a sitemap that is wrong by the second
@@ -7,7 +7,11 @@ import { getSettings, getWork, writingSamples } from '../lib/content';
 // host returns 404s.
 
 export const GET: APIRoute = async () => {
-  const [site, work] = await Promise.all([getSettings(), getWork()]);
+  const [site, work, pipelines] = await Promise.all([
+    getSettings(),
+    getWork(),
+    getAllPipelines(),
+  ]);
 
   // Priority is a hint and engines mostly ignore it. It is set anyway, because
   // where it is read it should say what this site thinks the front door is.
@@ -15,9 +19,11 @@ export const GET: APIRoute = async () => {
     { path: '/', priority: '1.0' },
     { path: '/reel/', priority: '0.8' },
     { path: '/writing/', priority: '0.8' },
-    { path: '/spec/', priority: '0.7' },
+    { path: '/product/', priority: '0.7' },
     { path: '/pipelines/', priority: '0.7' },
     { path: '/captures/', priority: '0.7' },
+    ...films.map((f) => ({ path: `/films/${f.slug}/`, priority: '0.8' })),
+    ...pipelines.map((p: any) => ({ path: `/pipelines/${p.id}/`, priority: '0.6' })),
     ...work.map((w: any) => ({ path: `/work/${w.slug}/`, priority: '0.6' })),
     ...writingSamples.map((s) => ({ path: `/writing/${s.slug}/`, priority: '0.6' })),
   ];

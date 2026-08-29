@@ -6,18 +6,49 @@ interface Props {
   href: string;
   num: string;
   client: string;
-  kind: 'Client' | 'Spec, self-initiated';
+  // Free text, because the shelves that use this card label their work
+  // differently: case studies say Client, the product shelf says spec, the film
+  // section says Original. The one rule is that the label is always printed.
+  kind: string;
   problem: string;
-  image: CmsImage | null;
+  // Either a picture from the CMS, or a manifest key and its alt text for the
+  // pictures this repository owns. Frame takes the same pair either way.
+  image?: CmsImage | null;
+  src?: string;
+  alt?: string;
   year?: string;
+  // The card crops to 4:3 by default so the work grid lines up. A caller with a
+  // picture that is not a photograph, such as a contact strip, passes its own.
+  ratio?: string;
 }
 
-const { href, num, client, kind, problem, image, year } = Astro.props;
-const spec = kind === 'Spec, self-initiated';
+const {
+  href,
+  num,
+  client,
+  kind,
+  problem,
+  image,
+  src,
+  alt,
+  year,
+  ratio = '4 / 3',
+} = Astro.props;
+
+// Gold is the shelf colour for anything self-initiated, and both the product
+// shelf and the film section are.
+const spec = /spec|original/i.test(kind);
 ---
 
 <a class="card" href={href}>
-  <Frame image={image} num={num} ratio="4 / 3" sizes="(max-width: 900px) 100vw, 45vw" />
+  <Frame
+    image={image}
+    src={src}
+    alt={alt}
+    num={num}
+    ratio={ratio}
+    sizes="(max-width: 900px) 100vw, 45vw"
+  />
 
   <div class="card__body">
     <p class="card__meta mono">

@@ -9,11 +9,13 @@ import {
   getHome,
   getSettings,
   getWork,
-  getPipelines,
   getReel,
   getSpecPage,
   getSpecBrands,
-  morePipelines,
+  getAllPipelines,
+  findPipeline,
+  HOME_PIPELINE,
+  films,
   captures,
   faqs,
   featuredWriting,
@@ -21,19 +23,32 @@ import {
   writingGroups,
   profile,
 } from '../lib/content';
-import { composeSections } from '../data/sections';
+import { composeSections, headingFor } from '../data/sections';
 import { fill, words, Words } from '../lib/text';
 import { breadcrumbs, faqPage, graph, person, website } from '../lib/schema';
 
-const [home, site, work, pipelines, reel, specPage, specBrands] = await Promise.all([
+const [home, site, work, allPipelines, reel, specPage, specBrands, lead] = await Promise.all([
   getHome(),
   getSettings(),
   getWork(),
-  getPipelines(),
+  getAllPipelines(),
   getReel(),
   getSpecPage(),
   getSpecBrands(),
+  findPipeline(HOME_PIPELINE),
 ]);
+
+// One pipeline on the page, in full, and the other six as rows underneath. The
+// one is the product photography line, which now runs directly above the shelf
+// it produces. A missing slug is a wiring error worth failing on: the
+// alternative is a front page that silently drops its only diagram.
+if (!lead) {
+  throw new Error(
+    `HOME_PIPELINE is "${HOME_PIPELINE}" and no pipeline has that slug. ` +
+      `Check src/data/pipelines.ts against the slugs in the Studio.`
+  );
+}
+const restOfPipelines = allPipelines.filter((p: any) => p.id !== HOME_PIPELINE);
 
 // The three frames from the cut belong to the reel, not to this page, so both
 // places show the same pictures and there is one row to change.
@@ -46,7 +61,7 @@ const counts = {
   samples: writingSamples.length,
   frames: captures.length,
   brands: Words(specBrands.length),
-  pipelines: Words(pipelines.length + morePipelines.length),
+  pipelines: Words(allPipelines.length),
 };
 
 // The index down the front page and the labels down the left margin are the
@@ -66,7 +81,7 @@ const captureLead = captures.slice(0, 4);
 // underneath, so the shelf reads as a shelf rather than as two recommendations.
 const restOfWriting = writingSamples.filter((s) => !s.featured);
 
-// Sites built and shipped, shown as work rather than claimed as anything else.
+// Sites built and shipped, shown as work and not claimed as anything else.
 const shipped = [
   {
     label: 'talecrafters.studio',
@@ -217,100 +232,41 @@ const jsonLd = graph([
     </div>
   </section>
 
-  <!-- ============================================================ 03 spec -->
-  <section id="spec" class="section shell spread">
+  <!-- =========================================================== 03 films -->
+  <section id="films" class="section shell spread">
     <div class="rail">
-      <span class="rail__num">{mark('#spec').num}</span>
-      <span class="rail__slug">{mark('#spec').rail}</span>
+      <span class="rail__num">{mark('#films').num}</span>
+      <span class="rail__slug">{mark('#films').rail}</span>
     </div>
 
     <div class="stack-block">
-      <h2 class="sec__h2">{specPage.heading}</h2>
-      <p class="spec__flag mono">{specPage.flag}</p>
-      <p class="spec__lede">
-        {
-          fill(specPage.lede, {
-            brands: Words(specBrands.length),
-            count: specBrands.reduce((n: number, b: any) => n + b.shots.length, 0),
-          })
-        }
+      <h2 class="sec__h2">{headingFor('#films', 'AI Filmmaking Workflows')}</h2>
+      <p class="films__lede">
+        Two original shorts, written, designed, directed and cut inside one generative pipeline.
+        The process sheets are here in full.
       </p>
 
-      <ul class="shelf">
+      <div class="grid">
         {
-          specBrands.map((b: any) => (
-            <li class="shelf__brand">
-              <a class="shelf__link" href={`/spec/#${b.id}`}>
-                {b.shots[0] && (
-                  <Frame
-                    image={b.shots[0]}
-                    num={b.num}
-                    ratio="4 / 5"
-                    sizes="(max-width: 620px) 45vw, (max-width: 1000px) 30vw, 22vw"
-                  />
-                )}
-                <span class="shelf__name">{b.name}</span>
-              </a>
-              <p class="shelf__what mono mono--lower faint">{b.product}</p>
-              <p class="shelf__proves quiet">{b.proves}</p>
-            </li>
+          films.map((f, i) => (
+            <WorkCard
+              href={`/films/${f.slug}/`}
+              num={String(i + 1).padStart(2, '0')}
+              client={f.title}
+              kind="Original"
+              year={f.runtime}
+              problem={f.standfirst}
+              src={f.strip}
+              alt={f.stripAlt}
+              ratio="1800 / 253"
+            />
           ))
         }
-      </ul>
-
-      <p class="quiet more">
-        Every frame, the arguments in full and the gate each brand was built to break.
-        <a href="/spec/">Open the spec shelf</a>.
-      </p>
-    </div>
-  </section>
-
-  <!-- ======================================================= 04 pipelines -->
-  <section id="pipelines" class="section shell spread">
-    <div class="rail">
-      <span class="rail__num">{mark('#pipelines').num}</span>
-      <span class="rail__slug">{mark('#pipelines').rail}</span>
-    </div>
-
-    <div class="stack-block">
-      <h2 class="sec__h2">{home.pipelinesHeading}</h2>
-      <p class="pipes__intro">{fill(home.pipelinesIntro, { pipelines: Words(pipelines.length) })}</p>
-
-      <div class="pipes">
-        {pipelines.map((p: any) => <Strip {...p} />)}
       </div>
-
-      <!-- the other four -->
-      <aside class="more-pipes">
-        <p class="mono more-pipes__head">
-          The other {words(morePipelines.length)}
-        </p>
-        <p class="more-pipes__lede quiet">
-          Same shape, different problem. Voice at volume, three feeds from one idea, one article
-          turned into nine assets, and a cast that holds across an episode.
-        </p>
-        <ol class="more-pipes__list">
-          {
-            morePipelines.map((p) => (
-              <li>
-                <a class="more-pipes__row" href={`/pipelines/#${p.id}`}>
-                  <span class="more-pipes__num mono">{p.num}</span>
-                  <span class="more-pipes__title">{p.title}</span>
-                  <span class="more-pipes__mech mono mono--lower faint">{p.mechanism}</span>
-                </a>
-              </li>
-            ))
-          }
-        </ol>
-        <p class="quiet more">
-          <a href="/pipelines/">Read the other {words(morePipelines.length)} in full</a>, stages and
-          gates included.
-        </p>
-      </aside>
     </div>
   </section>
 
-  <!-- ======================================================== 05 captures -->
+  <!-- ======================================================== 04 captures -->
   <section id="captures" class="section shell spread">
     <div class="rail">
       <span class="rail__num">{mark('#captures').num}</span>
@@ -352,7 +308,96 @@ const jsonLd = graph([
     </div>
   </section>
 
-  <!-- ========================================================= 06 writing -->
+  <!-- ======================================================= 05 pipelines -->
+  <section id="pipelines" class="section shell spread">
+    <div class="rail">
+      <span class="rail__num">{mark('#pipelines').num}</span>
+      <span class="rail__slug">{mark('#pipelines').rail}</span>
+    </div>
+
+    <div class="stack-block">
+      <h2 class="sec__h2">{home.pipelinesHeading}</h2>
+      <p class="pipes__intro">
+        {Words(allPipelines.length)} of these are written down, each with its stages, the tool that
+        runs every one of them, and the control gates that stop a frame from shipping. This is the
+        line behind the product shelf below.
+      </p>
+
+      <Strip {...lead} />
+
+      <!-- the other six -->
+      <aside class="more-pipes">
+        <p class="mono more-pipes__head">The other {words(restOfPipelines.length)}</p>
+        <ol class="more-pipes__list">
+          {
+            restOfPipelines.map((p: any) => (
+              <li>
+                <a class="more-pipes__row" href={`/pipelines/${p.id}/`}>
+                  <span class="more-pipes__num mono">{p.num}</span>
+                  <span class="more-pipes__title">{p.title}</span>
+                  <span class="more-pipes__mech mono mono--lower faint">{p.mechanism}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+        <p class="quiet more">
+          <a href="/pipelines/">All {words(allPipelines.length)} in full</a>, stages, prompts and
+          gates included.
+        </p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ========================================================= 06 product -->
+  <section id="product" class="section shell spread">
+    <div class="rail">
+      <span class="rail__num">{mark('#product').num}</span>
+      <span class="rail__slug">{mark('#product').rail}</span>
+    </div>
+
+    <div class="stack-block">
+      <h2 class="sec__h2">{headingFor('#product', specPage.heading)}</h2>
+      <p class="spec__flag mono">{specPage.flag}</p>
+      <p class="spec__lede">
+        {
+          fill(specPage.lede, {
+            brands: Words(specBrands.length),
+            count: specBrands.reduce((n: number, b: any) => n + b.shots.length, 0),
+          })
+        }
+      </p>
+
+      <ul class="shelf">
+        {
+          specBrands.map((b: any) => (
+            <li class="shelf__brand">
+              <a class="shelf__link" href={`/product/#${b.id}`}>
+                {b.shots[0] && (
+                  <Frame
+                    image={b.shots[0]}
+                    num={b.num}
+                    ratio="4 / 5"
+                    sizes="(max-width: 620px) 45vw, (max-width: 1000px) 30vw, 22vw"
+                  />
+                )}
+                <span class="shelf__name">{b.name}</span>
+              </a>
+              <p class="shelf__what mono mono--lower faint">{b.product}</p>
+              <p class="shelf__proves quiet">{b.proves}</p>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="quiet more">
+        Every frame, the arguments in full and the gate each brand was built to break.
+        <a href="/product/">Open the product shelf</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- ========================================================= 07 writing -->
   <section id="writing" class="section shell spread">
     <div class="rail">
       <span class="rail__num">{mark('#writing').num}</span>
@@ -362,9 +407,9 @@ const jsonLd = graph([
     <div class="stack-block">
       <h2 class="sec__h2">{home.writingHeading}</h2>
       <p class="write__lede">
-        Published in full rather than offered on request. Scripts with their direction column
-        intact, feed writing as text rather than as a screenshot, and the long form described by
-        the argument it had to carry.
+        Published in full, not offered on request. Scripts keep their direction column, feed
+        writing is set as text and never photographed off a phone, and the long form is described
+        by the argument it had to carry.
       </p>
 
       <div class="feature">
@@ -408,7 +453,7 @@ const jsonLd = graph([
     </div>
   </section>
 
-  <!-- =========================================================== 07 about -->
+  <!-- =========================================================== 08 about -->
   <section id="about" class="section shell spread">
     <div class="rail">
       <span class="rail__num">{mark('#about').num}</span>
@@ -454,7 +499,7 @@ const jsonLd = graph([
     </div>
   </section>
 
-  <!-- ============================================================= 08 faq -->
+  <!-- ============================================================= 09 faq -->
   <section id="faq" class="section shell spread">
     <div class="rail">
       <span class="rail__num">{mark('#faq').num}</span>
@@ -775,7 +820,7 @@ const jsonLd = graph([
     font-size: var(--step--1);
   }
 
-  /* --- 03 spec ------------------------------------------------------------ */
+  /* --- 06 product --------------------------------------------------------- */
 
   .spec__flag {
     color: var(--gold);
@@ -844,7 +889,15 @@ const jsonLd = graph([
     margin: 0;
   }
 
-  /* --- 04 pipelines ------------------------------------------------------- */
+  /* --- 03 films ----------------------------------------------------------- */
+
+  .films__lede {
+    font-size: var(--step-0);
+    color: var(--newsprint-dim);
+    max-width: 58ch;
+  }
+
+  /* --- 05 pipelines ------------------------------------------------------- */
 
   .pipes__intro {
     font-size: var(--step-0);
@@ -852,14 +905,10 @@ const jsonLd = graph([
     max-width: var(--measure);
   }
 
-  .pipes {
-    display: grid;
-    gap: var(--s-8);
-  }
-
   .more-pipes {
     border-top: 1px solid var(--rule-bright);
     padding-top: var(--s-5);
+    margin-top: var(--s-4);
     display: grid;
     gap: var(--s-4);
   }
@@ -868,11 +917,6 @@ const jsonLd = graph([
     color: var(--cyan);
     font-size: 0.7rem;
     max-width: none;
-  }
-
-  .more-pipes__lede {
-    font-size: var(--step--1);
-    max-width: 56ch;
   }
 
   .more-pipes__list {
@@ -929,7 +973,7 @@ const jsonLd = graph([
     }
   }
 
-  /* --- 05 captures -------------------------------------------------------- */
+  /* --- 04 captures -------------------------------------------------------- */
 
   .caps__lede {
     font-size: var(--step-0);
@@ -972,7 +1016,7 @@ const jsonLd = graph([
     max-width: 44ch;
   }
 
-  /* --- 06 writing --------------------------------------------------------- */
+  /* --- 07 writing --------------------------------------------------------- */
 
   .write__lede {
     font-size: var(--step-0);
@@ -1109,7 +1153,7 @@ const jsonLd = graph([
     }
   }
 
-  /* --- 07 about ----------------------------------------------------------- */
+  /* --- 08 about ----------------------------------------------------------- */
 
   /* The paragraphs here are rendered inside RichText, so they never carry this
      component's scope attribute and cannot be selected by class from out here.
@@ -1169,7 +1213,7 @@ const jsonLd = graph([
     color: var(--ink);
   }
 
-  /* --- 08 faq ------------------------------------------------------------- */
+  /* --- 09 faq ------------------------------------------------------------- */
 
   .faq {
     list-style: none;

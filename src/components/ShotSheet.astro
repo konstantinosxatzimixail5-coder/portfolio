@@ -1,0 +1,285 @@
+---
+// One generation block: the still it produced, a note, and the prompt that made
+// it. The prompt panel is the reason this page exists, so it is set at a size
+// that survives a phone and given a copy control that puts the whole block on
+// the clipboard in one press.
+//
+// Open by default, every one of them. That is correct on a desktop, correct with
+// scripting off, and correct for a search engine, which is three of the four
+// cases. The fourth is a phone, where fourteen open blocks is a scroll nobody
+// finishes, so a small script closes all but the first once it can measure the
+// viewport. Doing it that way round means the failure mode is a long page, never
+// a page with its content hidden behind a control that does not work.
+
+import Frame from './Frame.astro';
+
+interface Props {
+  letter: string;
+  time: string;
+  name: string;
+  image: string;
+  alt: string;
+  note?: string;
+  prompt?: string;
+  id: string;
+  // Say that a prompt is missing only when the rest of the page has them, so a
+  // real gap is visible and a document that has simply not arrived yet is stated
+  // once in the section lede instead of once per block.
+  pendingNote?: boolean;
+}
+
+const { letter, time, name, image, alt, note, prompt, id, pendingNote = false } = Astro.props;
+
+// With nothing beside it, the still takes the width. A two column grid with an
+// empty right hand column is a layout describing an absence.
+const side = Boolean(note || prompt || pendingNote);
+---
+
+<details class="shot" id={id} data-shot open>
+  <summary class="shot__head">
+    <span class="shot__letter mono">{letter}</span>
+    <span class="shot__name">{name}</span>
+    <span class="shot__time mono faint">{time}</span>
+    <span class="shot__sign" aria-hidden="true">+</span>
+  </summary>
+
+  <div class={side ? 'shot__body' : 'shot__body shot__body--wide'}>
+    <Frame
+      src={image}
+      alt={alt}
+      num={letter}
+      sizes="(max-width: 900px) 92vw, 55vw"
+    />
+
+    {
+      side && (
+        <div class="shot__side">
+          {note && <p class="shot__note">{note}</p>}
+
+          {prompt ? (
+            <div class="panel">
+              <div class="panel__bar">
+                <span class="panel__label mono">Prompt</span>
+                <button class="panel__copy mono" type="button" data-copy hidden>
+                  Copy
+                </button>
+              </div>
+              <pre class="panel__text" data-prompt>{prompt}</pre>
+            </div>
+          ) : (
+            <p class="shot__pending mono">Prompt still to come</p>
+          )}
+        </div>
+      )
+    }
+  </div>
+</details>
+
+<style>
+  .shot {
+    border-top: 1px solid var(--rule);
+    padding-block: var(--s-4);
+  }
+
+  .shot__head {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr) auto auto;
+    align-items: baseline;
+    gap: var(--s-3);
+    min-height: var(--tap);
+    padding-block: var(--s-2);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .shot__head::-webkit-details-marker {
+    display: none;
+  }
+
+  .shot__letter {
+    color: var(--red);
+    font-size: 0.72rem;
+  }
+
+  .shot__name {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.2;
+    color: var(--newsprint);
+    transition: color var(--dur) var(--ease);
+  }
+
+  .shot__head:hover .shot__name {
+    color: var(--cyan);
+  }
+
+  .shot__time {
+    font-size: 0.66rem;
+  }
+
+  .shot__sign {
+    font-family: var(--mono);
+    font-variation-settings: var(--rec-mono);
+    color: var(--red);
+    transition: transform var(--dur) var(--ease);
+  }
+
+  .shot[open] .shot__sign {
+    transform: rotate(45deg);
+  }
+
+  .shot__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: var(--s-5);
+    align-items: start;
+    padding-top: var(--s-4);
+  }
+
+  .shot__body--wide {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media (max-width: 900px) {
+    .shot__body {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-4);
+    }
+  }
+
+  .shot__side {
+    display: grid;
+    gap: var(--s-3);
+    min-width: 0;
+  }
+
+  .shot__note {
+    font-size: var(--step--1);
+    line-height: 1.55;
+    color: var(--newsprint-dim);
+  }
+
+  .shot__pending {
+    font-size: 0.64rem;
+    color: var(--fg-faint);
+    border: 1px dashed var(--rule-bright);
+    border-radius: var(--radius);
+    padding: var(--s-3) var(--s-4);
+    max-width: none;
+  }
+
+  /* --- the prompt panel --------------------------------------------------- */
+
+  /* One step off the page ground, so the block reads as a quoted artefact and
+     not as another paragraph of the page talking about itself. */
+  .panel {
+    background: var(--ink-sunk);
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--cyan);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .panel__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    padding: 0 var(--s-3);
+    border-bottom: 1px solid var(--rule);
+    min-height: var(--tap);
+  }
+
+  .panel__label {
+    font-size: 0.62rem;
+    color: var(--cyan);
+    max-width: none;
+  }
+
+  .panel__copy {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--rule-bright);
+    border-radius: var(--radius);
+    color: var(--fg-quiet);
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-family: var(--mono);
+    font-variation-settings: var(--rec-mono);
+    padding-inline: var(--s-3);
+    min-height: 32px;
+    cursor: pointer;
+  }
+
+  .panel__copy:hover {
+    color: var(--ink);
+    background: var(--cyan);
+    border-color: var(--cyan);
+  }
+
+  .panel__copy[data-state='done'] {
+    color: var(--ink);
+    background: var(--mint);
+    border-color: var(--mint);
+  }
+
+  /* 13px is the floor at which this stays readable on a phone without the line
+     wrapping into soup. It scrolls sideways inside its own box instead. */
+  .panel__text {
+    margin: 0;
+    padding: var(--s-4);
+    font-family: var(--mono);
+    font-variation-settings: var(--rec-mono);
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: var(--newsprint-dim);
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    max-height: 26rem;
+    overflow: auto;
+  }
+</style>
+
+<script>
+  // Two upgrades, both additive.
+  //
+  // One: the copy control is markup-hidden until this runs, because a copy
+  // button on a page with no clipboard is a button that lies.
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((button) => {
+    const panel = button.closest('.panel');
+    const text = panel?.querySelector<HTMLElement>('[data-prompt]')?.textContent ?? '';
+    if (!text || !navigator.clipboard) return;
+
+    button.hidden = false;
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(text);
+        button.dataset.state = 'done';
+        button.textContent = 'Copied';
+      } catch {
+        // A refused clipboard is not worth a dialog. The text is on the page and
+        // selectable, which is the fallback either way.
+        button.textContent = 'Select and copy';
+      }
+      window.setTimeout(() => {
+        delete button.dataset.state;
+        button.textContent = 'Copy';
+      }, 2000);
+    });
+  });
+
+  // Two: on a phone, close everything but the first block. Done here rather than
+  // in the markup so that the no-script page keeps every block open.
+  const narrow = window.matchMedia('(max-width: 700px)');
+  const collapse = () => {
+    const shots = Array.from(document.querySelectorAll<HTMLDetailsElement>('[data-shot]'));
+    if (shots.length < 2) return;
+    shots.forEach((shot, i) => {
+      shot.open = narrow.matches ? i === 0 : true;
+    });
+  };
+  collapse();
+  narrow.addEventListener('change', collapse);
+</script>

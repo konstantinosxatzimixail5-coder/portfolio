@@ -88,15 +88,23 @@ export async function usedAssets(sanity) {
 // because both the full pass and the top-up pass now enumerate the same folder.
 export const INPUT_FORMATS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif', '.tif', '.tiff']);
 
-// Everything under source-assets/site/, as {file, key} pairs. The key is the
-// filename without its extension, so renaming the file renames the picture and
-// the build says so instead of serving a stale one.
-export async function localAssets() {
-  const names = await readdir(SITE_SRC).catch(() => []);
-  return names
-    .filter((name) => INPUT_FORMATS.has(extname(name).toLowerCase()))
-    .sort()
-    .map((name) => ({ file: join(SITE_SRC, name), key: `site/${basename(name, extname(name))}` }));
+// Everything under source-assets/site/, as {file, key} pairs, walking
+// subdirectories. The key is the path below source-assets/ with the extension
+// dropped, so source-assets/site/twin-moons/tm-hero.jpg is site/twin-moons/tm-hero
+// and renaming either the file or its folder renames the picture. The build then
+// says so, loudly, instead of serving a stale one under the old name.
+export async function localAssets(dir = SITE_SRC, prefix = 'site') {
+  const entries = await readdir(dir, { withFileTypes: true }).catch(() => []);
+  const out = [];
+  for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name))) {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      out.push(...(await localAssets(path, `${prefix}/${entry.name}`)));
+    } else if (INPUT_FORMATS.has(extname(entry.name).toLowerCase())) {
+      out.push({ file: path, key: `${prefix}/${basename(entry.name, extname(entry.name))}` });
+    }
+  }
+  return out;
 }
 
 export async function readManifest() {

@@ -78,15 +78,15 @@ const [markStart = '', markEnd = ''] = String(settings.monogram ?? '').split('/'
     padding-inline: 0.08em;
   }
 
+  /* Seven items, and every one of them visible at every width. It used to
+     scroll sideways when it ran out of room, which hides links behind a gesture
+     nobody knows is available: at 320px that silently swallowed the last three.
+     Wrapping instead costs a second line at the narrow end and loses nothing. */
   .nav__links {
     display: flex;
-    gap: var(--s-5);
+    flex-wrap: wrap;
+    gap: 0 var(--s-5);
     margin-right: auto;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .nav__links::-webkit-scrollbar {
-    display: none;
   }
 
   .nav__link {
@@ -126,9 +126,10 @@ const [markStart = '', markEnd = ''] = String(settings.monogram ?? '').split('/'
     color: var(--ink);
   }
 
-  /* On a phone the five links do not fit beside the mark and the reel button,
-     and a silently scrolling nav reads as a clipped one. Second row instead. */
-  @media (max-width: 720px) {
+  /* The seven links stop fitting beside the mark and the reel button well
+     before a phone: 768px was already clipping them. The threshold is set where
+     the row actually runs out of room, not where a device class begins. */
+  @media (max-width: 880px) {
     .nav__inner {
       flex-wrap: wrap;
       gap: var(--s-3);
@@ -140,7 +141,7 @@ const [markStart = '', markEnd = ''] = String(settings.monogram ?? '').split('/'
     .nav__links {
       order: 3;
       width: 100%;
-      gap: var(--s-4);
+      gap: 0 var(--s-4);
       margin-right: 0;
       border-top: 1px solid var(--rule);
     }
@@ -150,12 +151,11 @@ const [markStart = '', markEnd = ''] = String(settings.monogram ?? '').split('/'
     }
   }
 
-  @media (max-width: 360px) {
+  /* Tightening the gap buys one more item per line without touching the type
+     size, which is the one lever the brief rules out. */
+  @media (max-width: 420px) {
     .nav__links {
-      gap: var(--s-3);
-    }
-    .nav__link {
-      font-size: 0.68rem;
+      gap: 0 var(--s-3);
     }
   }
 </style>

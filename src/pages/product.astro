@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Frame from '../components/Frame.astro';
 import { getSpecPage, getSpecBrands, getSettings } from '../lib/content';
 import { fill, Words } from '../lib/text';
+import { headingFor } from '../data/sections';
 import { breadcrumbs, collection, graph, person } from '../lib/schema';
 
 const [page, specBrands, site] = await Promise.all([getSpecPage(), getSpecBrands(), getSettings()]);
@@ -20,12 +21,23 @@ const counts = {
   brands: Words(specBrands.length),
 };
 
+// The section is renamed. The honesty label is not: every brand on this shelf is
+// self-initiated and every card still carries its spec chip, which is what the
+// flag field prints. See group 3a of the brief.
+const heading = headingFor('#product', page.heading);
+
+// The brief renames the page title and the meta description along with the
+// heading, so neither can be left saying "spec shelf" while the h1 says
+// something else. The Studio still owns the sentence after the colon.
+const title = `${heading}, ${site.name}`;
+const description = page.seoDescription;
+
 const jsonLd = graph([
   person(site.domain, site),
-  collection(site.domain, '/spec/', page.heading, page.seoDescription),
+  collection(site.domain, '/product/', heading, page.seoDescription),
   breadcrumbs(site.domain, [
     { name: 'Home', path: '/' },
-    { name: page.heading, path: '/spec/' },
+    { name: heading, path: '/product/' },
   ]),
   {
     '@type': 'ItemList',
@@ -35,18 +47,18 @@ const jsonLd = graph([
       position: i + 1,
       name: b.name,
       description: b.proves,
-      url: new URL(`/spec/#${b.id}`, site.domain).href,
+      url: new URL(`/product/#${b.id}`, site.domain).href,
     })),
   },
 ]);
 ---
 
-<Base title={page.seoTitle} description={page.seoDescription} active="spec" jsonLd={jsonLd}>
+<Base title={title} description={description} active="product" jsonLd={jsonLd}>
   <article class="shelf">
     <!-- header -->
     <header class="shelf__head shell">
       <p class="mono shelf__flag">{page.flag}</p>
-      <h1 class="shelf__title">{page.heading}</h1>
+      <h1 class="shelf__title">{heading}</h1>
       <p class="shelf__lede">{fill(page.lede, counts)}</p>
       <p class="shelf__note quiet">{page.note}</p>
     </header>
