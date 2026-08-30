@@ -83,7 +83,7 @@ const jsonLd = graph([
       {
         hasDoc && (
           <p class="piece__flag mono">
-            The document is published in full underneath, and it is the client’s.
+            {sample.doc!.flag ?? 'The document is published in full underneath, and it is the client’s.'}
           </p>
         )
       }
@@ -118,6 +118,9 @@ const jsonLd = graph([
                 path={sample.doc!.path}
                 title={sample.doc!.title}
                 summary={sample.doc!.summary}
+                poster={sample.doc!.poster}
+                posterAlt={sample.doc!.posterAlt}
+                posterShape={sample.doc!.posterShape}
                 shape={sample.doc!.shape ?? 'a wide-format document'}
                 id="sample-doc"
               />

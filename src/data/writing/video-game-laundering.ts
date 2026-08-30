@@ -11,6 +11,22 @@ export const videoGameLaundering: WritingSample = {
   year: '2024',
   format: 'White paper, roughly 1,800 words, with three case studies',
   featured: true,
+  // Set as a document from the text below, and not a scan of the client's own
+  // edition: the paragraph that sold their product closes the original, and the
+  // note at the foot of this piece says it was left off. Regenerate with
+  // scripts/whitepaper.mjs after editing anything in `body`.
+  doc: {
+    path: '/docs/Money_Laundering_in_Video_Games.pdf',
+    title: 'The white paper',
+    summary:
+      'The same argument, set as a six-page paper: a cover carrying the brief, seven numbered sections, the three cases each on their own card, and the closing line alone on a dark page. Made for reading on a screen and for printing on A4.',
+    shape: 'a six-page A4 paper',
+    poster: 'site/doc-cover-whitepaper',
+    posterAlt:
+      'The cover of the paper: the title set large in white on a near-black page, over the brief for who it was written for and what it had to do.',
+    posterShape: 'page',
+    flag: 'The paper is set as a document underneath, typeset here from the text on this page.',
+  },
   standfirst:
     'A compliance argument written for people who do not play games, about an economy that behaves like a bank and is regulated like a toy shop.',
   meta: [

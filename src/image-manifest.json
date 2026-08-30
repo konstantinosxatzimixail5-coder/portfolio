@@ -1847,6 +1847,122 @@
     ],
     "fallback": "/img/site/capture-sunday-league-960.webp"
   },
+  "site/doc-cover-assistant": {
+    "key": "site/doc-cover-assistant",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7773,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/doc-cover-assistant-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/doc-cover-assistant-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/doc-cover-assistant-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/doc-cover-assistant-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/doc-cover-assistant-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/doc-cover-assistant-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/doc-cover-assistant-1600.webp"
+  },
+  "site/doc-cover-case-study": {
+    "key": "site/doc-cover-case-study",
+    "width": 960,
+    "height": 1359,
+    "aspect": 0.7066,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/doc-cover-case-study-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/doc-cover-case-study-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/doc-cover-case-study-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/doc-cover-case-study-960.webp"
+      }
+    ],
+    "fallback": "/img/site/doc-cover-case-study-960.webp"
+  },
+  "site/doc-cover-ebook": {
+    "key": "site/doc-cover-ebook",
+    "width": 960,
+    "height": 1357,
+    "aspect": 0.7075,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/doc-cover-ebook-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/doc-cover-ebook-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/doc-cover-ebook-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/doc-cover-ebook-960.webp"
+      }
+    ],
+    "fallback": "/img/site/doc-cover-ebook-960.webp"
+  },
+  "site/doc-cover-whitepaper": {
+    "key": "site/doc-cover-whitepaper",
+    "width": 960,
+    "height": 1357,
+    "aspect": 0.7073,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/doc-cover-whitepaper-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/doc-cover-whitepaper-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/doc-cover-whitepaper-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/doc-cover-whitepaper-960.webp"
+      }
+    ],
+    "fallback": "/img/site/doc-cover-whitepaper-960.webp"
+  },
   "site/skyrunner/sr-a-launch": {
     "key": "site/skyrunner/sr-a-launch",
     "width": 1600,

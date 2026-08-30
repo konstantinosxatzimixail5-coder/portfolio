@@ -34,6 +34,11 @@ interface Props {
   summary: string;
   poster?: string; // manifest key
   posterAlt?: string;
+  // A cover shot of a portrait page is a tall picture, and at plate width it
+  // pushes the controls under it off the screen. 'page' holds it to the width a
+  // cover is actually read at; 'wide' is a strip or a landscape sheet and fills
+  // the plate.
+  posterShape?: 'wide' | 'page';
   // What the document is, for the line shown on a phone.
   shape?: string;
   id?: string;
@@ -45,6 +50,7 @@ const {
   summary,
   poster,
   posterAlt,
+  posterShape = 'wide',
   shape = 'a wide-format sheet',
   id = 'document',
 } = Astro.props;
@@ -59,7 +65,16 @@ const file = path.split('/').pop() ?? 'document.pdf';
   <div class="doc__plate">
     {
       poster && posterAlt ? (
-        <Frame src={poster} alt={posterAlt} sizes="(max-width: 900px) 92vw, 70vw" />
+        <Frame
+          src={poster}
+          alt={posterAlt}
+          class={posterShape === 'page' ? 'doc-cover doc-cover--page' : 'doc-cover'}
+          sizes={
+            posterShape === 'page'
+              ? '(max-width: 900px) 60vw, 22rem'
+              : '(max-width: 900px) 92vw, 70vw'
+          }
+        />
       ) : (
         <p class="doc__cover mono" aria-hidden="true">
           {file}
@@ -116,6 +131,13 @@ const file = path.split('/').pop() ?? 'document.pdf';
     background: var(--ink-sunk);
     border: 1px solid var(--rule);
     border-radius: var(--radius);
+  }
+
+  /* Frame is a component, so its root is reached by the class handed to it
+     rather than by this file's scope. */
+  .doc__plate :global(.doc-cover--page) {
+    max-width: 22rem;
+    margin-inline: auto;
   }
 
   .doc__cover {

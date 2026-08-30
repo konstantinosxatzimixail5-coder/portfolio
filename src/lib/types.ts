@@ -77,8 +77,23 @@ export interface WritingSample {
   // Two samples sit on the front page. This is which two.
   featured?: boolean;
   // The document itself, when it is published alongside the write-up. The page
-  // renders a reader for it under the prose.
-  doc?: { path: string; title: string; summary: string; shape?: string };
+  // renders a reader for it under the prose. `flag` overrides the line above the
+  // fold, which by default says the document is the client's: one of these is
+  // set here from the text on the page instead, and saying otherwise would be a
+  // small lie printed in the header.
+  doc?: {
+    path: string;
+    title: string;
+    summary: string;
+    shape?: string;
+    flag?: string;
+    // The document's own first page, rendered to source-assets/site/ so the
+    // reader opens on a cover and not on a filename. `posterShape` is 'page'
+    // for a portrait cover and 'wide' for a landscape one.
+    poster?: string;
+    posterAlt?: string;
+    posterShape?: 'wide' | 'page';
+  };
   meta?: { key: string; value: string }[];
   body: Block[];
 }

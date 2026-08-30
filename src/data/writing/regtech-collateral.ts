@@ -23,6 +23,10 @@ export const complianceEbook: WritingSample = {
     summary:
       'The document itself, front to back. Eight pages on why compliance is hard before a single page on what to buy, then the platform, the screening data, the export control logic and the cost case with its parameters printed beside it.',
     shape: 'a long designed document',
+    poster: 'site/doc-cover-ebook',
+    posterAlt:
+      'The ebook cover: an aircraft and a container ship drawn over a pale city skyline, under the title Process Automation Solutions for International Trade and Transport Compliance.',
+    posterShape: 'page',
   },
   standfirst:
     'Export controls, sanctions screening and dual-use classification, written so a freight forwarder finishes it.',
@@ -80,6 +84,9 @@ export const knowledgeAssistantBrochure: WritingSample = {
     summary:
       'The document itself. The portfolio map, the challenges the product answers, the manual process set against the assisted one row by row, the cost drivers with their arithmetic shown, the retrieval architecture and the pilot plan with a duration against every stage.',
     shape: 'a wide-format brochure',
+    poster: 'site/doc-cover-assistant',
+    posterAlt:
+      'The brochure cover: a night port with cranes and stacked containers behind the product name and the line Personal Customs and Regulations Knowledge Assistant.',
   },
   standfirst:
     'Selling a conversational assistant to an audience professionally trained to distrust confident answers.',
@@ -136,6 +143,10 @@ export const caseStudyBrochure: WritingSample = {
     summary:
       'The document itself. Seven outcome sections, each opening on the mechanism and closing on the result, then a commitments page set in a flatter register on purpose.',
     shape: 'a wide-format brochure',
+    poster: 'site/doc-cover-case-study',
+    posterAlt:
+      'The case study cover: a rendered atrium with figures talking under a pale globe, titled Case Study.',
+    posterShape: 'page',
   },
   standfirst:
     'Seven outcomes, each one written as a mechanism first and a result second, so the result is checkable.',
