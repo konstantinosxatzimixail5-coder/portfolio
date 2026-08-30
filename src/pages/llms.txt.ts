@@ -42,7 +42,7 @@ export const GET: APIRoute = async () => {
     '',
     `- Name: ${site.name}`,
     `- Role: ${profile.role}`,
-    `- Based: ${profile.base}`,
+    `- Location: ${profile.base}`,
     `- Working languages: English and Greek`,
     `- Email: ${site.email}`,
     `- Phone and WhatsApp: ${profile.phone.display}`,

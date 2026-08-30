@@ -31,12 +31,13 @@ export const profile = {
   // One sentence, used in the meta description and in the structured data. It
   // has to survive being read aloud by an assistant with no page around it.
   //
-  // GenAI, not the bare two letters. The site style rules out "AI" standing on
-  // its own in body copy, and GenAI is the word this sentence was briefed with
-  // in the first place. The hyphenated role line above is a fixed label and
-  // keeps its own spelling.
+  // Two sentences, because this one is read without the page around it: an
+  // assistant quoting the site, a search result, the Person description in the
+  // structured data. The first says what the person is, the second names what is
+  // actually on the shelves. "AI" never stands on its own in body copy here; the
+  // hyphenated role line above is a fixed label and keeps its own spelling.
   claim:
-    'A storyteller at heart who builds GenAI growth systems and generative workflows into creative pipelines and marketing teams.',
+    'A storyteller who builds the machine as well as the story. Scripts, shorts, invented brands and photoreal frames come out of generative pipelines a marketing team can run without me.',
 
   phone: {
     // E.164 for the machines, spaced for the humans, digits only for wa.me.

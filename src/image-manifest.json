@@ -2278,6 +2278,41 @@
     ],
     "fallback": "/img/site/skyrunner/sr-hero-1600.webp"
   },
+  "site/skyrunner/sr-poster": {
+    "key": "site/skyrunner/sr-poster",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7768,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-poster-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-poster-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-poster-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/skyrunner/sr-poster-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/skyrunner/sr-poster-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/skyrunner/sr-poster-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/skyrunner/sr-poster-1600.webp"
+  },
   "site/skyrunner/sr-route-map": {
     "key": "site/skyrunner/sr-route-map",
     "width": 1600,
@@ -2697,6 +2732,41 @@
       }
     ],
     "fallback": "/img/site/twin-moons/tm-hero-1600.webp"
+  },
+  "site/twin-moons/tm-poster": {
+    "key": "site/twin-moons/tm-poster",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7768,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-poster-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-poster-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-poster-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/twin-moons/tm-poster-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/twin-moons/tm-poster-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/site/twin-moons/tm-poster-1600.webp"
+      }
+    ],
+    "fallback": "/img/site/twin-moons/tm-poster-1600.webp"
   },
   "site/twin-moons/tm-strip": {
     "key": "site/twin-moons/tm-strip",

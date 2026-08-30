@@ -40,23 +40,27 @@ export const sections: SectionDef[] = [
     heading: 'AI Filmmaking Workflows',
   },
   {
+    href: '#product',
+    label: 'AI Product Photography',
+    rail: 'Product',
+    note: 'Invented brands and product sets, labelled as spec throughout',
+    heading: 'AI Product Photography',
+  },
+  {
     href: '#captures',
     label: 'Photoreal captures',
     rail: 'Captures',
     note: '{frames} generated human frames, and what each one was built to break',
   },
   {
+    // The navigation says Pipelines, because seven short labels are what fits
+    // across a phone. The section says what they are, the same way the films and
+    // the product shelf do.
     href: '#pipelines',
-    label: 'Pipelines',
+    label: 'AI Creative Pipelines',
     rail: 'Pipelines',
     note: '{pipelines} of them, stage by stage, with the gates that stop a frame',
-  },
-  {
-    href: '#product',
-    label: 'AI Product Photography',
-    rail: 'Product',
-    note: 'Invented brands and product sets, labelled as spec throughout',
-    heading: 'AI Product Photography',
+    heading: 'AI Creative Pipelines',
   },
   {
     href: '#writing',
@@ -102,7 +106,10 @@ export function composeSections(
     const row = rows.get(s.href);
     return {
       ...s,
-      label: row?.label || s.label,
+      // A section that owns its heading owns the index entry too. Letting the
+      // Studio rename one of the two is how the contents list and the heading
+      // twelve screens down end up disagreeing.
+      label: s.heading ?? row?.label ?? s.label,
       rail: row?.rail || row?.label || s.rail,
       note: row?.note || s.note,
       num: String(i + 1).padStart(2, '0'),
@@ -111,7 +118,8 @@ export function composeSections(
 }
 
 // The heading a section prints above itself. A section that owns its heading
-// keeps it whatever the CMS says, because the heading and the navigation label
-// have to be the same words.
+// keeps it whatever the CMS says. The navigation keeps its own short label: the
+// bar has to hold seven of them across a phone, and "AI Creative Pipelines" is
+// not a word that fits there.
 export const headingFor = (href: string, fallback: string): string =>
   sections.find((s) => s.href === href)?.heading ?? fallback;

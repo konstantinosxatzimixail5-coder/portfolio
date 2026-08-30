@@ -40,8 +40,8 @@ const [home, site, work, allPipelines, reel, specPage, specBrands, lead] = await
 ]);
 
 // One pipeline on the page, in full, and the other six as rows underneath. The
-// one is the product photography line, which now runs directly above the shelf
-// it produces. A missing slug is a wiring error worth failing on: the
+// one is the product photography line, and it reads directly under the shelf it
+// produced: the shelf makes the claim, the line shows the work behind it. A missing slug is a wiring error worth failing on: the
 // alternative is a front page that silently drops its only diagram.
 if (!lead) {
   throw new Error(
@@ -109,8 +109,6 @@ const jsonLd = graph([
   <section class="open shell">
     <p class="mono open__slug">
       <span class="open__role">{site.role}</span>
-      <span class="open__sep" aria-hidden="true">/</span>
-      <span class="faint">{site.base}</span>
     </p>
 
     <div class="open__top">
@@ -118,6 +116,11 @@ const jsonLd = graph([
         <h1 class="open__line">{home.headline}</h1>
 
         <p class="open__lede">{home.lede}</p>
+
+        <!-- Under the description and above the claim, which is where a reader
+             asks it. It used to sit in the label strip at the top, where it was
+             the second thing on the page and the least urgent. -->
+        <p class="open__base mono">{site.base}</p>
 
         <p class="open__claim">{site.claim}</p>
 
@@ -243,8 +246,8 @@ const jsonLd = graph([
     <div class="stack-block">
       <h2 class="sec__h2">{headingFor('#films', 'AI Filmmaking Workflows')}</h2>
       <p class="films__lede">
-        Two original shorts, written, designed, directed and cut inside one generative pipeline.
-        The process sheets are here in full.
+        Two original shorts. I wrote, designed, directed and cut both of them inside a
+        generative pipeline, and the sheet behind each one is here in full.
       </p>
 
       <div class="grid">
@@ -257,9 +260,9 @@ const jsonLd = graph([
               kind="Original"
               year={f.runtime}
               problem={f.standfirst}
-              src={f.strip}
-              alt={f.stripAlt}
-              ratio="1800 / 253"
+              src={f.poster}
+              alt={f.posterAlt}
+              ratio="16 / 9"
             />
           ))
         }
@@ -267,90 +270,7 @@ const jsonLd = graph([
     </div>
   </section>
 
-  <!-- ======================================================== 04 captures -->
-  <section id="captures" class="section shell spread">
-    <div class="rail">
-      <span class="rail__num">{mark('#captures').num}</span>
-      <span class="rail__slug">{mark('#captures').rail}</span>
-    </div>
-
-    <div class="stack-block">
-      <h2 class="sec__h2">Photoreal captures</h2>
-      <p class="caps__lede">
-        Generated human frames, kept for one reason each. A face at rest is the easiest thing
-        these models make. Skin under unflattering daylight, hands doing skilled work, two people
-        with a real eyeline between them and wet ground throwing the light back up are not, and
-        those are what is on this shelf.
-      </p>
-
-      <ul class="caps">
-        {
-          captureLead.map((c, i) => (
-            <li class="cap">
-              <Frame
-                src={c.key}
-                alt={c.alt}
-                num={String(i + 1).padStart(2, '0')}
-                focus={c.focus}
-                ratio="4 / 3"
-                sizes="(max-width: 700px) 90vw, 42vw"
-              />
-              <p class="cap__title">{c.title}</p>
-              <p class="cap__proves quiet">{c.proves}</p>
-            </li>
-          ))
-        }
-      </ul>
-
-      <p class="quiet more">
-        Every frame is generated and labelled as generated.
-        <a href="/captures/">See all {counts.frames}</a>, with what each one was built to break.
-      </p>
-    </div>
-  </section>
-
-  <!-- ======================================================= 05 pipelines -->
-  <section id="pipelines" class="section shell spread">
-    <div class="rail">
-      <span class="rail__num">{mark('#pipelines').num}</span>
-      <span class="rail__slug">{mark('#pipelines').rail}</span>
-    </div>
-
-    <div class="stack-block">
-      <h2 class="sec__h2">{home.pipelinesHeading}</h2>
-      <p class="pipes__intro">
-        {Words(allPipelines.length)} of these are written down, each with its stages, the tool that
-        runs every one of them, and the control gates that stop a frame from shipping. This is the
-        line behind the product shelf below.
-      </p>
-
-      <Strip {...lead} />
-
-      <!-- the other six -->
-      <aside class="more-pipes">
-        <p class="mono more-pipes__head">The other {words(restOfPipelines.length)}</p>
-        <ol class="more-pipes__list">
-          {
-            restOfPipelines.map((p: any) => (
-              <li>
-                <a class="more-pipes__row" href={`/pipelines/${p.id}/`}>
-                  <span class="more-pipes__num mono">{p.num}</span>
-                  <span class="more-pipes__title">{p.title}</span>
-                  <span class="more-pipes__mech mono mono--lower faint">{p.mechanism}</span>
-                </a>
-              </li>
-            ))
-          }
-        </ol>
-        <p class="quiet more">
-          <a href="/pipelines/">All {words(allPipelines.length)} in full</a>, stages, prompts and
-          gates included.
-        </p>
-      </aside>
-    </div>
-  </section>
-
-  <!-- ========================================================= 06 product -->
+  <!-- ========================================================= 04 product -->
   <section id="product" class="section shell spread">
     <div class="rail">
       <span class="rail__num">{mark('#product').num}</span>
@@ -420,6 +340,89 @@ const jsonLd = graph([
         Every frame, the arguments in full and the gate each brand was built to break.
         <a href="/product/">Open the product shelf</a>.
       </p>
+    </div>
+  </section>
+
+  <!-- ======================================================== 05 captures -->
+  <section id="captures" class="section shell spread">
+    <div class="rail">
+      <span class="rail__num">{mark('#captures').num}</span>
+      <span class="rail__slug">{mark('#captures').rail}</span>
+    </div>
+
+    <div class="stack-block">
+      <h2 class="sec__h2">Photoreal captures</h2>
+      <p class="caps__lede">
+        Generated human frames, kept for one reason each. A face at rest is the easiest thing
+        these models make. Skin under unflattering daylight, hands doing skilled work, two people
+        with a real eyeline between them and wet ground throwing the light back up are not, and
+        those are what is on this shelf.
+      </p>
+
+      <ul class="caps">
+        {
+          captureLead.map((c, i) => (
+            <li class="cap">
+              <Frame
+                src={c.key}
+                alt={c.alt}
+                num={String(i + 1).padStart(2, '0')}
+                focus={c.focus}
+                ratio="4 / 3"
+                sizes="(max-width: 700px) 90vw, 42vw"
+              />
+              <p class="cap__title">{c.title}</p>
+              <p class="cap__proves quiet">{c.proves}</p>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="quiet more">
+        Every frame is generated and labelled as generated.
+        <a href="/captures/">See all {counts.frames}</a>, with what each one was built to break.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======================================================= 06 pipelines -->
+  <section id="pipelines" class="section shell spread">
+    <div class="rail">
+      <span class="rail__num">{mark('#pipelines').num}</span>
+      <span class="rail__slug">{mark('#pipelines').rail}</span>
+    </div>
+
+    <div class="stack-block">
+      <h2 class="sec__h2">{headingFor('#pipelines', home.pipelinesHeading)}</h2>
+      <p class="pipes__intro">
+        {Words(allPipelines.length)} of these are written down, each with its stages, the tool
+        behind each stage, and the control gates that stop a frame from shipping. This is the line
+        behind the product shelf above.
+      </p>
+
+      <Strip {...lead} />
+
+      <!-- the other six -->
+      <aside class="more-pipes">
+        <p class="mono more-pipes__head">The other {words(restOfPipelines.length)}</p>
+        <ol class="more-pipes__list">
+          {
+            restOfPipelines.map((p: any) => (
+              <li>
+                <a class="more-pipes__row" href={`/pipelines/${p.id}/`}>
+                  <span class="more-pipes__num mono">{p.num}</span>
+                  <span class="more-pipes__title">{p.title}</span>
+                  <span class="more-pipes__mech mono mono--lower faint">{p.mechanism}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+        <p class="quiet more">
+          <a href="/pipelines/">All {words(allPipelines.length)} in full</a>, stages, prompts and
+          gates included.
+        </p>
+      </aside>
     </div>
   </section>
 
@@ -612,6 +615,17 @@ const jsonLd = graph([
     line-height: 1.42;
     max-width: 44ch;
     color: var(--newsprint-dim);
+  }
+
+  /* Where a reader asks it: under the description, in the same register as the
+     other labels on the page, and quiet enough that it does not compete with
+     the claim under it. */
+  .open__base {
+    margin-top: var(--s-3);
+    color: var(--fg-faint);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    max-width: none;
   }
 
   /* The positioning line. Set against a rule rather than in a box, because it

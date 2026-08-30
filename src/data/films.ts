@@ -36,6 +36,11 @@ export interface Film {
   logline: string;
   hero: string;
   heroAlt: string;
+  // The key art. It leads the film's card on the front page, where a four frame
+  // contact strip was too small to carry a title and read as a decoration
+  // instead of as a film.
+  poster: string;
+  posterAlt: string;
   strip: string;
   stripAlt: string;
   closing: string;
@@ -79,6 +84,9 @@ export const films: Film[] = [
       'A rooftop arena under two moons, a bladesman clearing it, and a phase assassin arriving on a burning wing.',
     logline:
       'A red-armoured bladesman clears a rooftop arena of engineered predators while a phase assassin cuts his way off a burning strike deck above the same city. The two survivors meet on wet metal under twin moons, and the rain does the talking.',
+    poster: 'site/twin-moons/tm-poster',
+    posterAlt:
+      'The Twin Moons key art: two swordsmen facing each other across a wet neon platform in the rain, one hooded with a magenta blade and one in red armour with a cyan blade, two moons and a burning wreck behind them over a dark city, the title set between them.',
     hero: 'site/twin-moons/tm-hero',
     heroAlt:
       'A red-armoured bladesman in silhouette holds a glowing katana level while an enormous orange fireball fills the sky behind him, a hooded figure with a violet blade below him at the edge of frame.',
@@ -682,6 +690,9 @@ Two figures only, screen sides fixed. End the block on a static frame with both 
       'A glider run through a floating city, flown along a route drawn by hand before a single frame was generated.',
     logline:
       'A pocket-sized scout flies her own glider through a floating spire city, threads the arcane rings and the waterfalls at full speed, drops onto a terrace held by armoured enforcers, and gets off the machine already fighting.',
+    poster: 'site/skyrunner/sr-poster',
+    posterAlt:
+      'The Skyrunner key art: a small fox pilot in goggles and a flight coat stands beside her folded glider on a wet golden terrace, an armoured figure at each edge of the frame, a floating spire city behind her, the title in gold above.',
     hero: 'site/skyrunner/sr-hero',
     heroAlt:
       'The glider seen from behind with its wings spread, diving past a pale tower through blue and violet cloud.',
