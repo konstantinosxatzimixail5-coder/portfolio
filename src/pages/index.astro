@@ -109,6 +109,7 @@ const jsonLd = graph([
   <section class="open shell">
     <p class="mono open__slug">
       <span class="open__role">{site.role}</span>
+      <span class="open__base">{site.base}</span>
     </p>
 
     <div class="open__top">
@@ -116,11 +117,6 @@ const jsonLd = graph([
         <h1 class="open__line">{home.headline}</h1>
 
         <p class="open__lede">{home.lede}</p>
-
-        <!-- Under the description and above the claim, which is where a reader
-             asks it. It used to sit in the label strip at the top, where it was
-             the second thing on the page and the least urgent. -->
-        <p class="open__base mono">{site.base}</p>
 
         <p class="open__claim">{site.claim}</p>
 
@@ -564,24 +560,21 @@ const jsonLd = graph([
     padding-bottom: var(--s-7);
   }
 
-  /* The role line is a sentence now rather than a label, so it is allowed to
-     wrap and the two halves stay on their own lines when it does. */
+  /* Two lines: what the person does, then where they are. They used to share a
+     line with a slash between them, which put the location at the end of a
+     seventy-eight character label where it read as an afterthought. */
   .open__slug {
     font-size: 0.66rem;
     max-width: none;
     margin-bottom: var(--s-6);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 0.35rem;
+    display: grid;
+    gap: 0.3rem;
+    justify-items: start;
     color: var(--fg-quiet);
   }
 
   .open__role {
     color: var(--newsprint-dim);
-  }
-
-  .open__sep {
-    color: var(--red);
   }
 
   /* Headline left, one trained creator on the right, so the first screen
@@ -621,11 +614,7 @@ const jsonLd = graph([
      other labels on the page, and quiet enough that it does not compete with
      the claim under it. */
   .open__base {
-    margin-top: var(--s-3);
     color: var(--fg-faint);
-    font-size: 0.7rem;
-    letter-spacing: 0.06em;
-    max-width: none;
   }
 
   /* The positioning line. Set against a rule rather than in a box, because it
