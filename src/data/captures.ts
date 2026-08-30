@@ -9,7 +9,11 @@
 // shelf.
 //
 // Every one of these is labelled as generated wherever it appears. That is not
-// modesty, it is the same honesty rule that puts "spec" on the spec shelf.
+// modesty, it is the same honesty rule that puts "spec" on the product shelf.
+//
+// Order matters: the front page shows the first four, so the strongest frame
+// leads. The late shift opens because the reflection in it is the hardest thing
+// on the shelf and the one a sceptical eye goes to first.
 
 export interface Capture {
   key: string; // manifest key
@@ -23,6 +27,14 @@ export interface Capture {
 }
 
 export const captures: Capture[] = [
+  {
+    key: 'site/capture-late-shift',
+    title: 'The late shift',
+    alt: 'A woman in a black work fleece with a name badge rests her head against a bus window at night, holding a phone, her face reflected in the glass alongside the traffic and shop lights of the street outside.',
+    proves:
+      'A reflection that is a second performance. The face in the glass has to be the same face, at the correct angle, over a street that is genuinely behind her.',
+    register: 'Night interior, fluorescent overhead, wide and close',
+  },
   {
     key: 'site/capture-sunday-league',
     title: 'Sunday league',
@@ -81,14 +93,6 @@ export const captures: Capture[] = [
     proves:
       'Age written into a face properly. Sun raking across skin that has weather in it, and a look that is aimed at something outside the frame.',
     register: 'Documentary portrait, late golden hour, 85mm',
-  },
-  {
-    key: 'site/capture-late-shift',
-    title: 'The late shift',
-    alt: 'A woman in a black work fleece with a name badge rests her head against a bus window at night, holding a phone, her face reflected in the glass alongside the traffic and shop lights of the street outside.',
-    proves:
-      'A reflection that is a second performance. The face in the glass has to be the same face, at the correct angle, over a street that is genuinely behind her.',
-    register: 'Night interior, fluorescent overhead, wide and close',
   },
 ];
 

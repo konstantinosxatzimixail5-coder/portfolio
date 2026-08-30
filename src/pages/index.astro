@@ -19,6 +19,7 @@ import {
   captures,
   faqs,
   featuredWriting,
+  pairFor,
   writingSamples,
   writingGroups,
   profile,
@@ -370,23 +371,48 @@ const jsonLd = graph([
 
       <ul class="shelf">
         {
-          specBrands.map((b: any) => (
-            <li class="shelf__brand">
-              <a class="shelf__link" href={`/product/#${b.id}`}>
-                {b.shots[0] && (
-                  <Frame
-                    image={b.shots[0]}
-                    num={b.num}
-                    ratio="4 / 5"
-                    sizes="(max-width: 620px) 45vw, (max-width: 1000px) 30vw, 22vw"
-                  />
-                )}
-                <span class="shelf__name">{b.name}</span>
-              </a>
-              <p class="shelf__what mono mono--lower faint">{b.product}</p>
-              <p class="shelf__proves quiet">{b.proves}</p>
-            </li>
-          ))
+          specBrands.map((b: any) => {
+            // Three brands show the studio frame beside the creator frame. The
+            // rest keep their single image until their pair is supplied.
+            const pair = pairFor(b.name);
+            return (
+              <li class={pair ? 'shelf__brand shelf__brand--pair' : 'shelf__brand'}>
+                <a class="shelf__link" href={`/product/#${b.id}`}>
+                  {pair ? (
+                    <span class="pair">
+                      <Frame
+                        src={pair.product.key}
+                        alt={pair.product.alt}
+                        num={b.num}
+                        ratio="4 / 5"
+                        sizes="(max-width: 620px) 45vw, 24vw"
+                      />
+                      <Frame
+                        src={pair.ugc.key}
+                        alt={pair.ugc.alt}
+                        ratio="4 / 5"
+                        sizes="(max-width: 620px) 45vw, 24vw"
+                      />
+                    </span>
+                  ) : (
+                    b.shots[0] && (
+                      <Frame
+                        image={b.shots[0]}
+                        num={b.num}
+                        ratio="4 / 5"
+                        sizes="(max-width: 620px) 45vw, (max-width: 1000px) 30vw, 22vw"
+                      />
+                    )
+                  )}
+                  <span class="shelf__name">{b.name}</span>
+                </a>
+                <p class="shelf__what mono mono--lower faint">
+                  {pair ? 'Product / UGC' : b.product}
+                </p>
+                <p class="shelf__proves quiet">{b.proves}</p>
+              </li>
+            );
+          })
         }
       </ul>
 
@@ -840,8 +866,32 @@ const jsonLd = graph([
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
     gap: var(--s-5) var(--s-4);
+  }
+
+  /* A pair needs two card widths, so it takes two tracks and the single-image
+     brands flow around it. */
+  .shelf__brand--pair {
+    grid-column: span 2;
+  }
+
+  /* Side by side down to 380px. Stacking them would put the two frames on
+     different screens, and comparing them is the whole reason they are here. */
+  .pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2px;
+  }
+
+  @media (max-width: 380px) {
+    .shelf__brand--pair {
+      grid-column: auto;
+    }
+    .pair {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-2);
+    }
   }
 
   .shelf__brand {

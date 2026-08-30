@@ -1,9 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Strip from '../../components/Strip.astro';
-import DocReader from '../../components/DocReader.astro';
 import { getSettings, getAllPipelines } from '../../lib/content';
-import { docExists, pipelineDoc } from '../../lib/docs';
 import { breadcrumbs, graph, person } from '../../lib/schema';
 
 export async function getStaticPaths() {
@@ -24,11 +22,11 @@ const site = await getSettings();
 const title = `${pipeline.title}, pipeline ${pipeline.num} | ${site.name}`;
 const description = pipeline.summary;
 
-// Only the four transcribed in this repository carry the second sheet. The three
-// edited in the Studio have their stages and gates and nothing else, so those
-// blocks stay off their pages instead of rendering empty headings.
-const doc = pipelineDoc(pipeline.id);
-const hasDoc = docExists(doc);
+// No reader on these pages, deliberately. The sheet's whole contents are on the
+// page already: the diagram, the stage notes, the gates, the prompt architecture
+// and the rhythm. Embedding the PDF underneath would be the same document twice.
+// Only the four transcribed in this repository carry the second sheet, so the
+// prompt and rhythm blocks render for those and stay off the other three.
 
 const jsonLd = graph([
   person(site.domain, site),
@@ -208,27 +206,6 @@ const jsonLd = graph([
               <span class="faint">Loop</span>
               {pipeline.loop}
             </p>
-          </div>
-        </section>
-      )
-    }
-
-    <!-- the sheet itself -->
-    {
-      hasDoc && (
-        <section class="line__sec shell spread" id="sheet">
-          <div class="rail">
-            <span class="rail__num">·</span>
-            <span class="rail__slug">Sheet</span>
-          </div>
-          <div class="line__col">
-            <DocReader
-              path={doc}
-              title={`${pipeline.title}, the sheet`}
-              summary={`The source document this page is transcribed from, two wide-format sheets. The first carries the mechanism, the six stages and what runs each one. The second carries the prompt architecture, the control gates and the delivery rhythm, set out the way they are used on a job.`}
-              shape="a two-sheet wide-format document"
-              id="pipeline-doc"
-            />
           </div>
         </section>
       )

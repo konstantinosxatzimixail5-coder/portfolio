@@ -223,7 +223,12 @@ Where documents go:
 |---|---|
 | `public/docs/TwinMoons_Process_TaleCrafters.pdf` | The Twin Moons process document, eleven sheets |
 | `public/docs/Skyrunner_Process_TaleCrafters.pdf` | The Skyrunner process document, eleven sheets |
-| `public/docs/pipelines/<slug>.pdf` | One KC pipeline sheet, named for the pipeline slug: `voice-vault`, `split-at-source`, `identity-lock`, `multiplier`, `phantom-set`, `continuity-spine`, `operator-stack`. None of these are here yet |
+| `public/docs/Trade_Compliance_Ebook.pdf` | The ebook, under its write-up on `/writing/compliance-ebook/` |
+| `public/docs/Customs_Knowledge_Assistant_Brochure.pdf` | The product brochure, under its write-up |
+| `public/docs/Compliance_Case_Study_Brochure.pdf` | The case study brochure, under its write-up |
+
+Pipeline pages carry no reader. Their sheets are transcribed onto the page in
+full, so embedding the PDF underneath would print the same document twice.
 
 ---
 

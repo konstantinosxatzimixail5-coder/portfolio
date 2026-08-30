@@ -111,6 +111,7 @@ export const getSpecBrands = once(async () => {
 export { morePipelines, HOME_PIPELINE } from '../data/pipelines';
 export { films, findFilm } from '../data/films';
 export { captures } from '../data/captures';
+export { pairFor } from '../data/product-pairs';
 export { faqs } from '../data/faq';
 export {
   writingSamples,

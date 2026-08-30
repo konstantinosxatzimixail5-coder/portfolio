@@ -76,8 +76,9 @@ export interface WritingSample {
   standfirst: string; // the one line that sells the piece in an index
   // Two samples sit on the front page. This is which two.
   featured?: boolean;
-  // Long-form client documents are described and quoted, not republished whole.
-  extractOnly?: boolean;
+  // The document itself, when it is published alongside the write-up. The page
+  // renders a reader for it under the prose.
+  doc?: { path: string; title: string; summary: string; shape?: string };
   meta?: { key: string; value: string }[];
   body: Block[];
 }

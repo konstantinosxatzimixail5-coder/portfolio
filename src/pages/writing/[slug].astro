@@ -2,7 +2,9 @@
 import Base from '../../layouts/Base.astro';
 import Prose from '../../components/Prose.astro';
 import WhatsApp from '../../components/WhatsApp.astro';
+import DocReader from '../../components/DocReader.astro';
 import { getSettings, writingSamples } from '../../lib/content';
+import { docExists } from '../../lib/docs';
 import { breadcrumbs, graph, person, writingArticle } from '../../lib/schema';
 
 export function getStaticPaths() {
@@ -24,9 +26,28 @@ const next = writingSamples[i + 1];
 const title = `${sample.title} | Writing | ${site.name}`;
 const description = sample.standfirst;
 
+const spec = sample.kind !== 'Client work';
+
+// Long-form pieces publish the document alongside the write-up. The reader is
+// only offered when the file is actually here, so a moved PDF costs a section
+// and never an empty frame.
+const hasDoc = Boolean(sample.doc) && docExists(sample.doc!.path);
+
 const jsonLd = graph([
   person(site.domain, site),
-  writingArticle(site.domain, sample),
+  {
+    ...writingArticle(site.domain, sample),
+    ...(hasDoc
+      ? {
+          associatedMedia: {
+            '@type': 'MediaObject',
+            contentUrl: new URL(sample.doc!.path, site.domain).href,
+            encodingFormat: 'application/pdf',
+            name: sample.doc!.title,
+          },
+        }
+      : {}),
+  },
   breadcrumbs(site.domain, [
     { name: 'Home', path: '/' },
     { name: 'Writing', path: '/writing/' },
@@ -34,7 +55,6 @@ const jsonLd = graph([
   ]),
 ]);
 
-const spec = sample.kind !== 'Client work';
 ---
 
 <Base title={title} description={description} active="writing" jsonLd={jsonLd}>
@@ -61,9 +81,9 @@ const spec = sample.kind !== 'Client work';
       <p class="piece__format mono mono--lower faint">{sample.format}</p>
 
       {
-        sample.extractOnly && (
+        hasDoc && (
           <p class="piece__flag mono">
-            Described, not reproduced. The document belongs to the client.
+            The document is published in full underneath, and it is the client’s.
           </p>
         )
       }
@@ -90,6 +110,20 @@ const spec = sample.kind !== 'Client work';
         }
 
         <Prose blocks={sample.body} />
+
+        {
+          hasDoc && (
+            <div class="piece__doc">
+              <DocReader
+                path={sample.doc!.path}
+                title={sample.doc!.title}
+                summary={sample.doc!.summary}
+                shape={sample.doc!.shape ?? 'a wide-format document'}
+                id="sample-doc"
+              />
+            </div>
+          )
+        }
       </div>
     </div>
 
@@ -191,9 +225,9 @@ const spec = sample.kind !== 'Client work';
     max-width: none;
   }
 
-  /* The one label on this page that is allowed to interrupt. A reader who thinks
-     they are about to get a whole ebook should find out here, not four
-     paragraphs in. */
+  /* The one label on this page that is allowed to interrupt. A reader arriving
+     for the document should find out it is here without scrolling the write-up
+     first. */
   .piece__flag {
     font-size: 0.66rem;
     color: var(--gold);
@@ -253,6 +287,11 @@ const spec = sample.kind !== 'Client work';
       grid-template-columns: minmax(0, 1fr);
       gap: 0.2rem;
     }
+  }
+
+  .piece__doc {
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--rule);
   }
 
   /* --- next and previous -------------------------------------------------- */

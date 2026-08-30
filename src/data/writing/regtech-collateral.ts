@@ -1,8 +1,13 @@
 import type { WritingSample } from '../../lib/types';
 
-// Long-form client documents. These are the client's property and run to well
-// over a hundred designed pages each, so they are described and quoted rather
-// than republished. `extractOnly` is what makes the page say so out loud.
+// Long-form client documents, published with the write-up rather than only
+// described. Each entry carries a `doc`, and the page renders a reader for it
+// underneath the prose: the argument first, then the artefact it was made for.
+//
+// These are marketing collateral, which is to say they were written to be
+// handed out. Publishing one is not the same call as publishing a client's
+// internal file, and the write-ups still credit the work to the client rather
+// than restating their figures as results of this site's author.
 
 export const complianceEbook: WritingSample = {
   slug: 'compliance-ebook',
@@ -12,7 +17,13 @@ export const complianceEbook: WritingSample = {
   client: 'RegTech and compliance',
   year: '2024',
   format: 'Long-form ebook, designed spreads, for a trade compliance platform',
-  extractOnly: true,
+  doc: {
+    path: '/docs/Trade_Compliance_Ebook.pdf',
+    title: 'The ebook',
+    summary:
+      'The document itself, front to back. Eight pages on why compliance is hard before a single page on what to buy, then the platform, the screening data, the export control logic and the cost case with its parameters printed beside it.',
+    shape: 'a long designed document',
+  },
   standfirst:
     'Export controls, sanctions screening and dual-use classification, written so a freight forwarder finishes it.',
   meta: [
@@ -50,7 +61,7 @@ export const complianceEbook: WritingSample = {
     },
     {
       t: 'note',
-      text: 'Client property. Described here, not reproduced. The figures in the original are the client’s and their sources are printed in the document itself.',
+      text: 'The client’s document, published here with their collateral intact. The figures in it are theirs and their sources are printed on the page, so nothing in this write-up restates them as a result of mine.',
     },
   ],
 };
@@ -63,7 +74,13 @@ export const knowledgeAssistantBrochure: WritingSample = {
   client: 'RegTech and compliance',
   year: '2025',
   format: 'Product brochure for a retrieval-augmented assistant, co-funded programme',
-  extractOnly: true,
+  doc: {
+    path: '/docs/Customs_Knowledge_Assistant_Brochure.pdf',
+    title: 'The brochure',
+    summary:
+      'The document itself. The portfolio map, the challenges the product answers, the manual process set against the assisted one row by row, the cost drivers with their arithmetic shown, the retrieval architecture and the pilot plan with a duration against every stage.',
+    shape: 'a wide-format brochure',
+  },
   standfirst:
     'Selling a conversational assistant to an audience professionally trained to distrust confident answers.',
   meta: [
@@ -100,7 +117,7 @@ export const knowledgeAssistantBrochure: WritingSample = {
     },
     {
       t: 'note',
-      text: 'Client property, produced under a co-funded programme. Described here, not reproduced.',
+      text: 'Produced under a co-funded programme and published here as it was handed out. The write-up above is about the decisions in it; the document speaks for the product.',
     },
   ],
 };
@@ -113,7 +130,13 @@ export const caseStudyBrochure: WritingSample = {
   client: 'RegTech and compliance',
   year: '2024',
   format: 'Case study brochure, seven outcome sections plus a commitments page',
-  extractOnly: true,
+  doc: {
+    path: '/docs/Compliance_Case_Study_Brochure.pdf',
+    title: 'The case study',
+    summary:
+      'The document itself. Seven outcome sections, each opening on the mechanism and closing on the result, then a commitments page set in a flatter register on purpose.',
+    shape: 'a wide-format brochure',
+  },
   standfirst:
     'Seven outcomes, each one written as a mechanism first and a result second, so the result is checkable.',
   meta: [
@@ -150,7 +173,7 @@ export const caseStudyBrochure: WritingSample = {
     },
     {
       t: 'note',
-      text: 'Client property, and the performance figures in it are the client’s own. They are described here as the structure of the document, and are not reproduced as results of mine.',
+      text: 'The performance figures in this document are the client’s own. The write-up above is about how the argument is built, and the numbers stay attributed to the people who measured them.',
     },
   ],
 };
