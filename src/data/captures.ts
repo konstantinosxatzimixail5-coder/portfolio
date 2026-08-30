@@ -11,9 +11,10 @@
 // Every one of these is labelled as generated wherever it appears. That is not
 // modesty, it is the same honesty rule that puts "spec" on the product shelf.
 //
-// Order matters: the front page shows the first four, so the strongest frame
-// leads. The late shift opens because the reflection in it is the hardest thing
-// on the shelf and the one a sceptical eye goes to first.
+// Order matters: the front page shows the first four, so the four hardest frames
+// come first and the rest wait on /captures/. The late shift opens because the
+// reflection in it is the hardest thing on the shelf and the one a sceptical eye
+// goes to first.
 
 export interface Capture {
   key: string; // manifest key
@@ -36,13 +37,13 @@ export const captures: Capture[] = [
     register: 'Night interior, fluorescent overhead, wide and close',
   },
   {
-    key: 'site/capture-sunday-league',
-    title: 'Sunday league',
-    alt: 'A young footballer in a blue kit with a sponsor name across the chest stands with her hands on her hips on an artificial pitch, hair damp with sweat, a grazed knee, a wheelie bin and three parked cars behind the fence.',
+    key: 'site/capture-kitchen',
+    title: 'The kitchen',
+    alt: 'A man in a navy t-shirt pours from a glass coffee jug into a mug in a cluttered domestic kitchen while a young woman in a grey hoodie stands behind him with her arms folded, mid-sentence, looking at him.',
     proves:
-      'Sponsor type on a moving garment, held legible across the chest, with the fabric creasing under it and the letters creasing with it.',
-    register: 'Grassroots sport documentary, harsh midday sun, no fill',
-    focus: '55% 35%',
+      'Two people in one frame with a real relationship between them. He is not listening, she is not finished, and the eyeline goes somewhere.',
+    register: 'Observational drama, practical lamp, handheld',
+    focus: '45% 40%',
   },
   {
     key: 'site/capture-runway',
@@ -61,13 +62,13 @@ export const captures: Capture[] = [
     register: 'Craft documentary, window light, shallow at f2',
   },
   {
-    key: 'site/capture-kitchen',
-    title: 'The kitchen',
-    alt: 'A man in a navy t-shirt pours from a glass coffee jug into a mug in a cluttered domestic kitchen while a young woman in a grey hoodie stands behind him with her arms folded, mid-sentence, looking at him.',
+    key: 'site/capture-sunday-league',
+    title: 'Sunday league',
+    alt: 'A young footballer in a blue kit with a sponsor name across the chest stands with her hands on her hips on an artificial pitch, hair damp with sweat, a grazed knee, a wheelie bin and three parked cars behind the fence.',
     proves:
-      'Two people in one frame with a real relationship between them. He is not listening, she is not finished, and the eyeline goes somewhere.',
-    register: 'Observational drama, practical lamp, handheld',
-    focus: '45% 40%',
+      'Sponsor type on a moving garment, held legible across the chest, with the fabric creasing under it and the letters creasing with it.',
+    register: 'Grassroots sport documentary, harsh midday sun, no fill',
+    focus: '55% 35%',
   },
   {
     key: 'site/capture-crossing',
