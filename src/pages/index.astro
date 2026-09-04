@@ -23,6 +23,10 @@ import {
   writingSamples,
   writingGroups,
   profile,
+  leadWork,
+  tailWork,
+  clipFor,
+  blog,
 } from '../lib/content';
 import { composeSections, headingFor } from '../data/sections';
 import { fill, words, Words } from '../lib/text';
@@ -54,6 +58,10 @@ const restOfPipelines = allPipelines.filter((p: any) => p.id !== HOME_PIPELINE);
 // The three frames from the cut belong to the reel, not to this page, so both
 // places show the same pictures and there is one row to change.
 const reelTrio = reel.trio;
+
+// Whether there is a cut to play, from the Studio or from src/data/videos.ts.
+// The badge says "play" or "coming" off this and nothing else.
+const reelIsUp = !!(reel.videoId || clipFor('reel'));
 
 // Numbers written into the copy are counted here instead of typed, because a
 // typed number stays a valid sentence long after it stops being true.
@@ -176,7 +184,7 @@ const jsonLd = graph([
           }
         </span>
         <span class="reel__badge mono">
-          {reel.videoId ? home.reelBadgePlay : home.reelBadgePending}
+          {reelIsUp ? home.reelBadgePlay : home.reelBadgePending}
           <span aria-hidden="true"> →</span>
         </span>
       </a>
@@ -196,14 +204,44 @@ const jsonLd = graph([
       <h2 class="sec__h2">{home.workHeading}</h2>
       <div class="grid">
         {
-          work.map((e: any, i: number) => (
+          leadWork.map((e, i) => (
             <WorkCard
-              href={`/work/${e.slug}/`}
+              href={e.href}
               num={String(i + 1).padStart(2, '0')}
               client={e.client}
               kind={e.kind}
               problem={e.problem}
+              src={e.src}
+              alt={e.alt}
+              ratio={e.ratio}
+              year={e.year}
+            />
+          ))
+        }
+        {
+          work.map((e: any, i: number) => (
+            <WorkCard
+              href={`/work/${e.slug}/`}
+              num={String(leadWork.length + i + 1).padStart(2, '0')}
+              client={e.client}
+              kind={e.kind}
+              problem={e.problem}
               image={e.hero}
+              year={e.year}
+            />
+          ))
+        }
+        {
+          tailWork.map((e, i) => (
+            <WorkCard
+              href={e.href}
+              num={String(leadWork.length + work.length + i + 1).padStart(2, '0')}
+              client={e.client}
+              kind={e.kind}
+              problem={e.problem}
+              src={e.src}
+              alt={e.alt}
+              ratio={e.ratio}
               year={e.year}
             />
           ))
@@ -242,8 +280,8 @@ const jsonLd = graph([
     <div class="stack-block">
       <h2 class="sec__h2">{headingFor('#films', 'AI Filmmaking Workflows')}</h2>
       <p class="films__lede">
-        Two original shorts. I wrote, designed, directed and cut both of them inside a
-        generative pipeline, and the sheet behind each one is here in full.
+        Three original shorts. I wrote, designed, directed and cut all three of them inside a
+        generative pipeline, and the sheet or the beat map behind each one is here in full.
       </p>
 
       <div class="grid">
@@ -470,6 +508,18 @@ const jsonLd = graph([
           ))
         }
       </ul>
+
+      <!-- the writing that lives on the studio's own domain -->
+      <div class="blog">
+        <p class="mono blog__flag">{blog.flag}</p>
+        <h3 class="blog__title">{blog.title}</h3>
+        <p class="blog__stand quiet">{blog.standfirst}</p>
+        <p class="blog__note quiet">{blog.note}</p>
+        <a class="blog__link mono" href={blog.href} rel="noopener">
+          {blog.linkLabel}
+          <span aria-hidden="true"> ↗</span>
+        </a>
+      </div>
 
       <p class="quiet more">
         <a href="/writing/">Open the writing shelf</a>. All {counts.samples} samples, in
@@ -1320,5 +1370,59 @@ const jsonLd = graph([
     line-height: 1.6;
     max-width: 62ch;
     padding-bottom: var(--s-4);
+  }
+  /* The blog. It sits under the shelf rather than inside it, because it is the
+     one body of writing here with an address of its own, and a row in that list
+     that leaves the site would be the odd one out. The heading is set at the
+     size of the sample titles above it: another kind of writing, not a louder
+     one. */
+  .blog {
+    display: grid;
+    gap: var(--s-2);
+    justify-items: start;
+    padding: var(--s-4) var(--s-5);
+    background: var(--ink-raised);
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--gold);
+    border-radius: var(--radius);
+  }
+
+  .blog__flag {
+    color: var(--gold);
+    font-size: 0.62rem;
+    max-width: none;
+  }
+
+  .blog__title {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.2;
+    color: var(--newsprint);
+    max-width: 28ch;
+  }
+
+  .blog__stand,
+  .blog__note {
+    font-size: var(--step--1);
+    max-width: var(--measure);
+  }
+
+  .blog__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-height: var(--tap);
+    margin-top: var(--s-2);
+    padding: 0 var(--s-4);
+    border: 1px solid var(--gold);
+    border-radius: var(--radius);
+    color: var(--gold);
+    text-decoration: none;
+    font-size: 0.66rem;
+  }
+
+  .blog__link:hover {
+    background: var(--gold);
+    color: var(--ink);
   }
 </style>

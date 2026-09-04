@@ -1,26 +1,38 @@
 ---
 // Click-to-play facade. The poster frame is a static image. No third-party
 // iframe, cookie or script loads until someone presses play.
-// The video id, host and poster all come from the CMS.
+//
+// The poster comes either from the CMS, which carries its own alt text, or as a
+// manifest key and alt for the clips this repository owns. Frame takes the same
+// pair either way, which is the same rule WorkCard follows.
 import Frame from './Frame.astro';
 import type { CmsImage } from '../lib/sanity';
 
 interface Props {
   host: 'vimeo' | 'youtube';
   videoId: string;
-  poster: CmsImage | null;
+  poster?: CmsImage | null;
+  src?: string;
+  alt?: string;
   title: string;
   duration?: string;
+  // How the film was cut. A vertical clip is held to a phone's width rather
+  // than filling the column, and the player keeps the shape of the poster it
+  // replaces instead of snapping to widescreen and letterboxing itself.
+  ratio?: '16:9' | '9:16';
   loading?: 'lazy' | 'eager';
 }
 
-const { host, videoId, poster, title, duration, loading = 'lazy' } = Astro.props;
+const { host, videoId, poster, src, alt, title, duration, ratio = '16:9', loading = 'lazy' } =
+  Astro.props;
 
-if (!poster) {
+if (!poster && !src) {
   throw new Error(
     `VideoFacade: "${title}" has a video id but no poster frame. Add one in the Studio, or the player has nothing to sit behind.`
   );
 }
+
+const tall = ratio === '9:16';
 
 const embed =
   host === 'vimeo'
@@ -31,8 +43,21 @@ const watch =
   host === 'vimeo' ? `https://vimeo.com/${videoId}` : `https://www.youtube.com/watch?v=${videoId}`;
 ---
 
-<div class="facade" data-facade data-embed={embed} data-title={title}>
-  <Frame image={poster} loading={loading} sizes="(max-width: 900px) 100vw, 80vw" />
+<div
+  class={tall ? 'facade facade--tall' : 'facade'}
+  data-facade
+  data-embed={embed}
+  data-title={title}
+  data-ratio={tall ? '9 / 16' : '16 / 9'}
+>
+  <Frame
+    image={poster}
+    src={src}
+    alt={alt}
+    ratio={tall ? '9 / 16' : '16 / 9'}
+    loading={loading}
+    sizes={tall ? '(max-width: 620px) 90vw, 22rem' : '(max-width: 900px) 100vw, 80vw'}
+  />
 
   <button type="button" class="facade__btn" data-play>
     <span class="facade__icon" aria-hidden="true">
@@ -58,6 +83,16 @@ const watch =
   .facade {
     position: relative;
     display: grid;
+  }
+
+  /* A vertical cut at full column width is a wall of picture. Held to a phone's
+     worth of width, it reads as what it is: something made for a feed. */
+  .facade--tall {
+    max-width: 22rem;
+  }
+
+  .facade--tall .facade__title {
+    font-size: var(--step-0);
   }
 
   .facade :global(.frame) {
@@ -158,7 +193,7 @@ const watch =
   .facade__iframe {
     grid-area: 1 / 1;
     width: 100%;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: var(--facade-ratio, 16 / 9);
     border: 1px solid var(--rule);
     border-radius: var(--radius);
   }
@@ -174,6 +209,9 @@ const watch =
     btn.addEventListener('click', () => {
       const iframe = document.createElement('iframe');
       iframe.className = 'facade__iframe';
+      // The player keeps the shape of the poster it replaced, so a vertical cut
+      // does not snap to widescreen and letterbox itself the moment it starts.
+      iframe.style.setProperty('--facade-ratio', facade.dataset.ratio ?? '16 / 9');
       iframe.src = embed;
       iframe.title = title;
       iframe.allow = 'autoplay; fullscreen; picture-in-picture';

@@ -36,7 +36,7 @@ export const sections: SectionDef[] = [
     href: '#films',
     label: 'AI Filmmaking Workflows',
     rail: 'Films',
-    note: 'Two original shorts, with the process sheets behind them',
+    note: 'Three original shorts, with the sheets and the cuts behind them',
     heading: 'AI Filmmaking Workflows',
   },
   {

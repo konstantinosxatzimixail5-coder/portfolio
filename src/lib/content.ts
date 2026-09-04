@@ -110,9 +110,14 @@ export const getSpecBrands = once(async () => {
 
 export { morePipelines, HOME_PIPELINE } from '../data/pipelines';
 export { films, findFilm } from '../data/films';
+export { clips, clipsFor, clipFor } from '../data/videos';
+export type { Clip } from '../data/videos';
 export { captures } from '../data/captures';
 export { pairFor } from '../data/product-pairs';
+export { extrasFor, extraShotCount } from '../data/product-extras';
+export { leadWork, tailWork } from '../data/work-extras';
 export { faqs } from '../data/faq';
+export { blog } from '../data/blog';
 export {
   writingSamples,
   writingGroups,

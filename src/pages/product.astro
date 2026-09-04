@@ -1,7 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 import Frame from '../components/Frame.astro';
-import { getSpecPage, getSpecBrands, getSettings } from '../lib/content';
+import Clips from '../components/Clips.astro';
+import { getSpecPage, getSpecBrands, getSettings, clipsFor, extrasFor, extraShotCount } from '../lib/content';
 import { fill, Words } from '../lib/text';
 import { headingFor } from '../data/sections';
 import { breadcrumbs, collection, graph, person } from '../lib/schema';
@@ -17,7 +18,9 @@ const [page, specBrands, site] = await Promise.all([getSpecPage(), getSpecBrands
 // the Studio and the sentence keeps up on its own. {brands} opens the sentence,
 // so it is spelled out with a capital.
 const counts = {
-  count: specBrands.reduce((n, b) => n + b.shots.length, 0),
+  // The frames this repository adds count too, or the sentence undercounts the
+  // page it sits on.
+  count: specBrands.reduce((n, b) => n + b.shots.length, 0) + extraShotCount,
   brands: Words(specBrands.length),
 };
 
@@ -114,7 +117,18 @@ const jsonLd = graph([
                   sizes="(max-width: 620px) 90vw, (max-width: 1000px) 45vw, 30vw"
                 />
               ))}
+              {extrasFor(b.id).map((s, i) => (
+                <Frame
+                  src={s.key}
+                  alt={s.alt}
+                  label={s.label}
+                  num={String(b.shots.length + i + 1).padStart(2, '0')}
+                  sizes="(max-width: 620px) 90vw, (max-width: 1000px) 45vw, 30vw"
+                />
+              ))}
             </div>
+
+            <Clips clips={clipsFor(`brand:${b.id}`)} heading="Moving" />
           </div>
         </section>
       ))

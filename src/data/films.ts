@@ -1,4 +1,4 @@
-// The two original shorts.
+// The three original shorts.
 //
 // Every field below that the brief marks "verbatim from the PDF" was extracted
 // from the process document with pypdf and reflowed by script, then proofread
@@ -7,6 +7,12 @@
 //
 // Sources: TwinMoons_Process_TaleCrafters.pdf and Skyrunner_Process_TaleCrafters.pdf,
 // eleven sheets each, both committed under public/docs/.
+//
+// Mars Drop is the third and the odd one out. It has no sheet under public/docs/
+// yet, so its page omits the reader; everything on it was written from the cut
+// and the beat map rather than lifted from a PDF. It is also the only one of the
+// three built scene by scene out of an episodic engine rather than shot by shot
+// out of a video model, which is why its stack note reads the way it does.
 
 export interface Beat {
   letter: string;
@@ -71,7 +77,10 @@ export interface Film {
     locks: string[];
     result: string;
   };
-  doc: { path: string; title: string; summary: string };
+  // The process sheet, once it is written and committed under public/docs/.
+  // Optional because a film can be published before its sheet is: the page omits
+  // the reader rather than pointing at a file that is not there. See docExists.
+  doc?: { path: string; title: string; summary: string };
 }
 
 export const films: Film[] = [
@@ -1241,6 +1250,230 @@ Style, light, colour, materials and every surface in the shot come from @spires_
       summary:
         'Eleven wide-format sheets covering the whole build. The story spine and the beat map, the three design plates and the scale gap they lock, the hand-drawn route and how it is written into a prompt, the nine pipeline stages, the stack, all six shot prompts as written for Seedance, the look rules that hold six blocks together, and the six failure modes with the instruction that closed each one.',
     },
+  },
+
+
+  {
+    slug: 'mars-drop',
+    title: 'Mars Drop',
+    runtime: '1:47',
+    strapline: 'Two men, one red planet, and the growing suspicion that somebody is testing something.',
+    standfirst:
+      'A comedy two-hander with no action in it, made to find out whether an episodic AI pipeline can hold a scene on dialogue alone.',
+    logline:
+      'A chef and a rocket executive find themselves standing on a Mars colony with no memory of getting there. Over a hundred and seven seconds they stop arguing about whose fault it is, work out that they are inside a demonstration, and start giving notes to the person running it.',
+    poster: 'site/mars-drop/md-poster',
+    posterAlt:
+      'The Mars Drop key art: a wide animated frame of a Mars colony, two figures standing apart in front of a landed rocket and a domed habitat, orange rock formations and a blue sky behind them.',
+    hero: 'site/mars-drop/md-hero',
+    heroAlt:
+      'An animated frame of the executive in a blue flight suit standing at the foot of a booster, arms open, mid-line, with red rock and two moons behind him.',
+    strip: 'site/mars-drop/md-strip',
+    stripAlt:
+      'A four frame contact strip from Mars Drop: the wide two-shot on the colony floor, the chef mid-line under the water tower, the executive at the booster, and the chef addressing camera.',
+    closing: 'site/mars-drop/md-d-address',
+    closingAlt:
+      'The closing single: the chef with his hands on his hips, talking past the camera to whoever is running the demonstration.',
+    spec: [
+      { key: 'Runtime', value: '1:47' },
+      { key: 'Format', value: '1920 x 1080 / 24 fps / 16:9' },
+      { key: 'Structure', value: '4 beats, one location, two characters' },
+      { key: 'Episodic engine', value: 'Showrunner' },
+      { key: 'Design', value: 'Nano Banana 2, ChatGPT Image 2' },
+      { key: 'Motion', value: 'Higgsfield' },
+      { key: 'Voice', value: 'ElevenLabs' },
+    ],
+    delivery: [
+      { key: 'Runtime', value: '1:47' },
+      { key: 'Master', value: '1920 x 1080, 24 fps, H.264' },
+      { key: 'Sound', value: 'Two cloned reads, mixed against room tone in the edit' },
+      { key: 'Subtitles', value: 'Burned in, speaker-labelled, because two voices in one wide need attributing' },
+      { key: 'Cut for', value: 'Wide only. There is no vertical version and there should not be' },
+    ],
+    spine: [
+      { key: 'Want', value: 'Both men want an explanation for why they are standing on Mars.' },
+      { key: 'Obstacle', value: 'There is no explanation available to them inside the scene.' },
+      { key: 'Turn', value: 'They stop asking each other and start addressing the thing watching them.' },
+      { key: 'Cost', value: 'Admitting they are a demo, which is also the only way out.' },
+      { key: 'Last image', value: 'The wide it opened on, with one of them asking for a snack.' },
+    ],
+    spineNote:
+      'Every other film we publish leans on movement. This one deliberately has none: no chase, no weather, no creature, nothing for a viewer to look at while the performances settle. If the two of them are not listening to each other, there is nothing on screen to cover it, which is the whole reason the piece exists.',
+    beats: [
+      {
+        letter: 'A',
+        time: '0:00',
+        span: '0:00 – 0:26',
+        name: 'Arrival',
+        image: 'site/mars-drop/md-poster',
+        alt: 'The wide establishing frame: two figures on the colony floor, a landed rocket to the right, a domed habitat and antenna masts to the left, red rock formations behind.',
+        note: 'The wide is held longer than is comfortable. Both men are in it, neither is centred, and the joke lands before either has moved.',
+        prompt:
+          'Wide establishing shot, flat 2D animation, thick ink outlines and flat colour fills. A Mars colony floor in mid-afternoon light: a landed white booster on a four-legged pad right of frame, a silver geodesic habitat and lattice antenna masts left of frame, layered orange rock formations across the background, a small second moon high in a blue sky. Two figures stand about four metres apart on the dust, both full length, both small in frame. Camera locked off at eye level. No camera move.',
+      },
+      {
+        letter: 'B',
+        time: '0:26',
+        span: '0:26 – 0:52',
+        name: 'Act natural',
+        image: 'site/mars-drop/md-b-natural',
+        alt: 'A single of the chef in a black suit and tie under a water tower, one hand raised, his expression somewhere between suspicion and irritation.',
+        note: 'The first single. The line is an instruction to the other man and a piece of direction to the film at the same time.',
+        prompt:
+          'Medium single, same flat 2D animation register. A tall man in a black suit, white shirt and black tie, blond hair swept up, standing in front of a dark steel water tower on lattice legs. Orange dunes and a signal mast behind him, cyan sky with scattered stars. He raises one hand shoulder height, palm out, eyes wide, mouth open mid-word. Slight breathing motion only. Camera static, eye level, subject centre-right.',
+      },
+      {
+        letter: 'C',
+        time: '0:52',
+        span: '0:52 – 1:20',
+        name: 'The demonstration',
+        image: 'site/mars-drop/md-hero',
+        alt: 'A single of the executive at the foot of the booster, arms open in a shrug, two moons and a rock face behind him.',
+        note: 'The turn. He works out what they are in, and the shrug arrives a beat before the line rather than on it.',
+        prompt:
+          'Medium single, reverse of the previous angle, same register. A man in a navy-blue flight suit with shoulder flags and a round mission patch, dark hair, standing beside the lower stage of a white booster with vertical lettering down it. A deep orange rock wall fills the right third of frame, two moons in a dark blue sky, pale cloud bank low behind him. He opens both arms in a shrug, palms up, shoulders lifting. Camera static, eye level, subject centre.',
+      },
+      {
+        letter: 'D',
+        time: '1:20',
+        span: '1:20 – 1:47',
+        name: 'Notes to the operator',
+        image: 'site/mars-drop/md-d-address',
+        alt: 'A single of the chef, hands on hips, leaning slightly toward camera as he delivers the closing note.',
+        note: 'The address to camera, then straight back to the opening wide so the film ends where it started, with nothing resolved.',
+        prompt:
+          'Medium single, same setup as beat B. The man in the black suit plants both hands on his hips and leans a few degrees toward camera, chin lifted, talking past the lens rather than into it. Water tower and orange dunes behind, unchanged. Hold, then cut to the beat A wide, identical framing, both figures back in position.',
+      },
+    ],
+    castIntro:
+      'Two figures, both caricatures, both invented for this piece. Neither is presented as a real person and nothing either of them says is attributed to anyone.',
+    castNote:
+      'The designs are broad on purpose. A caricature survives a shot-size change that a rendered likeness does not, and it removes any question about whose face is on screen. Both were locked as reference sheets before the first shot and neither was re-described in a prompt after that.',
+    cast: [
+      {
+        tag: 'THE CHEF',
+        name: 'Black suit, tie, blond sweep',
+        note: 'The impatient one. Carries the film’s frustration and the closing note. Built tall and angular so he reads at wide-shot scale where the other figure would disappear.',
+      },
+      {
+        tag: 'THE EXECUTIVE',
+        name: 'Navy flight suit, mission patch',
+        note: 'The one who works it out. Rounder silhouette, lower centre of gravity, so the two of them are separable in a two-shot at any distance.',
+      },
+      {
+        tag: 'THE COLONY',
+        name: 'One location, three angles',
+        note: 'A pad, a habitat, a water tower and a rock wall. Three camera positions on it and no fourth, because a two-hander that keeps finding new corners of its set stops being a two-hander.',
+      },
+    ],
+    pipeline: [
+      {
+        num: '01',
+        name: 'Write the scene',
+        tool: 'Written first, in full',
+        body: 'All eleven exchanges, in order, before anything rendered. A dialogue scene assembled from whatever the model happened to produce is a montage with subtitles.',
+      },
+      {
+        num: '02',
+        name: 'Fix the beats',
+        tool: 'Four blocks',
+        body: 'Arrival, act natural, the demonstration, the notes. Each beat gets one camera position and keeps it, so the cutting pattern is decided before the first frame rather than in the edit.',
+      },
+      {
+        num: '03',
+        name: 'Lock the two designs',
+        tool: 'Nano Banana 2, ChatGPT Image 2',
+        body: 'Reference sheets for both figures and for the colony, generated and approved before any shot. Nothing after this stage describes a character in words.',
+      },
+      {
+        num: '04',
+        name: 'Build the scene',
+        tool: 'Showrunner',
+        body: 'The episodic engine carries the scene and the character continuity across shots. This is the stage that makes a two-hander possible at all: the same two figures, in the same place, across four beats.',
+      },
+      {
+        num: '05',
+        name: 'Performance pass',
+        tool: 'Higgsfield',
+        body: 'Motion on each block, directed to the listening rather than the speaking. The reaction is generated first and the line is timed to it.',
+      },
+      {
+        num: '06',
+        name: 'Voice',
+        tool: 'ElevenLabs',
+        body: 'Two reads, cut against the picture rather than under it. Both were retimed after the motion pass, because a line that arrives on the gesture instead of just after it reads as a puppet.',
+      },
+      {
+        num: '07',
+        name: 'Assembly',
+        tool: 'CapCut',
+        body: 'Cut, room tone, and burned-in speaker-labelled subtitles. Two voices in one wide need attributing or the audience spends the first exchange working out who is who.',
+      },
+    ],
+    pipelineNote:
+      'Seven stages and only two of them are generation. That ratio is the finding: on a piece with no action in it, the work moves out of the render and into the writing, the casting and the timing, which is where it sits on a live-action two-hander as well.',
+    tools: [
+      { name: 'Showrunner', role: 'Episodic engine', body: 'Holds the scene and the two characters across four beats. The reason this is a scene and not four clips.' },
+      { name: 'Nano Banana 2', role: 'Design', body: 'Character sheets and the colony plates, locked before the first shot.' },
+      { name: 'ChatGPT Image 2', role: 'Design', body: 'Set dressing and the second pass on the habitat and tower.' },
+      { name: 'Higgsfield', role: 'Motion', body: 'The performance passes. Directed at the listener, not the speaker.' },
+      { name: 'ElevenLabs', role: 'Voice', body: 'Both reads, retimed against the motion rather than the script.' },
+      { name: 'CapCut', role: 'Assembly', body: 'Cut, mix and burned-in subtitles.' },
+    ],
+    skills: [
+      { name: 'tig-scene-engine', role: 'Structure', body: 'Goal, obstacle, tactic, reversal, value shift, applied to a scene with no plot in it. The reversal is the two of them turning to face the camera.' },
+      { name: 'tig-acting-task', role: 'Performance', body: 'The acting task per beat, written for the listener as well as the speaker. Every note in the film about looking like a malfunctioning robot came out of failing this first.' },
+      { name: 'cinedance', role: 'Blocking', body: 'Three camera positions, fixed, with the two figures held on their sides of the set so a cut between singles never crosses the line.' },
+    ],
+    stackNote:
+      'No video model appears in this stack at the shot level, which is the difference between this workflow and the other two. Twin Moons and Skyrunner are built shot by shot out of a video model. This one is built scene by scene out of an episodic engine, and the trade is the one you would expect: continuity comes free, spectacle does not.',
+    look: [
+      {
+        key: 'Register',
+        lines: [
+          'Flat 2D, thick ink outline, flat colour fill. No gradients on character art.',
+          'Backgrounds carry the texture; the figures never do.',
+        ],
+      },
+      {
+        key: 'Colour',
+        lines: [
+          'Orange rock, cyan sky, one cool blue costume against one black suit.',
+          'The two figures are the only saturated cool notes in frame, so they separate from the set at any distance.',
+        ],
+      },
+      {
+        key: 'Camera',
+        lines: [
+          'Three positions total: the wide, the tower single, the booster single.',
+          'Locked off. No push, no drift, no handheld. A moving camera in a two-hander is a way of hiding that nothing is happening.',
+        ],
+      },
+    ],
+    lookNote:
+      'The look rules exist to stop the piece reaching for coverage it does not need. Every temptation on a scene like this is to add a shot, and every added shot is another place for the two designs to drift.',
+    locks: [
+      {
+        name: 'Dead listener',
+        symptom: 'The character not speaking froze into a held pose for the length of the other man’s line.',
+        lock: 'The reaction is generated before the line, and the line is timed to it. If the listener is idling, the beat goes back regardless of how the delivery reads.',
+      },
+      {
+        name: 'Shot-size drift',
+        symptom: 'Both figures lost proportion between the wide and the singles: heads grew, the jawline moved.',
+        lock: 'Two reference sheets, fixed at stage 03, and no verbal description of either character in any prompt after that.',
+      },
+      {
+        name: 'Line-crossing',
+        symptom: 'Cutting between the two singles put both men facing the same way, so the conversation stopped reading as a conversation.',
+        lock: 'Camera positions fixed to three, each one assigned a side. The tower single looks camera-right, the booster single looks camera-left, and nothing else is shot.',
+      },
+      {
+        name: 'Voice ahead of gesture',
+        symptom: 'Lines landed on the movement rather than just after it, which reads as lip-sync on a puppet.',
+        lock: 'Voice is cut last, against picture, and every read is retimed after the motion pass rather than before it.',
+      },
+    ],
   },
 ];
 

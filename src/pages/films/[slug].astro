@@ -3,7 +3,8 @@ import Base from '../../layouts/Base.astro';
 import Frame from '../../components/Frame.astro';
 import ShotSheet from '../../components/ShotSheet.astro';
 import DocReader from '../../components/DocReader.astro';
-import { getSettings, films } from '../../lib/content';
+import Clips from '../../components/Clips.astro';
+import { getSettings, films, clipFor } from '../../lib/content';
 import { docExists } from '../../lib/docs';
 import { breadcrumbs, graph, person } from '../../lib/schema';
 
@@ -17,9 +18,14 @@ const site = await getSettings();
 const title = `${film.title}, an original short | ${site.name}`;
 const description = film.logline;
 
-// The process document is committed, so the reader renders. docExists keeps the
-// section honest if the file is ever moved or dropped.
-const hasDoc = docExists(film.doc.path);
+// The process document renders when there is one and it is on disk. Two of the
+// three films carry a sheet; docExists keeps the section honest if a file is
+// ever moved or dropped, and the optional chain covers a film published before
+// its sheet was written.
+const hasDoc = !!film.doc && docExists(film.doc.path);
+
+// The cut itself, when it is public. See src/data/videos.ts.
+const cut = clipFor(`film:${film.slug}`);
 
 const jsonLd = graph([
   person(site.domain, site),
@@ -36,7 +42,22 @@ const jsonLd = graph([
     // The document is the evidence for everything on the page, so it is named
     // in the data as well as linked at the foot of it.
     ...(hasDoc
-      ? { associatedMedia: { '@type': 'MediaObject', contentUrl: new URL(film.doc.path, site.domain).href, encodingFormat: 'application/pdf', name: film.doc.title } }
+      ? { associatedMedia: { '@type': 'MediaObject', contentUrl: new URL(film.doc!.path, site.domain).href, encodingFormat: 'application/pdf', name: film.doc!.title } }
+      : {}),
+    // A film a reader can actually watch. A VideoObject describing a video
+    // nobody can fetch is a claim that gets discounted, so this only appears
+    // once the cut is public.
+    ...(cut
+      ? {
+          video: {
+            '@type': 'VideoObject',
+            name: cut.title,
+            description: cut.note ?? film.logline,
+            thumbnailUrl: new URL(`/img/${cut.poster}-960.webp`, site.domain).href,
+            embedUrl: `https://www.youtube-nocookie.com/embed/${cut.videoId}`,
+            uploadDate: '2026-02-26',
+          },
+        }
       : {}),
   },
   breadcrumbs(site.domain, [
@@ -86,6 +107,9 @@ const jsonLd = graph([
       </div>
       <div class="film__col">
         <h2 class="film__h2">The film</h2>
+
+        {cut && <Clips clips={[cut]} loading="eager" />}
+
         <p class="film__lede">
           The spine was beaten out with the tig-scene-engine skill before a single frame was
           generated. A short cut still needs a chain, otherwise it is only a reel of pretty motion.
@@ -406,9 +430,9 @@ const jsonLd = graph([
           </div>
           <div class="film__col">
             <DocReader
-              path={film.doc.path}
-              title={film.doc.title}
-              summary={film.doc.summary}
+              path={film.doc!.path}
+              title={film.doc!.title}
+              summary={film.doc!.summary}
               poster={film.strip}
               posterAlt={film.stripAlt}
               shape="a set of eleven wide-format sheets"

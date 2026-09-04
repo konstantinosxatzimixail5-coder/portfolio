@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Frame from '../components/Frame.astro';
 import VideoFacade from '../components/VideoFacade.astro';
-import { getReel, getSettings } from '../lib/content';
+import { getReel, getSettings, clipFor } from '../lib/content';
 import { breadcrumbs, collection, graph, person } from '../lib/schema';
 
 // Everything on this page is edited in the Studio. While the cut is unhosted
@@ -10,6 +10,14 @@ import { breadcrumbs, collection, graph, person } from '../lib/schema';
 // the source frames are portrait and a single wide still would crop them.
 const [reel, site] = await Promise.all([getReel(), getSettings()]);
 const shots = reel.shots ?? [];
+
+// The cut, once it is public. The Studio's own video id still wins: this only
+// fills the field in while it is empty, which is what it was when the cut went
+// up. Set it in the Studio and that takes over with nothing here to change.
+// See src/data/videos.ts.
+const cut = clipFor('reel');
+const videoId = reel.videoId || cut?.videoId || '';
+const host = reel.videoId ? reel.host : (cut?.host ?? reel.host);
 
 // A VideoObject only goes in once there is a video. Describing an unhosted cut
 // as one is the structured-data version of a page that pretends the reel exists,
@@ -21,7 +29,7 @@ const jsonLd = graph([
     { name: 'Home', path: '/' },
     { name: 'Reel', path: '/reel/' },
   ]),
-  ...(reel.videoId
+  ...(videoId
     ? [
         {
           '@type': 'VideoObject',
@@ -30,9 +38,9 @@ const jsonLd = graph([
           description: reel.seoDescription,
           ...(reel.duration ? { duration: `PT${reel.duration.replace(':', 'M')}S` } : {}),
           embedUrl:
-            reel.host === 'youtube'
-              ? `https://www.youtube-nocookie.com/embed/${reel.videoId}`
-              : `https://player.vimeo.com/video/${reel.videoId}`,
+            host === 'youtube'
+              ? `https://www.youtube-nocookie.com/embed/${videoId}`
+              : `https://player.vimeo.com/video/${videoId}`,
           creator: { '@id': new URL('/', site.domain).href + '#person' },
         },
       ]
@@ -50,11 +58,13 @@ const jsonLd = graph([
 
     <div class="reelpage__player shell">
       {
-        reel.videoId ? (
+        videoId ? (
           <VideoFacade
-            host={reel.host}
-            videoId={reel.videoId}
-            poster={reel.poster}
+            host={host}
+            videoId={videoId}
+            poster={reel.videoId ? reel.poster : null}
+            src={reel.videoId ? undefined : cut?.poster}
+            alt={reel.videoId ? undefined : cut?.posterAlt}
             title={reel.title}
             duration={reel.duration}
             loading="eager"

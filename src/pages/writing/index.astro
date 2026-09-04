@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getSettings, writingGroups, writingSamples } from '../../lib/content';
+import { getSettings, writingGroups, writingSamples, blog } from '../../lib/content';
 import { breadcrumbs, collection, graph, person } from '../../lib/schema';
 
 const site = await getSettings();
@@ -102,6 +102,18 @@ const jsonLd = graph([
         </section>
       ))
     }
+
+    <!-- the writing that lives on the studio's own domain -->
+    <section class="shell blog" aria-labelledby="blog-h">
+      <p class="mono blog__flag">{blog.flag}</p>
+      <h2 class="blog__title" id="blog-h">{blog.title}</h2>
+      <p class="blog__stand">{blog.standfirst}</p>
+      <p class="blog__note quiet">{blog.note}</p>
+      <a class="blog__link mono" href={blog.href} rel="noopener">
+        {blog.linkLabel}
+        <span aria-hidden="true"> ↗</span>
+      </a>
+    </section>
 
     <nav class="shelf__back shell" aria-label="Back">
       <a class="mono" href="/">← Back to the front page</a>
@@ -266,5 +278,61 @@ const jsonLd = graph([
     display: inline-flex;
     align-items: center;
     min-height: var(--tap);
+  }
+  /* The blog. The one body of writing on this shelf published somewhere else, so
+     it gets a block at the foot rather than a group of rows that lead nowhere.
+     Set at the size of a group heading: another kind of writing, not a louder
+     one. */
+  .blog {
+    display: grid;
+    gap: var(--s-2);
+    justify-items: start;
+    margin-block: var(--s-6);
+    padding-block: var(--s-6);
+    border-top: 1px solid var(--rule);
+  }
+
+  .blog__flag {
+    color: var(--gold);
+    font-size: 0.68rem;
+    max-width: none;
+  }
+
+  .blog__title {
+    font-size: var(--step-2);
+    letter-spacing: -0.02em;
+    max-width: 24ch;
+  }
+
+  .blog__stand {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.4;
+    color: var(--newsprint);
+    max-width: 46ch;
+  }
+
+  .blog__note {
+    font-size: var(--step--1);
+    max-width: var(--measure);
+  }
+
+  .blog__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-height: var(--tap);
+    margin-top: var(--s-2);
+    padding: 0 var(--s-4);
+    border: 1px solid var(--gold);
+    border-radius: var(--radius);
+    color: var(--gold);
+    text-decoration: none;
+    font-size: 0.68rem;
+  }
+
+  .blog__link:hover {
+    background: var(--gold);
+    color: var(--ink);
   }
 </style>

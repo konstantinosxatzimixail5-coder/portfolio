@@ -1,0 +1,66 @@
+---
+// A run of films with a line under each one saying what it was for.
+//
+// The note is the part that earns the player. A film on its own is a showreel
+// clip; a film with the test it was built to pass written underneath makes the
+// same argument the rest of the site makes, in ten seconds instead of five
+// paragraphs. See src/data/videos.ts.
+import VideoFacade from './VideoFacade.astro';
+import type { Clip } from '../data/videos';
+
+interface Props {
+  clips: Clip[];
+  /** Small heading above the run. Left off when there is only one. */
+  heading?: string;
+  loading?: 'lazy' | 'eager';
+}
+
+const { clips, heading, loading = 'lazy' } = Astro.props;
+---
+
+{
+  clips.length > 0 && (
+    <div class="clips">
+      {heading && <p class="mono clips__head">{heading}</p>}
+      {clips.map((c) => (
+        <figure class="clips__one">
+          <VideoFacade
+            host={c.host}
+            videoId={c.videoId}
+            src={c.poster}
+            alt={c.posterAlt}
+            title={c.title}
+            duration={c.duration}
+            ratio={c.ratio}
+            loading={loading}
+          />
+          {c.note && <figcaption class="clips__note quiet">{c.note}</figcaption>}
+        </figure>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .clips {
+    display: grid;
+    gap: var(--s-5);
+    margin-top: var(--s-4);
+  }
+
+  .clips__head {
+    color: var(--fg-faint);
+    font-size: 0.62rem;
+  }
+
+  .clips__one {
+    margin: 0;
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .clips__note {
+    font-size: var(--step--1);
+    max-width: var(--measure);
+  }
+</style>
