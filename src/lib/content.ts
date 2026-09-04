@@ -37,9 +37,15 @@ async function singleton<T>(query: string, id: string): Promise<T> {
 //
 // The rule is one line long, and it is the same rule everywhere below. A field
 // the overlay names wins. A field it does not name comes off the dataset
-// untouched. Nothing in the overlay deletes anything, so a case study, a frame
-// or a paragraph published in the Studio cannot disappear because of a file in
-// here.
+// untouched.
+//
+// Which is why the overlay only ever ADDS. Naming a field here does not edit it
+// in the Studio, it hides it, and a paragraph hidden this way is off the site
+// without being deleted from anywhere anyone would think to look. That happened
+// once, to the published wording on five case studies and most of the front
+// page, and it is the reason the files in src/content/ now carry nothing but
+// new documents, films, pictures, stale numbers and two fields with an order
+// number typed into them.
 //
 // The overlay exists because the dataset could not be written to when this
 // content was added, not because the repository is a better home for it. The
@@ -95,9 +101,7 @@ const films = (fromCms: Film[], fromRepo: Film[] = []): Film[] => {
 
 /* ---------------------------------------------------------------- singles -- */
 
-export const getSettings = once(async () =>
-  over(await singleton<any>(QUERIES.settings, 'siteSettings'), copy.settings as any)
-);
+export const getSettings = once(() => singleton<any>(QUERIES.settings, 'siteSettings'));
 
 export const getHome = once(async () => {
   const d = await singleton<any>(QUERIES.home, 'homePage');

@@ -2,12 +2,15 @@
 // the Studio owns.
 //
 // Two lists, and the difference between them matters. `added` is whole case
-// studies that have no document in Sanity yet. `patch` is a set of fields laid
-// over a case study that does, keyed by slug: the films it can now play, a
-// sharper index line, a typo that has been on the page for a while.
+// studies that have no document in Sanity yet. `patch` hangs films off a case
+// study that does.
 //
-// Nothing here deletes. A field this file does not name comes off the dataset
-// untouched, so publishing in the Studio still wins for everything it covers.
+// ADD, DO NOT REPLACE. A patch used to carry rewritten briefs and index lines
+// as well, which was a mistake: overlaying a paragraph does not edit it in the
+// Studio, it hides it, and the published wording on five cases went off the
+// site without being deleted from anywhere anyone could look. The prose here is
+// the dataset's, always. The single exception is marked where it appears, and
+// it is a field with an order number typed into it rather than a sentence.
 // See src/lib/content.ts for the merge, and the README, under "The overlay",
 // for the way out: retype this in the Studio, delete it from here, and the
 // dataset is the only version of the site again.
@@ -339,11 +342,6 @@ export const order = [
 
 export const patch: Record<string, Patch> = {
   mariposa: {
-    problem:
-      'A restaurant on Rhodes needed a site, a film and photographs of dishes the camera never reached, and every plate had to survive being put in front of the person who ordered it.',
-    landed: blocks(`Live at mariposa.restaurant, site and film together.
-
-Every generated plate was signed off by somebody who cooks it before it shipped. That was the gate I cared about most, and it is the one no model can pass on my behalf.`),
     films: [
       {
         host: 'youtube',
@@ -361,7 +359,7 @@ Every generated plate was signed off by somebody who cooks it before it shipped.
         host: 'youtube',
         videoId: 'Ql-5EMhXTZQ',
         title: 'Restaurant showcase, from the room as it stands',
-        note: 'The terrace at dusk, built out of the restaurant’s own photography and its map imagery rather than a set. The tables, the decking and the olive tree in the middle are where they actually are, so a diner who has eaten there recognises the room.',
+        note: 'The terrace at dusk, built out of the restaurant\u2019s own photography and its map imagery rather than a set. The tables, the decking and the olive tree in the middle are where they actually are, so a diner who has eaten there recognises the room.',
         duration: '0:15',
         ratio: '9:16',
         poster: local(
@@ -372,17 +370,7 @@ Every generated plate was signed off by somebody who cooks it before it shipped.
     ],
   },
 
-  'ib-nl': {
-    problem:
-      'A Dutch consultancy had to say it works out of the Netherlands and operates worldwide, with no voiceover and no cut.',
-  },
-
   'bike-barn': {
-    problem:
-      'A dealership wanted hero films for two motorcycles without a location, a rider, a night permit or a rain machine.',
-    brief: blocks(`Bike Barn sells motorcycles and needed hero pieces for two machines in particular. Something that would stop a thumb in a feed and still read as the actual bike on the actual floor.
-
-The bikes are the product. Everything else in frame is set dressing, and set dressing is the part a dealership never has budget for.`),
     films: [
       {
         host: 'youtube',
@@ -399,21 +387,7 @@ The bikes are the product. Everything else in frame is set dressing, and set dre
     ],
   },
 
-  bbda: {
-    problem:
-      'A data school needed a run of adverts that shared no visual language, week after week, without the brand dissolving in the process.',
-    brief: blocks(`Big Blue Data Academy teaches data science to people changing careers. The audience is on a phone, mid-scroll, and has already learned to skip anything shaped like a course advert.
-
-I ran their social strategy and their paid media, from the brainstorm to the finished creative. The ask was volume: not one film with a long approval cycle, but a run of short pieces that could go out week after week and keep working.`),
-    built: blocks(`A content calendar that put pop culture next to data education, and the creative to fill it: promo films, LinkedIn and Meta posts, and the paid ad creative underneath both.
-
-The frames below are from across the run. No two of them are trying to look like each other, which was the whole instruction.`),
-    landed: blocks(`Delivered as a running programme rather than a campaign, and it outlasted the calendar it started on.`),
-  },
-
   'amino-alliance': {
-    problem:
-      'A supplement brand needed creator ads and product stills at volume, with the same faces available again next month.',
     films: [
       {
         host: 'youtube',
@@ -455,8 +429,6 @@ The frames below are from across the run. No two of them are trying to look like
   },
 
   cocoon: {
-    problem:
-      'A grid cyberattack that has never happened had to be explained to people who do not work on grids, from a grant document and nothing else.',
     films: [
       {
         host: 'youtube',
@@ -474,19 +446,16 @@ The frames below are from across the run. No two of them are trying to look like
   },
 
   'jarfis-property-group': {
-    // `place` in the dataset reads "7", which is the order field typed into the
-    // wrong box. Bali is where the villas are and it is what the line is for.
+    // The only field on any published case study this overlay overwrites, and
+    // it is not prose: `place` in the dataset reads "7", which is the order
+    // number typed into the wrong box. It prints in the line under the title.
     place: 'Bali, sold from the Netherlands',
-    problem:
-      'A property group needed a spokesperson who sounds like the person an investor speaks to next week, and two villas filmed that nobody was flying to.',
-    built: blocks(`A set of vertical spots with a presenter talking straight to the viewer, and one short film cut around two real listings. The voice is cloned from his own recordings and carries every piece, so the delivery on screen matches the person on the call.`),
-    landed: blocks(`Used across their international client base and as paid ad creative, where they outperformed the listing photography they were built from.`),
     films: [
       {
         host: 'youtube',
         videoId: 'xDGt2MejwJA',
         title: 'Spokesperson ad, vertical cut',
-        note: 'To camera at a listed villa, phone on a tripod in shot, cloned voice on the read. The villa behind him is reconstructed from the stills already on the client’s own site, which is why the grade matches the listing photography instead of sitting a stop off it.',
+        note: 'To camera at a listed villa, phone on a tripod in shot, cloned voice on the read. The villa behind him is reconstructed from the stills already on the client\u2019s own site, which is why the grade matches the listing photography instead of sitting a stop off it.',
         duration: '0:10',
         ratio: '9:16',
         poster: local(

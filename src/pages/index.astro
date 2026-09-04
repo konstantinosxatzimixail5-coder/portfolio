@@ -20,8 +20,10 @@ const [home, site, work, pipelines, reel] = await Promise.all([
 const reelTrio = reel.trio;
 
 // Numbers written into the copy are counted here instead of typed, because a
-// typed number stays a valid sentence long after it stops being true.
-const counts = { count: work.length };
+// typed number stays a valid sentence long after it stops being true. The
+// contents index carries two of them: how many projects, and how many of the
+// seven pipelines are written out below.
+const counts = { count: work.length, pipelines: Words(pipelines.length) };
 
 // The contents index and the labels down the left margin are the same six
 // sections, so they read from one list. Numbering them twice is how 02 in the

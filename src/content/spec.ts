@@ -1,13 +1,13 @@
 // What this repository adds to the spec shelf.
 //
-// The six brands and most of their frames live in Sanity and are edited there.
+// ADD, DO NOT REPLACE. The six brands and their frames are the dataset's and
+// the wording under each heading is the dataset's. Overlaying a paragraph here
+// does not edit it in the Studio, it hides it, so nothing below rewrites one.
+//
 // Missing from the dataset were the two out-of-home pieces, which are the
 // hardest exam on the shelf and were also the two films the shelf could not
-// play. Both are added here, along with the "runs on" line for the brands that
-// never got one and a fix for a slug that shipped as a digit.
-//
-// Keyed by the id the page already uses, which is the slug. Anything a patch
-// does not name comes off the dataset unchanged.
+// play. Both are added. The rest is two empty fields filled in and a slug that
+// shipped as a digit.
 
 import { local, type Film } from './video';
 import type { CmsImage } from '../lib/sanity';
@@ -15,8 +15,7 @@ import type { CmsImage } from '../lib/sanity';
 export interface BrandPatch {
   /** Replaces the anchor and the URL fragment. */
   id?: string;
-  proves?: string;
-  note?: string;
+  /** Only ever filled in where the dataset left it empty. */
   pipeline?: { label: string; href: string };
   /** Appended to the frames already in the dataset, in this order. */
   shots?: CmsImage[];
@@ -25,8 +24,6 @@ export interface BrandPatch {
 
 export const patch: Record<string, BrandPatch> = {
   feral: {
-    proves:
-      'One label held across five sets, one creator held across three rooms, and the same can walking off a billboard',
     shots: [
       local(
         'spec/feral/billboard',
@@ -51,7 +48,6 @@ export const patch: Record<string, BrandPatch> = {
   },
 
   'grain-01': {
-    note: 'This set exists to test drift. The same creator appears in warm string lights, in red club light with a flash, and in low sun on a roof. Nothing about the face is allowed to move between them, and the camera in her hand has to stay the same object in all three. Stack the frames, flick through at speed, and the jaw is where a fail shows first. The billboard puts the camera through the same test in daylight: a translucent body with a visible board, battery and lens barrel, breaking the edge of a flat surface with nothing to hide the seam.',
     shots: [
       local(
         'spec/grain-01/billboard',
@@ -75,16 +71,16 @@ export const patch: Record<string, BrandPatch> = {
     ],
   },
 
+  // Two brands were published without a "runs on" line, so the page left the
+  // line off. Filling an empty field takes nothing away.
   kilnwork: {
     pipeline: { label: 'Phantom Set', href: '/#phantom-set' },
   },
 
-  // The slug went in as "6", so this brand answered to /spec/#6 and the contents
-  // index pointed at a number instead of a name.
+  // The slug went in as "6", so this brand answered to /spec/#6 and the
+  // contents index pointed at a number instead of a name.
   '6': {
     id: 'soie',
     pipeline: { label: 'Phantom Set', href: '/#phantom-set' },
-    proves:
-      'Frosted glass with liquid behind it, and a drop caught on its way out of the pipette',
   },
 };
