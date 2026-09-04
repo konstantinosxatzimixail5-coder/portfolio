@@ -88,6 +88,14 @@ export default defineType({
       of: [{ type: 'siteImage' }],
       validation: (Rule) => Rule.min(1),
     }),
+    defineField({
+      name: 'videos',
+      title: 'Films',
+      type: 'array',
+      of: [{ type: 'embeddedVideo' }],
+      description:
+        'Anything from this set that moves. Two of these brands end on an anamorphic billboard, which is the frame the stills cannot make the argument for.',
+    }),
   ],
   orderings: [{ title: 'Site order', name: 'order', by: [{ field: 'order', direction: 'asc' }] }],
   preview: {

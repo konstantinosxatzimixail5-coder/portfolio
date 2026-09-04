@@ -6,15 +6,34 @@
 // `npm run content`. `top-up` is the incremental pass that runs before every
 // build, including on the deploy host.
 
-import { mkdir, writeFile, readFile, stat } from 'node:fs/promises';
-import { join, dirname } from 'node:path';
+import { mkdir, writeFile, readFile, readdir, stat } from 'node:fs/promises';
+import { join, dirname, extname, relative } from 'node:path';
 import sharp from 'sharp';
 import { projectId, dataset } from '../sanity-env.mjs';
 
 export const SRC = 'source-assets/cms';
+
+// The second source of pictures, and the reason there are two.
+//
+// Everything under source-assets/cms/ is a download: Sanity holds the original
+// and the file here is a cache of it. Everything under source-assets/local/ is
+// the opposite. These are pictures this repository owns, referenced by the
+// content files in src/content/, and they exist because the dataset could not
+// be written to when they were added. They are committed, they are not pruned
+// by a sync, and their manifest key is their path: source-assets/local/spec/
+// feral/billboard.png is `local/spec/feral/billboard`.
+//
+// Only this directory is built. The other folders under source-assets/ are
+// pre-CMS masters, kept so Sanity is not the only copy of them, and building
+// those too meant 54 unused image sets in every deploy.
+export const LOCAL = 'source-assets/local';
 export const OUT = 'public/img';
 export const MANIFEST = 'src/image-manifest.json';
 export const WIDTHS = [480, 960, 1600];
+
+// The file types sharp is asked to read. Shared so the two build passes cannot
+// disagree about what counts as a picture.
+export const INPUT = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif', '.tif', '.tiff']);
 
 // Every type that can hold a picture. A type missing from this list means its
 // images are never downloaded and the build fails on a missing manifest key,
@@ -76,6 +95,27 @@ export async function usedAssets(sanity) {
     else unreadable.push(id);
   }
   return { assets, unreadable };
+}
+
+// Every picture under source-assets/local/, as { file, key } pairs. Walked
+// rather than listed, because these sit in folders per project and a picture
+// added to one of them should not need a second edit here to be built.
+export async function localImages(dir = LOCAL, found = []) {
+  let entries;
+  try {
+    entries = await readdir(dir, { withFileTypes: true });
+  } catch {
+    return found; // no local pictures in this checkout, which is allowed
+  }
+  for (const e of entries) {
+    const p = join(dir, e.name);
+    if (e.isDirectory()) await localImages(p, found);
+    else if (INPUT.has(extname(e.name).toLowerCase())) {
+      const rel = relative(LOCAL, p);
+      found.push({ file: p, key: `local/${rel.slice(0, -extname(rel).length)}`.split('\\').join('/') });
+    }
+  }
+  return found;
 }
 
 export async function readManifest() {

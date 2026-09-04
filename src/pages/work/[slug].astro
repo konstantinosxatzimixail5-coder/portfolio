@@ -1,7 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Frame from '../../components/Frame.astro';
-import VideoFacade from '../../components/VideoFacade.astro';
+import Films from '../../components/Films.astro';
 import RichText from '../../components/RichText.astro';
 import { getWork, getSettings } from '../../lib/content';
 
@@ -32,7 +32,10 @@ const sections = [
   { id: 'landed', label: 'Where it landed', body: d.landed },
 ];
 
-const spec = d.kind === 'Spec, self-initiated';
+// Client work is cyan. Everything I set myself, whether that is my own studio
+// or an invented brand, is gold. One test rather than a list of kinds, so a new
+// label in the Studio picks a side on its own.
+const spec = d.kind !== 'Client';
 ---
 
 <Base title={`${d.title}, ${site.name}`} description={d.problem} active="work">
@@ -101,14 +104,11 @@ const spec = d.kind === 'Spec, self-initiated';
                 </div>
               )}
 
-              {s.id === 'built' && d.video && (
+              {s.id === 'built' && d.films.length > 0 && (
                 <div class="cs__video">
-                  <VideoFacade
-                    host={d.video.host}
-                    videoId={d.video.videoId}
-                    poster={d.video.poster}
-                    title={d.video.title}
-                    duration={d.video.duration}
+                  <Films
+                    films={d.films}
+                    heading={d.films.length > 1 ? `${d.films.length} films from this one` : undefined}
                   />
                 </div>
               )}

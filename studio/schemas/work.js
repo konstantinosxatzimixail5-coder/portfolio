@@ -143,11 +143,20 @@ export default defineType({
     }),
     defineField({
       name: 'video',
-      title: 'Video',
+      title: 'Video (single, older field)',
       type: 'embeddedVideo',
       group: 'media',
       description:
-        'Optional, and kept scarce on purpose. Three embeds across the whole site is the budget.',
+        'The original one-film field. Anything in it still plays, first, above the list below. New films go in the list.',
+    }),
+    defineField({
+      name: 'videos',
+      title: 'Films',
+      type: 'array',
+      of: [{ type: 'embeddedVideo' }],
+      group: 'media',
+      description:
+        'The films from this engagement that a reader can actually watch. Every player on this site is a facade, so nothing loads until somebody clicks and the count is not a page-weight problem. A film nobody can play is worse than no film, so leave one out until it is public.',
     }),
 
     // --- extras ------------------------------------------------------------

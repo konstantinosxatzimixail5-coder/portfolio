@@ -3,6 +3,12 @@
 // Six numbered stages on a line, with a detail panel per stage and the control
 // gates beneath. Renders complete and readable with JavaScript disabled: every
 // stage detail is visible as a stacked list. Script upgrades it to one at a time.
+//
+// A line can carry a film of something it produced. Six stages and four gates
+// are a description of a method; the film is the part that says the method
+// finished something.
+import Films from './Films.astro';
+import type { Film } from '../content/video';
 
 interface Stage {
   name: string;
@@ -25,9 +31,10 @@ interface Props {
   loop: string; // how long the whole loop takes
   stages: Stage[];
   gates: Gate[];
+  film?: Film; // something this line actually produced
 }
 
-const { id, title, mechanism, summary, loop, stages, gates } = Astro.props;
+const { id, title, mechanism, summary, loop, stages, gates, film } = Astro.props;
 const pad = (i: number) => String(i + 1).padStart(2, '0');
 ---
 
@@ -107,6 +114,8 @@ const pad = (i: number) => String(i + 1).padStart(2, '0');
     <span class="faint">Loop</span>
     {loop}
   </p>
+
+  {film && <Films films={[film]} heading="What it made" />}
 </article>
 
 <style>

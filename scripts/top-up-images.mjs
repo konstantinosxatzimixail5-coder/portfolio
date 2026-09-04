@@ -1,6 +1,10 @@
-// Fetches and builds any picture the CMS references that is not already in this
+// Builds any picture a page references that is not already built in this
 // repository, then stops. Runs automatically before every build, here and on the
 // deploy host.
+//
+// Two sources. Pictures the CMS references are fetched and then built. Pictures
+// under source-assets/local/ are already here and only need building, which is
+// what makes a repo-owned image work on a clean checkout of a fresh clone.
 //
 // The point is that publishing in the Studio is enough. Add a picture, publish,
 // and the next build brings it down on its own instead of failing and waiting
@@ -14,43 +18,55 @@
 // Run: happens on its own via `prebuild`. `npm run top-up` to do it by hand.
 
 import { client } from './sanity-env.mjs';
-import { derive, download, isBuilt, readManifest, usedAssets, writeManifest } from './lib/images.mjs';
+import {
+  derive,
+  download,
+  isBuilt,
+  localImages,
+  readManifest,
+  usedAssets,
+  writeManifest,
+} from './lib/images.mjs';
 
 const manifest = await readManifest();
 const { assets, unreadable } = await usedAssets(client());
+const local = await localImages();
 
 const missing = [];
-for (const asset of assets) {
-  if (!(await isBuilt(manifest, asset.key))) missing.push(asset);
+for (const picture of [...assets, ...local]) {
+  if (!(await isBuilt(manifest, picture.key))) missing.push(picture);
 }
 
+const inUse = assets.length + local.length;
+
 if (missing.length === 0 && unreadable.length === 0) {
-  console.log(`images: ${assets.length} in use, all built.`);
+  console.log(`images: ${inUse} in use, all built.`);
   process.exit(0);
 }
 
 const failed = unreadable.map((id) => `${id} (unreadable asset id)`);
 let added = 0;
 
-for (const asset of missing) {
+for (const picture of missing) {
   try {
-    await download(asset);
-    const result = await derive(asset.file, asset.key);
+    // A CMS picture has a url to fetch first. A local one is already on disk.
+    if (picture.url) await download(picture);
+    const result = await derive(picture.file, picture.key);
     if (!result) {
-      failed.push(`${asset.key} (no readable dimensions)`);
+      failed.push(`${picture.key} (no readable dimensions)`);
       continue;
     }
-    manifest[asset.key] = result.entry;
+    manifest[picture.key] = result.entry;
     added++;
-    console.log(`  built  ${asset.key}`);
+    console.log(`  built  ${picture.key}`);
   } catch (err) {
-    failed.push(`${asset.key} (${err.message})`);
+    failed.push(`${picture.key} (${err.message})`);
   }
 }
 
 if (added > 0) await writeManifest(manifest);
 
-console.log(`images: ${assets.length} in use, ${added} newly built.`);
+console.log(`images: ${inUse} in use, ${added} newly built.`);
 
 if (failed.length) {
   console.error(`\n${failed.length} could not be built:`);

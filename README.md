@@ -70,6 +70,12 @@ git add public/img src/image-manifest.json
 git commit -m "New frames for the spec shelf"
 ```
 
+Pictures under `source-assets/local/` work the other way round. They are not a
+cache of anything: the repository owns them, they are committed, and their
+manifest key is their path, so `source-assets/local/spec/feral/billboard.png` is
+`local/spec/feral/billboard`. Both passes build them and neither prunes them.
+They exist because of the overlay, and they leave with it.
+
 `top-up` only ever adds. Deleting a picture in the Studio leaves its files here
 until `npm run content` prunes them, which costs a few unused files in a deploy
 and never costs a broken page. Pruning on the host would mean a build that
@@ -80,6 +86,74 @@ TypeScript files this site used to keep its content in. Both the script and
 those files were deleted once it had run, since the dataset is now the only
 version anyone should edit. They are in the history at `bc48d3a` if the
 provenance of a sentence is ever in question.
+
+---
+
+## The overlay
+
+The site reads two sources. Sanity is the first one and is still where words and
+pictures are meant to be edited. `src/content/` is the second: whole documents
+the dataset does not have, and named fields laid over documents it does.
+
+The rule is one line long. **A field the overlay names wins. A field it does not
+name comes off the dataset untouched.** Nothing in the overlay deletes anything,
+so a case study, a frame or a paragraph published in the Studio cannot vanish
+because of a file in here. `src/lib/content.ts` is the whole of the merge.
+
+| File | What it holds |
+|---|---|
+| `src/content/copy.ts` | Front page, spec shelf and navigation wording |
+| `src/content/work.ts` | Three case studies, and films and fixes for the rest |
+| `src/content/spec.ts` | The two billboards, their films, two missing "runs on" lines |
+| `src/content/pipelines.ts` | The fourth workflow, and a film under three of them |
+| `src/content/video.ts`, `blocks.ts` | The two small shapes the above are written in |
+
+It exists for one reason: this content was written in a session that could read
+the dataset and not write to it. It is not a claim that the repository is a
+better home for content than the Studio is.
+
+### Retiring it
+
+One document at a time, in whichever order you like:
+
+1. Open the document in the Studio and type the fields in, from the file.
+2. Publish.
+3. Delete that entry from the file in `src/content/`.
+4. `npm run content`, then commit.
+
+The merge needs no help with this. A case study in `added` stops rendering the
+moment a document with the same slug is published, and a field disappearing from
+a `patch` just hands that field back to the dataset. When a file is empty, delete
+it. When the folder is empty, the site is back to reading one source.
+
+The exception is pictures. `source-assets/local/` holds sixteen files the dataset
+never had: two anamorphic billboards, four frames from Mars Drop, the studio mark,
+and nine poster frames for the films. Upload one to Sanity and the manifest key
+changes from `local/...` to `cms/...`, so swap the reference at the same time as
+the document, and let `npm run content` prune what is no longer used.
+
+---
+
+## Films
+
+Every player on the site is a facade: a poster frame, a play button, and no
+third-party request of any kind until somebody presses it. YouTube goes through
+`youtube-nocookie`, Vimeo through `dnt=1`.
+
+That is why there are now twelve of them and the page weight has not moved. The
+old budget in this file — three embeds site wide — was about embeds, and an embed
+is a script that runs on page load. There are none of those here. The number that
+still matters is the one on the poster frames, and those go through the same
+image pipeline as everything else.
+
+A film needs three things or it does not go on the page: a poster frame with alt
+text, an id that resolves to something public, and a note saying what the film
+was for. The first is enforced in code, the third by taste. A player with no note
+is a showreel clip.
+
+In the Studio: **Films** on a case study or a spec brand, **What it made** on a
+pipeline. `Shape` decides whether a cut is set wide or held to a phone's width.
+
 
 ---
 
@@ -138,9 +212,9 @@ The facade never loads the player until somebody clicks it. YouTube goes through
 `youtube-nocookie`, Vimeo through `dnt=1`. That is deliberate and it is why the
 page weight does not move when the reel goes live.
 
-**Video budget: three embeds site wide, four at the outside.** Every embed is a
-third party script and a tracking surface. If you are about to add a fifth, take
-one out first. Nothing in the Studio stops you, so this one is on you.
+**Video budget:** see **Films** below. Short version: the players are facades, so
+the count is not a page-weight problem and the ceiling is editorial rather than
+technical. A film with nothing to say under it should still come off the page.
 
 ---
 

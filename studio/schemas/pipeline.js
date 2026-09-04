@@ -121,6 +121,13 @@ export default defineType({
       description: 'The gates are the reason anyone believes the rest of it. Do not leave them out.',
       validation: (Rule) => Rule.min(1).error('A pipeline without a gate is just a tool list.'),
     }),
+    defineField({
+      name: 'film',
+      title: 'What it made',
+      type: 'embeddedVideo',
+      description:
+        'One film this line produced, played under the gates. Stages and gates describe a method; the film is the part that says the method finished something.',
+    }),
   ],
   orderings: [{ title: 'Site order', name: 'order', by: [{ field: 'order', direction: 'asc' }] }],
   preview: {

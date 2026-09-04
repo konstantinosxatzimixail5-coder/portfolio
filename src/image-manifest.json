@@ -332,6 +332,52 @@
     ],
     "fallback": "/img/cms/233b510f6f747f15a7a078d60f84307f3a151426-960.webp"
   },
+  "cms/26e1d0b5f25606986b26cec59e22f719da2b15f4": {
+    "key": "cms/26e1d0b5f25606986b26cec59e22f719da2b15f4",
+    "width": 960,
+    "height": 538,
+    "aspect": 1.786,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/cms/26e1d0b5f25606986b26cec59e22f719da2b15f4-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/cms/26e1d0b5f25606986b26cec59e22f719da2b15f4-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/cms/26e1d0b5f25606986b26cec59e22f719da2b15f4-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/cms/26e1d0b5f25606986b26cec59e22f719da2b15f4-960.webp"
+      }
+    ],
+    "fallback": "/img/cms/26e1d0b5f25606986b26cec59e22f719da2b15f4-960.webp"
+  },
+  "cms/27ca07a7cb3977d8fa1a81f5b2e1daef6abc0f2e": {
+    "key": "cms/27ca07a7cb3977d8fa1a81f5b2e1daef6abc0f2e",
+    "width": 480,
+    "height": 889,
+    "aspect": 0.5399,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/cms/27ca07a7cb3977d8fa1a81f5b2e1daef6abc0f2e-480.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/cms/27ca07a7cb3977d8fa1a81f5b2e1daef6abc0f2e-480.webp"
+      }
+    ],
+    "fallback": "/img/cms/27ca07a7cb3977d8fa1a81f5b2e1daef6abc0f2e-480.webp"
+  },
   "cms/2d17ac694a9e340a975ca2019173e51bb1a0880e": {
     "key": "cms/2d17ac694a9e340a975ca2019173e51bb1a0880e",
     "width": 960,
@@ -636,6 +682,44 @@
       }
     ],
     "fallback": "/img/cms/5688dad221bd28b765839cb34f9426743f0a7b89-1600.webp"
+  },
+  "cms/57bc294c07b6bceb08cd70fe16aca1aef96caf16": {
+    "key": "cms/57bc294c07b6bceb08cd70fe16aca1aef96caf16",
+    "width": 480,
+    "height": 598,
+    "aspect": 0.8024,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/cms/57bc294c07b6bceb08cd70fe16aca1aef96caf16-480.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/cms/57bc294c07b6bceb08cd70fe16aca1aef96caf16-480.webp"
+      }
+    ],
+    "fallback": "/img/cms/57bc294c07b6bceb08cd70fe16aca1aef96caf16-480.webp"
+  },
+  "cms/5c1798830915f49f29e0511a234cedc6bdea86b2": {
+    "key": "cms/5c1798830915f49f29e0511a234cedc6bdea86b2",
+    "width": 480,
+    "height": 479,
+    "aspect": 1.0013,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/cms/5c1798830915f49f29e0511a234cedc6bdea86b2-480.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/cms/5c1798830915f49f29e0511a234cedc6bdea86b2-480.webp"
+      }
+    ],
+    "fallback": "/img/cms/5c1798830915f49f29e0511a234cedc6bdea86b2-480.webp"
   },
   "cms/5c95d9459a6de1567549bfcf354e23e114355ce9": {
     "key": "cms/5c95d9459a6de1567549bfcf354e23e114355ce9",
@@ -1550,6 +1634,25 @@
     ],
     "fallback": "/img/cms/cfc00978e8551ca87eb4428b18bc8204dff21dcc-960.webp"
   },
+  "cms/d4bef98d99391892495ffeff05b6dc42a4174f5f": {
+    "key": "cms/d4bef98d99391892495ffeff05b6dc42a4174f5f",
+    "width": 373,
+    "height": 660,
+    "aspect": 0.5652,
+    "avif": [
+      {
+        "w": 373,
+        "src": "/img/cms/d4bef98d99391892495ffeff05b6dc42a4174f5f-373.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 373,
+        "src": "/img/cms/d4bef98d99391892495ffeff05b6dc42a4174f5f-373.webp"
+      }
+    ],
+    "fallback": "/img/cms/d4bef98d99391892495ffeff05b6dc42a4174f5f-373.webp"
+  },
   "cms/d79121cc985a4c27084015680b2f90e91849ad3e": {
     "key": "cms/d79121cc985a4c27084015680b2f90e91849ad3e",
     "width": 960,
@@ -1630,5 +1733,432 @@
       }
     ],
     "fallback": "/img/cms/e6aaf7ad0cd505e3ef994aced7b74580da55740f-960.webp"
+  },
+  "local/amino-alliance/presenter-01": {
+    "key": "local/amino-alliance/presenter-01",
+    "width": 405,
+    "height": 720,
+    "aspect": 0.5625,
+    "avif": [
+      {
+        "w": 405,
+        "src": "/img/local/amino-alliance/presenter-01-405.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 405,
+        "src": "/img/local/amino-alliance/presenter-01-405.webp"
+      }
+    ],
+    "fallback": "/img/local/amino-alliance/presenter-01-405.webp"
+  },
+  "local/amino-alliance/presenter-02": {
+    "key": "local/amino-alliance/presenter-02",
+    "width": 405,
+    "height": 720,
+    "aspect": 0.5625,
+    "avif": [
+      {
+        "w": 405,
+        "src": "/img/local/amino-alliance/presenter-02-405.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 405,
+        "src": "/img/local/amino-alliance/presenter-02-405.webp"
+      }
+    ],
+    "fallback": "/img/local/amino-alliance/presenter-02-405.webp"
+  },
+  "local/amino-alliance/presenter-03": {
+    "key": "local/amino-alliance/presenter-03",
+    "width": 405,
+    "height": 720,
+    "aspect": 0.5625,
+    "avif": [
+      {
+        "w": 405,
+        "src": "/img/local/amino-alliance/presenter-03-405.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 405,
+        "src": "/img/local/amino-alliance/presenter-03-405.webp"
+      }
+    ],
+    "fallback": "/img/local/amino-alliance/presenter-03-405.webp"
+  },
+  "local/bike-barn/showcase-poster": {
+    "key": "local/bike-barn/showcase-poster",
+    "width": 960,
+    "height": 540,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/local/bike-barn/showcase-poster-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/bike-barn/showcase-poster-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/local/bike-barn/showcase-poster-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/bike-barn/showcase-poster-960.webp"
+      }
+    ],
+    "fallback": "/img/local/bike-barn/showcase-poster-960.webp"
+  },
+  "local/films/mars-drop/md-b-natural": {
+    "key": "local/films/mars-drop/md-b-natural",
+    "width": 960,
+    "height": 540,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/local/films/mars-drop/md-b-natural-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/films/mars-drop/md-b-natural-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/local/films/mars-drop/md-b-natural-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/films/mars-drop/md-b-natural-960.webp"
+      }
+    ],
+    "fallback": "/img/local/films/mars-drop/md-b-natural-960.webp"
+  },
+  "local/films/mars-drop/md-d-address": {
+    "key": "local/films/mars-drop/md-d-address",
+    "width": 960,
+    "height": 540,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/local/films/mars-drop/md-d-address-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/films/mars-drop/md-d-address-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/local/films/mars-drop/md-d-address-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/films/mars-drop/md-d-address-960.webp"
+      }
+    ],
+    "fallback": "/img/local/films/mars-drop/md-d-address-960.webp"
+  },
+  "local/films/mars-drop/md-hero": {
+    "key": "local/films/mars-drop/md-hero",
+    "width": 960,
+    "height": 540,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/local/films/mars-drop/md-hero-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/films/mars-drop/md-hero-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/local/films/mars-drop/md-hero-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/films/mars-drop/md-hero-960.webp"
+      }
+    ],
+    "fallback": "/img/local/films/mars-drop/md-hero-960.webp"
+  },
+  "local/films/mars-drop/md-poster": {
+    "key": "local/films/mars-drop/md-poster",
+    "width": 960,
+    "height": 540,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/local/films/mars-drop/md-poster-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/films/mars-drop/md-poster-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/local/films/mars-drop/md-poster-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/films/mars-drop/md-poster-960.webp"
+      }
+    ],
+    "fallback": "/img/local/films/mars-drop/md-poster-960.webp"
+  },
+  "local/films/mars-drop/md-strip": {
+    "key": "local/films/mars-drop/md-strip",
+    "width": 1600,
+    "height": 223,
+    "aspect": 7.1778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/local/films/mars-drop/md-strip-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/films/mars-drop/md-strip-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/local/films/mars-drop/md-strip-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/local/films/mars-drop/md-strip-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/films/mars-drop/md-strip-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/local/films/mars-drop/md-strip-1600.webp"
+      }
+    ],
+    "fallback": "/img/local/films/mars-drop/md-strip-1600.webp"
+  },
+  "local/jarfis/ugc-poster": {
+    "key": "local/jarfis/ugc-poster",
+    "width": 405,
+    "height": 720,
+    "aspect": 0.5625,
+    "avif": [
+      {
+        "w": 405,
+        "src": "/img/local/jarfis/ugc-poster-405.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 405,
+        "src": "/img/local/jarfis/ugc-poster-405.webp"
+      }
+    ],
+    "fallback": "/img/local/jarfis/ugc-poster-405.webp"
+  },
+  "local/mariposa/plate-360": {
+    "key": "local/mariposa/plate-360",
+    "width": 405,
+    "height": 720,
+    "aspect": 0.5625,
+    "avif": [
+      {
+        "w": 405,
+        "src": "/img/local/mariposa/plate-360-405.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 405,
+        "src": "/img/local/mariposa/plate-360-405.webp"
+      }
+    ],
+    "fallback": "/img/local/mariposa/plate-360-405.webp"
+  },
+  "local/mariposa/showcase": {
+    "key": "local/mariposa/showcase",
+    "width": 405,
+    "height": 720,
+    "aspect": 0.5625,
+    "avif": [
+      {
+        "w": 405,
+        "src": "/img/local/mariposa/showcase-405.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 405,
+        "src": "/img/local/mariposa/showcase-405.webp"
+      }
+    ],
+    "fallback": "/img/local/mariposa/showcase-405.webp"
+  },
+  "local/selene-cc/pilot-poster": {
+    "key": "local/selene-cc/pilot-poster",
+    "width": 960,
+    "height": 540,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/local/selene-cc/pilot-poster-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/selene-cc/pilot-poster-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/local/selene-cc/pilot-poster-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/selene-cc/pilot-poster-960.webp"
+      }
+    ],
+    "fallback": "/img/local/selene-cc/pilot-poster-960.webp"
+  },
+  "local/spec/feral/billboard": {
+    "key": "local/spec/feral/billboard",
+    "width": 960,
+    "height": 540,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/local/spec/feral/billboard-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/spec/feral/billboard-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/local/spec/feral/billboard-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/spec/feral/billboard-960.webp"
+      }
+    ],
+    "fallback": "/img/local/spec/feral/billboard-960.webp"
+  },
+  "local/spec/grain-01/billboard": {
+    "key": "local/spec/grain-01/billboard",
+    "width": 960,
+    "height": 540,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/local/spec/grain-01/billboard-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/spec/grain-01/billboard-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/local/spec/grain-01/billboard-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/spec/grain-01/billboard-960.webp"
+      }
+    ],
+    "fallback": "/img/local/spec/grain-01/billboard-960.webp"
+  },
+  "local/talecrafters/logo": {
+    "key": "local/talecrafters/logo",
+    "width": 960,
+    "height": 955,
+    "aspect": 1.0049,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/local/talecrafters/logo-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/talecrafters/logo-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/local/talecrafters/logo-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/talecrafters/logo-960.webp"
+      }
+    ],
+    "fallback": "/img/local/talecrafters/logo-960.webp"
+  },
+  "local/talecrafters/mark-wide": {
+    "key": "local/talecrafters/mark-wide",
+    "width": 1600,
+    "height": 900,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/local/talecrafters/mark-wide-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/talecrafters/mark-wide-960.avif"
+      },
+      {
+        "w": 1600,
+        "src": "/img/local/talecrafters/mark-wide-1600.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/local/talecrafters/mark-wide-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/talecrafters/mark-wide-960.webp"
+      },
+      {
+        "w": 1600,
+        "src": "/img/local/talecrafters/mark-wide-1600.webp"
+      }
+    ],
+    "fallback": "/img/local/talecrafters/mark-wide-1600.webp"
   }
 }

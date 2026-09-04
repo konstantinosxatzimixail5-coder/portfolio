@@ -1,0 +1,57 @@
+---
+// A run of films with a line under each one saying what it was for.
+//
+// The note is the part that earns the player. A film on its own is a showreel
+// clip; a film with the test it was built to pass written underneath is the
+// same argument the rest of the site makes, in ninety seconds instead of five
+// paragraphs.
+import VideoFacade from './VideoFacade.astro';
+import type { Film } from '../content/video';
+
+interface Props {
+  films: Film[];
+  /** Small heading above the run. Left off when there is only one. */
+  heading?: string;
+  loading?: 'lazy' | 'eager';
+}
+
+const { films, heading, loading = 'lazy' } = Astro.props;
+---
+
+{
+  films.length > 0 && (
+    <div class="films">
+      {heading && <p class="mono films__head">{heading}</p>}
+      {films.map((f) => (
+        <figure class="films__one">
+          <VideoFacade film={f} loading={loading} />
+          {f.note && <figcaption class="films__note quiet">{f.note}</figcaption>}
+        </figure>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .films {
+    display: grid;
+    gap: var(--s-5);
+    margin-top: var(--s-4);
+  }
+
+  .films__head {
+    color: var(--fg-faint);
+    font-size: 0.62rem;
+  }
+
+  .films__one {
+    margin: 0;
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .films__note {
+    font-size: var(--step--1);
+    max-width: var(--measure);
+  }
+</style>

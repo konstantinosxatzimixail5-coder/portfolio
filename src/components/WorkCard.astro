@@ -6,18 +6,23 @@ interface Props {
   href: string;
   num: string;
   client: string;
-  kind: 'Client' | 'Spec, self-initiated';
+  /** 'Client' or anything else. The label prints as written. */
+  kind: string;
   problem: string;
   image: CmsImage | null;
   year?: string;
 }
 
 const { href, num, client, kind, problem, image, year } = Astro.props;
-const spec = kind === 'Spec, self-initiated';
+// Anything I was not paid for reads gold, whatever it is called.
+const spec = kind !== 'Client';
 ---
 
 <a class="card" href={href}>
-  <Frame image={image} num={num} ratio="4 / 3" sizes="(max-width: 900px) 100vw, 45vw" />
+  <!-- label="" suppresses the picture's own caption. A card already says what
+       it is on the line underneath, and a caption on some heroes and not others
+       staggers the two columns against each other. -->
+  <Frame image={image} num={num} label="" ratio="4 / 3" sizes="(max-width: 900px) 100vw, 45vw" />
 
   <div class="card__body">
     <p class="card__meta mono">
