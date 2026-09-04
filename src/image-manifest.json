@@ -2018,6 +2018,33 @@
     ],
     "fallback": "/img/local/mariposa/showcase-405.webp"
   },
+  "local/reel/poster": {
+    "key": "local/reel/poster",
+    "width": 960,
+    "height": 540,
+    "aspect": 1.7778,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/local/reel/poster-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/reel/poster-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/local/reel/poster-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/local/reel/poster-960.webp"
+      }
+    ],
+    "fallback": "/img/local/reel/poster-960.webp"
+  },
   "local/selene-cc/pilot-poster": {
     "key": "local/selene-cc/pilot-poster",
     "width": 960,

@@ -23,11 +23,13 @@ const shots = reel.shots ?? [];
       {
         reel.videoId ? (
           <VideoFacade
-            host={reel.host}
-            videoId={reel.videoId}
-            poster={reel.poster}
-            title={reel.title}
-            duration={reel.duration}
+            film={{
+              host: reel.host,
+              videoId: reel.videoId,
+              poster: reel.poster,
+              title: reel.title,
+              duration: reel.duration,
+            }}
             loading="eager"
           />
         ) : (

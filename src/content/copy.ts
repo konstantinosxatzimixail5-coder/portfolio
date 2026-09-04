@@ -13,6 +13,7 @@
 // spotted, and it is why they read as punctuation to anyone who saw the page.
 
 import { blocks } from './blocks';
+import { local } from './video';
 
 export const home = {
   headline: 'I make the films and the pictures a shoot could not pay for.',
@@ -64,7 +65,7 @@ export const home = {
       label: 'Writing',
       rail: 'Writing',
       href: '#writing',
-      note: 'Direct response scripts, ghostwriting, one long article',
+      note: 'Scripts, ghostwriting, and fifteen posts for the studio',
     },
     {
       _key: 'k5u',
@@ -93,6 +94,16 @@ export const home = {
   writingHeading: 'Writing',
   writingMore: 'Samples on request, in either language.',
 
+  // The one body of writing with a public address, so it gets a block of its
+  // own under the list rather than a fifth row inside it. Set at the size of
+  // the titles above it: it is another kind of writing, not a louder one.
+  writingStudio: {
+    flag: 'Ongoing, published',
+    title: 'SEO & AIO blog posts for TaleCrafters Studio',
+    note: 'Fifteen posts so far, each one written against a question somebody types: what generative video costs in 2026, what the EU AI Act now makes an advertiser label, how a master plate holds one product across a hundred shots. Written for search and for the answer engines reading over its shoulder, with the sources cited and the numbers sourced.',
+    link: { label: 'Read them', href: 'https://talecrafters.studio/blog' },
+  },
+
   aboutHeading: 'About and contact',
   aboutBody: blocks(`I am a writer and director in Athens, and I run TaleCrafters, a synthetic media and creative systems studio registered in London.
 
@@ -100,7 +111,7 @@ Most of my week goes on generated stills and film for brands that need volume: p
 
 The thing I care about is the gate. Anyone can generate a frame that looks right at thumbnail size. What makes it work is a written test the frame has to pass before anybody sees it, and the discipline to send it back when it fails instead of retouching it into shape.
 
-Learn the rules like a pro so you can break them like an artist. I have taken that literally for long enough that it now reads as a production method.`),
+Learn the rules like a pro so you can break them like an artist. I have run that as a production method for long enough that it now shows up in the work as a naming convention and a run log.`),
 
   seoTitle: 'Konstantinos Chatzimichail, AI-Enabled Marketing Designer & Creative Producer',
   seoDescription:
@@ -125,6 +136,19 @@ export const specPage = {
     'Six invented brands, built to break a specific failure. Product sets, creator ads and two anamorphic billboards, self-initiated, each with the control gate it was made to prove.',
 };
 
+// The cut is up. Setting the id here does two things on its own: /reel swaps
+// the three standing-in frames for a player, and the badge on the front page
+// stops saying the cut is coming and starts saying play it.
+//
+// The poster is the cover of the upload rather than a frame from inside it, so
+// what a visitor clicks and what they get are the same picture. Swap it for a
+// still from the cut in the Studio if you would rather the page stayed quiet.
 export const reelPage = {
+  host: 'youtube',
+  videoId: '96fsW49yKuo',
+  poster: local(
+    'reel/poster',
+    'The showreel cover: an illustrated portrait of me pointing at camera over a night city, surrounded by an edit timeline, a clapperboard, a camera body and a growth chart, under the word SHOWREEL in yellow brush type.'
+  ),
   lede: 'One cut. Under it, every shot in order, with the piece it came from, the line that made it, and what I actually did on it.',
 };

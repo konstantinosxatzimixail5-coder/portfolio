@@ -106,9 +106,12 @@ export const getHome = once(async () => {
 
 export const getReel = once(async () => {
   const d = await singleton<any>(QUERIES.reel, 'reelPage');
+  const merged = over(d, copy.reelPage as any);
   return {
-    ...over(d, copy.reelPage as any),
-    poster: toImage(d.poster),
+    ...merged,
+    // The overlay's poster is already a picture. The dataset's is a reference
+    // that has to be resolved first, so the two cannot share one line.
+    poster: (copy.reelPage as any).poster ?? toImage(d.poster),
     trio: toImages(d.trio),
   };
 });

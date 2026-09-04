@@ -184,6 +184,20 @@ const mark = (href: string) => {
           ))
         }
       </dl>
+      {
+        home.writingStudio && (
+          <div class="studio">
+            <p class="mono studio__flag">{home.writingStudio.flag}</p>
+            <h3 class="studio__title">{home.writingStudio.title}</h3>
+            <p class="quiet studio__note">{home.writingStudio.note}</p>
+            <a class="btn btn--ghost mono studio__link" href={home.writingStudio.link.href} rel="noopener">
+              {home.writingStudio.link.label}
+              <span aria-hidden="true"> ↗</span>
+            </a>
+          </div>
+        )
+      }
+
       {home.writingMore && <p class="quiet more">{home.writingMore}</p>}
     </div>
   </section>
@@ -499,6 +513,44 @@ const mark = (href: string) => {
     }
   }
 
+  /* The blog. It sits under the list rather than inside it because it is the
+     only writing here with an address, and a row that is also a link would be
+     the odd one out in a list of four that are not. The heading is set at the
+     size of the titles above it: a different kind of writing, not a louder one. */
+  .studio {
+    display: grid;
+    gap: var(--s-2);
+    justify-items: start;
+    padding: var(--s-4) var(--s-5);
+    background: var(--ink-raised);
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--gold);
+    border-radius: var(--radius);
+  }
+
+  .studio__flag {
+    color: var(--gold);
+    font-size: 0.62rem;
+    max-width: none;
+  }
+
+  .studio__title {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.2;
+    color: var(--newsprint);
+    max-width: 26ch;
+  }
+
+  .studio__note {
+    font-size: var(--step--1);
+    max-width: var(--measure);
+  }
+
+  .studio__link {
+    margin-top: var(--s-2);
+  }
+
   /* --- 05 about ----------------------------------------------------------- */
 
   /* The paragraphs here are rendered inside RichText, so they never carry this
@@ -529,6 +581,7 @@ const mark = (href: string) => {
   .btn {
     display: inline-flex;
     align-items: center;
+    gap: 0.3rem;
     min-height: var(--tap);
     padding: 0 var(--s-4);
     border: 1px solid var(--cyan);
