@@ -186,7 +186,9 @@ export const clips: Record<string, Clip[]> = {
       host: 'youtube',
       videoId: '96fsW49yKuo',
       title: 'Reel',
-      duration: '1:30',
+      // No duration on purpose. It was published as 1:30 and it is not that
+      // length; rather than swap one guess for another, the play button says
+      // nothing about it. Put the real figure in the Studio and it prints.
       ratio: '16:9',
       poster: 'site/reel-cover',
       posterAlt:

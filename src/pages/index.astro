@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Frame from '../components/Frame.astro';
 import WorkCard from '../components/WorkCard.astro';
 import Strip from '../components/Strip.astro';
+import Clips from '../components/Clips.astro';
 import RichText from '../components/RichText.astro';
 import WhatsApp from '../components/WhatsApp.astro';
 import {
@@ -62,14 +63,25 @@ const restOfPipelines = allPipelines.filter((p: any) => p.id !== HOME_PIPELINE);
 // places show the same pictures and there is one row to change.
 const reelTrio = reel.trio;
 
-// Whether there is a cut to play, from the Studio or from src/data/videos.ts.
-// The badge says "play" or "coming" off this and nothing else.
-const reelIsUp = !!(reel.videoId || clipFor('reel'));
+// The cut, which now plays in the section rather than linking out to it. While
+// there is none the three standing-in frames come back, and the badge under
+// them says so.
+const reelCut = reel.videoId
+  ? {
+      host: reel.host as 'youtube' | 'vimeo',
+      videoId: reel.videoId,
+      title: reel.title,
+      duration: reel.duration,
+      ratio: '16:9' as const,
+      poster: reel.poster!.key,
+      posterAlt: reel.poster!.alt,
+    }
+  : clipFor('reel');
 
 // Numbers written into the copy are counted here instead of typed, because a
 // typed number stays a valid sentence long after it stops being true.
 const counts = {
-  count: work.length,
+  count: work.length + shelf.lead.length + shelf.tail.length,
   samples: writingSamples.length,
   frames: captures.length,
   brands: Words(specBrands.length),
@@ -170,29 +182,31 @@ const jsonLd = graph([
     </div>
 
     <div class="stack-block">
-      <h2 class="sec__h2">{home.reelHeading}</h2>
+      <h2 class="sec__h2">{headingFor('#reel', home.reelHeading)}</h2>
 
-      <a class="reel" href="/reel/">
-        <span class="reel__trio">
-          {
-            reelTrio.map((f, i) => (
-              <Frame
-                image={f}
-                num={String(i + 1).padStart(2, '0')}
-                ratio="3 / 4"
-                loading="eager"
-                sizes="(max-width: 700px) 33vw, 300px"
-              />
-            ))
-          }
-        </span>
-        <span class="reel__badge mono">
-          {reelIsUp ? home.reelBadgePlay : home.reelBadgePending}
-          <span aria-hidden="true"> →</span>
-        </span>
-      </a>
-
-      <p class="quiet reel__note">{home.reelNote}</p>
+      {
+        reelCut ? (
+          <Clips clips={[reelCut]} loading="eager" />
+        ) : (
+          <a class="reel" href="/reel/">
+            <span class="reel__trio">
+              {reelTrio.map((f, i) => (
+                <Frame
+                  image={f}
+                  num={String(i + 1).padStart(2, '0')}
+                  ratio="3 / 4"
+                  loading="eager"
+                  sizes="(max-width: 700px) 33vw, 300px"
+                />
+              ))}
+            </span>
+            <span class="reel__badge mono">
+              {home.reelBadgePending}
+              <span aria-hidden="true"> →</span>
+            </span>
+          </a>
+        )
+      }
     </div>
   </section>
 

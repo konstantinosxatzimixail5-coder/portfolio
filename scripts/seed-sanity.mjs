@@ -206,7 +206,32 @@ for (const [place, list] of [
   }
 }
 
-// 4. The studio blog block, on the home page.
+// 4. Index rows and reel labels that stopped being true.
+//
+// These are Studio fields, and the Studio wins over the repository for all of
+// them, so a stale one keeps printing until it is patched here or edited by
+// hand. Patched by _key so the rest of the row and the rest of the array are
+// left alone.
+const stale = {
+  'contents[_key=="k5p"].note': 'One cut, and what my hand did on each piece of it',
+  'contents[_key=="k5q"].note': '{count} projects, brief to delivery',
+  'contents[_key=="k5r"].label': 'AI Creative Pipelines',
+  'contents[_key=="k5r"].note': '{pipelines} of them, stage by stage, with the gates that stop a frame',
+  'contents[_key=="k5t"].note': '{samples} samples in full, plus the studio blog',
+  reelHeading: 'Reel',
+};
+plan.push({ what: 'homePage index rows and reel heading', id: 'homePage', set: stale });
+
+// The reel page said "1:30 · Reel 2026, ninety seconds" and the cut is neither.
+// The title becomes the word; the duration is cleared rather than guessed at,
+// and the page prints the line without it until somebody measures the cut.
+plan.push({
+  what: 'reelPage title and duration',
+  id: 'reelPage',
+  set: { title: 'Reel', duration: '' },
+});
+
+// 5. The studio blog block, on the home page.
 plan.push({
   what: 'homePage.blog',
   id: 'homePage',

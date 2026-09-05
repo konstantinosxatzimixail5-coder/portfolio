@@ -2,6 +2,7 @@ import { sanity, QUERIES, toImage, toImages, toVideo, toVideos } from './sanity'
 import { clips as repoClips, type Clip } from '../data/videos';
 import { leadWork, tailWork } from '../data/work-extras';
 import { blog as repoBlog } from '../data/blog';
+import { positioning } from '../data/positioning';
 import { profile } from '../data/profile';
 import { navLinks } from '../data/sections';
 import { morePipelines } from '../data/pipelines';
@@ -54,7 +55,10 @@ export const getSettings = once(async () => {
 
 export const getHome = once(async () => {
   const d = await singleton<any>(QUERIES.home, 'homePage');
-  return { ...d, openImage: toImage(d.openImage) };
+  // The three positioning lines are the one place the repository wins over the
+  // Studio, and src/data/positioning.ts says why. Everything else on the home
+  // page is the Studio's.
+  return { ...d, ...positioning, openImage: toImage(d.openImage) };
 });
 
 export const getReel = once(async () => {

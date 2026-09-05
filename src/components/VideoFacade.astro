@@ -190,12 +190,19 @@ const watch =
     }
   }
 
-  .facade__iframe {
+  /* Global, and it has to be. The player is created in the script below, after
+     the build has already stamped its scope attribute on everything in the
+     template, so a scoped rule never matches it. It did not match for a while:
+     every player on the site opened at the browser's default 300 by 150 and
+     looked like a thumbnail of itself. */
+  :global(.facade__iframe) {
     grid-area: 1 / 1;
     width: 100%;
+    height: auto;
     aspect-ratio: var(--facade-ratio, 16 / 9);
     border: 1px solid var(--rule);
     border-radius: var(--radius);
+    display: block;
   }
 </style>
 

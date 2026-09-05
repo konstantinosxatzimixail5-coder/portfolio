@@ -17,20 +17,36 @@ export interface SectionDef {
   // Sections whose heading is a fixed navigation label own it here. The CMS
   // still supplies the lede and the note underneath.
   heading?: string;
+  // The same argument, applied to the index note. Four of these rows state a
+  // fact the repository is the only thing that knows: how many projects are on
+  // the shelf, how many pipelines are written out, how many writing samples
+  // there are, and whether the reel is a ninety-second cut. The Studio kept
+  // printing the old answer to all four long after the site had changed, so
+  // those rows own their note here and the rest still come off the CMS.
+  //
+  // `npm run seed` writes these into the Studio as well, so the two agree
+  // rather than one silently covering the other. Drop the flag once they do.
+  ownNote?: true;
 }
 
 export const sections: SectionDef[] = [
   {
+    // The cut plays here now, so the section is the reel rather than a link to
+    // it, and the heading is the word itself. It used to say Ninety seconds,
+    // which the cut is not.
     href: '#reel',
     label: 'Reel',
     rail: 'Reel',
-    note: 'Ninety seconds, and what my hand did on each piece',
+    note: 'One cut, and what my hand did on each piece of it',
+    heading: 'Reel',
+    ownNote: true,
   },
   {
     href: '#work',
     label: 'Selected work',
     rail: 'Selected work',
-    note: '{count} client projects, brief to delivery',
+    note: '{count} projects, brief to delivery',
+    ownNote: true,
   },
   {
     href: '#films',
@@ -41,10 +57,10 @@ export const sections: SectionDef[] = [
   },
   {
     href: '#product',
-    label: 'AI Product Photography',
+    label: 'Synthetic Product Ad Shoots',
     rail: 'Product',
-    note: 'Invented brands and product sets, labelled as spec throughout',
-    heading: 'AI Product Photography',
+    note: 'Invented brands, shot as ad campaigns, labelled as spec throughout',
+    heading: 'Synthetic Product Ad Shoots',
   },
   {
     href: '#captures',
@@ -61,12 +77,14 @@ export const sections: SectionDef[] = [
     rail: 'Pipelines',
     note: '{pipelines} of them, stage by stage, with the gates that stop a frame',
     heading: 'AI Creative Pipelines',
+    ownNote: true,
   },
   {
     href: '#writing',
     label: 'Writing',
     rail: 'Writing',
-    note: '{samples} samples in full: scripts, feed writing and long form',
+    note: '{samples} samples in full, plus the studio blog',
+    ownNote: true,
   },
   {
     href: '#about',
@@ -111,7 +129,7 @@ export function composeSections(
       // twelve screens down end up disagreeing.
       label: s.heading ?? row?.label ?? s.label,
       rail: row?.rail || row?.label || s.rail,
-      note: row?.note || s.note,
+      note: s.ownNote ? s.note : row?.note || s.note,
       num: String(i + 1).padStart(2, '0'),
     };
   });

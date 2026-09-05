@@ -62,7 +62,7 @@ export const GET: APIRoute = async () => {
     `- [Writing](${at('/writing/')}): samples published in full, not offered on request.`,
     `- [Pipelines](${at('/pipelines/')}): the ${words(morePipelines.length)} not shown on the front page, in full.`,
     `- [Captures](${at('/captures/')}): ${words(captures.length)} generated human frames and what each was built to break.`,
-    `- [AI Product Photography](${at('/product/')}): self-initiated brands and product sets, labelled as spec throughout.`,
+    `- [Synthetic Product Ad Shoots](${at('/product/')}): self-initiated brands and product sets, labelled as spec throughout.`,
     '',
     '## Case studies',
     '',

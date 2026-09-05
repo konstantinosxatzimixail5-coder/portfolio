@@ -51,7 +51,7 @@ const jsonLd = graph([
 <Base title={reel.seoTitle} description={reel.seoDescription} active="reel" jsonLd={jsonLd}>
   <article class="reelpage">
     <header class="reelpage__head shell">
-      <p class="mono faint">{reel.duration} · {reel.title}</p>
+      <p class="mono faint">{[reel.duration, reel.title].filter(Boolean).join(' · ')}</p>
       <h1 class="reelpage__title">{reel.heading}</h1>
       <p class="reelpage__lede">{reel.lede}</p>
     </header>

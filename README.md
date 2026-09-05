@@ -441,7 +441,7 @@ labels survive cannot ship a cut label.
 In the Studio, **Spec brand**. Each brand is a gallery with a short argument
 attached, which is why it is not a case study.
 
-The section is called **AI Product Photography** and lives at `/product`. The old
+The section is called **Synthetic Product Ad Shoots** and lives at `/product`. The old
 `/spec` address redirects and should stay redirecting. The rename is the section
 heading and the route only: every brand still carries its **SPEC** chip, because
 that label is the honesty rule and not the branding, and softening it to make the
