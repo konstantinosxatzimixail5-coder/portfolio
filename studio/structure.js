@@ -40,6 +40,15 @@ export const structure = (S) =>
         ),
 
       S.listItem()
+        .title('Shelf cards')
+        .schemaType('shelfCard')
+        .child(
+          S.documentTypeList('shelfCard')
+            .title('Shelf cards')
+            .defaultOrdering([{ field: 'order', direction: 'asc' }])
+        ),
+
+      S.listItem()
         .title('Pipelines')
         .schemaType('pipeline')
         .child(

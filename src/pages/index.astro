@@ -23,25 +23,28 @@ import {
   writingSamples,
   writingGroups,
   profile,
-  leadWork,
-  tailWork,
   clipFor,
-  blog,
+  getShelfCards,
+  getBlog,
 } from '../lib/content';
 import { composeSections, headingFor } from '../data/sections';
 import { fill, words, Words } from '../lib/text';
 import { breadcrumbs, faqPage, graph, person, website } from '../lib/schema';
 
-const [home, site, work, allPipelines, reel, specPage, specBrands, lead] = await Promise.all([
-  getHome(),
-  getSettings(),
-  getWork(),
-  getAllPipelines(),
-  getReel(),
-  getSpecPage(),
-  getSpecBrands(),
-  findPipeline(HOME_PIPELINE),
-]);
+const [home, site, work, allPipelines, reel, specPage, specBrands, lead, shelf, blog] =
+  await Promise.all([
+    getHome(),
+    getSettings(),
+    getWork(),
+    getAllPipelines(),
+    getReel(),
+    getSpecPage(),
+    getSpecBrands(),
+    findPipeline(HOME_PIPELINE),
+    getShelfCards(),
+    getBlog(),
+  ]);
+const { lead: leadWork, tail: tailWork } = shelf;
 
 // One pipeline on the page, in full, and the other six as rows underneath. The
 // one is the product photography line, and it reads directly under the shelf it
@@ -204,13 +207,14 @@ const jsonLd = graph([
       <h2 class="sec__h2">{home.workHeading}</h2>
       <div class="grid">
         {
-          leadWork.map((e, i) => (
+          leadWork.map((e: any, i: number) => (
             <WorkCard
               href={e.href}
               num={String(i + 1).padStart(2, '0')}
               client={e.client}
               kind={e.kind}
               problem={e.problem}
+              image={e.image}
               src={e.src}
               alt={e.alt}
               ratio={e.ratio}
@@ -232,13 +236,14 @@ const jsonLd = graph([
           ))
         }
         {
-          tailWork.map((e, i) => (
+          tailWork.map((e: any, i: number) => (
             <WorkCard
               href={e.href}
               num={String(leadWork.length + work.length + i + 1).padStart(2, '0')}
               client={e.client}
               kind={e.kind}
               problem={e.problem}
+              image={e.image}
               src={e.src}
               alt={e.alt}
               ratio={e.ratio}

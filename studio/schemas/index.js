@@ -10,6 +10,7 @@ import specPage from './specPage.js';
 import work from './work.js';
 import pipeline from './pipeline.js';
 import specBrand from './specBrand.js';
+import shelfCard from './shelfCard.js';
 
 export const schemaTypes = [
   // shared building blocks
@@ -25,6 +26,7 @@ export const schemaTypes = [
   work,
   pipeline,
   specBrand,
+  shelfCard,
 ];
 
 // The four documents there is only ever one of. Listed here so the desk can

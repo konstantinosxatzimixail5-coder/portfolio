@@ -4,7 +4,7 @@ import Frame from '../../components/Frame.astro';
 import VideoFacade from '../../components/VideoFacade.astro';
 import Clips from '../../components/Clips.astro';
 import RichText from '../../components/RichText.astro';
-import { getWork, getSettings, clipsFor } from '../../lib/content';
+import { getWork, getSettings, clipsForAsync } from '../../lib/content';
 import { breadcrumbs, caseStudy, graph, person } from '../../lib/schema';
 
 export async function getStaticPaths() {
@@ -39,7 +39,7 @@ const spec = d.kind === 'Spec, self-initiated';
 // The films from this engagement that a reader can actually watch. The Studio's
 // own video field still plays first; these are added under it rather than
 // instead of it. See src/data/videos.ts.
-const films = clipsFor(`work:${d.slug}`);
+const films = await clipsForAsync(`work:${d.slug}`);
 
 const jsonLd = graph([
   person(site.domain, site),

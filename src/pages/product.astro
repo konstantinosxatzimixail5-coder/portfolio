@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Frame from '../components/Frame.astro';
 import Clips from '../components/Clips.astro';
-import { getSpecPage, getSpecBrands, getSettings, clipsFor, extrasFor, extraShotCount } from '../lib/content';
+import { getSpecPage, getSpecBrands, getSettings, clipsForAsync, extrasFor, extraShotCount } from '../lib/content';
 import { fill, Words } from '../lib/text';
 import { headingFor } from '../data/sections';
 import { breadcrumbs, collection, graph, person } from '../lib/schema';
@@ -17,6 +17,12 @@ const [page, specBrands, site] = await Promise.all([getSpecPage(), getSpecBrands
 // The two numbers in the lede are counted, not typed. Add a brand or a frame in
 // the Studio and the sentence keeps up on its own. {brands} opens the sentence,
 // so it is spelled out with a capital.
+// Resolved before the template, because a map callback cannot await. Keyed by
+// brand id, so a brand with no films renders none and asks nothing.
+const brandClips = Object.fromEntries(
+  await Promise.all(specBrands.map(async (b: any) => [b.id, await clipsForAsync(`brand:${b.id}`)]))
+);
+
 const counts = {
   // The frames this repository adds count too, or the sentence undercounts the
   // page it sits on.
@@ -128,7 +134,7 @@ const jsonLd = graph([
               ))}
             </div>
 
-            <Clips clips={clipsFor(`brand:${b.id}`)} heading="Moving" />
+            <Clips clips={brandClips[b.id] ?? []} heading="Moving" />
           </div>
         </section>
       ))

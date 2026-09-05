@@ -225,6 +225,24 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
 
+    // --- the blog ----------------------------------------------------------
+    defineField({
+      name: 'blog',
+      title: 'Studio blog block',
+      type: 'object',
+      group: 'writing',
+      description:
+        'The one body of writing on this site published somewhere else, so it gets a block under the writing shelf rather than rows that lead nowhere. Clear the link and the block comes off the page.',
+      fields: [
+        { name: 'flag', title: 'Flag', type: 'string', description: 'The small line above, e.g. Ongoing, published.' },
+        { name: 'title', title: 'Title', type: 'string' },
+        { name: 'standfirst', title: 'Standfirst', type: 'text', rows: 2, description: 'The one line that sells it.' },
+        { name: 'note', title: 'Note', type: 'text', rows: 5 },
+        { name: 'href', title: 'Link', type: 'string', description: 'Where Read them goes.' },
+        { name: 'linkLabel', title: 'Link label', type: 'string' },
+      ],
+    }),
+
     // --- seo ---------------------------------------------------------------
     defineField({
       name: 'seoTitle',

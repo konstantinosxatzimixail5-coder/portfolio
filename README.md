@@ -263,6 +263,70 @@ it by hand when the role line changes and at no other time.
 
 ---
 
+## Editing the newer sections
+
+Films on a case study, films on a shelf brand, the three cards on the Selected
+work shelf and the studio blog block are all Studio fields. They were added to
+the repository first, under `src/data/`, because the dataset could not be
+written to when they were made. `npm run seed` moves them across.
+
+```bash
+cp .env.example .env.local        # then fill in SANITY_WRITE_TOKEN
+npm run seed -- --dry             # says what it would do, writes nothing
+npm run seed                      # uploads the pictures, writes the documents
+```
+
+The token comes from sanity.io/manage, your project, API, Tokens, Add API
+token, Editor role. It is the only thing in this project that needs one and it
+does not belong on Vercel: the site only ever reads.
+
+Running it is safe twice. Documents use fixed ids and are patched rather than
+duplicated, pictures are matched on their content hash so nothing uploads
+twice, extra shelf frames are matched on their alt text, and nothing is
+deleted.
+
+Afterwards the Studio wins. Every one of these reads *dataset first, repository
+second*, per key:
+
+| In the Studio | Falls back to |
+|---|---|
+| **Case study → Media → Films** | `src/data/videos.ts`, key `work:<slug>` |
+| **Spec brand → Films** | `src/data/videos.ts`, key `brand:<id>` |
+| **Spec brand → Frames** | `src/data/product-extras.ts` |
+| **Shelf cards** | `src/data/work-extras.ts` |
+| **Home page → Writing → Studio blog block** | `src/data/blog.ts` |
+
+Per key matters. Publishing films against one case study replaces that case
+study's list and leaves every other one alone, so filling in the first does not
+empty the rest.
+
+Two things stay in the repository on purpose, and both have their reasons
+written at the top of their own file: the film pages in `src/data/films.ts` and
+the four unpublished pipeline sheets in `src/data/pipelines.ts`. A beat map with
+fourteen prompts and their timecodes is a document with a shape, not a field
+with a value, and retyping one into a rich text box is how it stops being one.
+Say the word and they can move too.
+
+---
+
+## Why a publish shows an old site
+
+Publishing in the Studio changes the dataset. It does not push to git, and the
+host only builds on a push, so the Deploy Hook in **sanity.io/manage → API →
+Webhooks** is what closes the gap. It builds whatever is on `main`.
+
+Which means: if `main` is behind, every publish rebuilds the old site, and the
+Studio looks like it is undoing your work. It is not. Check with
+
+```bash
+git log --oneline main..HEAD     # anything listed is not on the live site
+```
+
+and fast-forward `main` before wondering why a change did not appear.
+
+
+---
+
 ## Deploying
 
 The build is a folder of static files. Any host that serves a directory will do.

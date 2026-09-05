@@ -14,7 +14,8 @@
     "images": "node scripts/build-images.mjs",
     "sync": "node scripts/sync-images.mjs",
     "studio": "npm --prefix studio run dev",
-    "studio:deploy": "npm --prefix studio run deploy"
+    "studio:deploy": "npm --prefix studio run deploy",
+    "seed": "node --experimental-strip-types scripts/seed-sanity.mjs"
   },
   "dependencies": {
     "@sanity/client": "^8.3.0",

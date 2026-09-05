@@ -40,6 +40,29 @@ export default defineType({
       description: 'Read out by screen readers as the name of the player.',
     }),
     defineField({ name: 'duration', title: 'Duration', type: 'string', description: 'e.g. 1:30' }),
+    defineField({
+      name: 'note',
+      title: 'Note',
+      type: 'text',
+      rows: 3,
+      description:
+        'One or two sentences under the player saying what this film was for. A player without one is a showreel clip; a player with one is evidence.',
+    }),
+    defineField({
+      name: 'ratio',
+      title: 'Shape',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Wide, 16:9', value: '16:9' },
+          { title: 'Vertical, 9:16', value: '9:16' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: '16:9',
+      description:
+        'A vertical cut is held to a phone’s width rather than filling the column, and the player keeps that shape when it starts.',
+    }),
   ],
   preview: {
     select: { title: 'title', subtitle: 'videoId', media: 'poster' },

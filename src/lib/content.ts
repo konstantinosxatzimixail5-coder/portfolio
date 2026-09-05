@@ -1,4 +1,7 @@
-import { sanity, QUERIES, toImage, toImages, toVideo } from './sanity';
+import { sanity, QUERIES, toImage, toImages, toVideo, toVideos } from './sanity';
+import { clips as repoClips, type Clip } from '../data/videos';
+import { leadWork, tailWork } from '../data/work-extras';
+import { blog as repoBlog } from '../data/blog';
 import { profile } from '../data/profile';
 import { navLinks } from '../data/sections';
 import { morePipelines } from '../data/pipelines';
@@ -61,6 +64,24 @@ export const getReel = once(async () => {
 
 export const getSpecPage = once(() => singleton<any>(QUERIES.specPage, 'specPage'));
 
+// A clip as the Studio stores it, in the shape the players take. One with no
+// poster has nothing to sit behind, so it is dropped rather than rendered as a
+// grey box.
+const clipsFromCms = (list: any): Clip[] =>
+  toVideos(list)
+    .filter((v) => !!v.poster)
+    .map((v) => ({
+      host: v.host === 'vimeo' ? ('vimeo' as const) : ('youtube' as const),
+      videoId: v.videoId,
+      title: v.title,
+      note: v.note,
+      duration: v.duration,
+      ratio: v.ratio,
+      // A CMS picture carries its key and its alt on the object itself.
+      poster: v.poster!.key,
+      posterAlt: v.poster!.alt,
+    }));
+
 export const getWork = once(async () => {
   const list = await sanity.fetch<any[]>(QUERIES.work);
   return list.map((w) => ({
@@ -68,6 +89,9 @@ export const getWork = once(async () => {
     hero: toImage(w.hero),
     gallery: toImages(w.gallery),
     video: toVideo(w.video),
+    // Films published in the Studio for this case study. They take over from
+    // the repository's list for that case; see getClips below.
+    videos: clipsFromCms(w.videos),
     stack: w.stack ?? [],
     links: w.links ?? [],
   }));
@@ -97,7 +121,49 @@ export const findPipeline = async (id: string) =>
 
 export const getSpecBrands = once(async () => {
   const list = await sanity.fetch<any[]>(QUERIES.specBrands);
-  return list.map((b) => ({ ...b, shots: toImages(b.shots) }));
+  return list.map((b) => ({ ...b, shots: toImages(b.shots), videos: clipsFromCms(b.videos) }));
+});
+
+/**
+ * Every clip on the site, keyed by what it belongs to.
+ *
+ * The Studio wins per key. A case study or a brand with films published against
+ * it replaces the repository's list for that one key and leaves every other key
+ * alone, so filling one in does not empty the rest. src/data/videos.ts is what
+ * the site shows until each is filled in, and it is what these were seeded from.
+ */
+export const getClips = once(async () => {
+  const [work, brands] = await Promise.all([getWork(), getSpecBrands()]);
+  const all: Record<string, Clip[]> = { ...repoClips };
+  for (const w of work) if (w.videos.length) all[`work:${w.slug}`] = w.videos;
+  for (const b of brands) if (b.videos.length) all[`brand:${b.id}`] = b.videos;
+  return all;
+});
+
+export const clipsForAsync = async (key: string): Promise<Clip[]> => (await getClips())[key] ?? [];
+
+/**
+ * The Selected work shelf, either side of the case studies. Cards published in
+ * the Studio replace the repository's list wholesale, because this one is short
+ * and a merge would mean a card deleted in the Studio quietly coming back.
+ */
+export const getShelfCards = once(async () => {
+  const docs = await sanity.fetch<any[]>(QUERIES.shelfCards);
+  const mapped = docs
+    .map((c) => ({ ...c, image: toImage(c.image) }))
+    .filter((c) => !!c.image);
+  if (mapped.length === 0) return { lead: leadWork, tail: tailWork };
+  return {
+    lead: mapped.filter((c) => c.place === 'lead'),
+    tail: mapped.filter((c) => c.place !== 'lead'),
+  };
+});
+
+/** The studio blog block. The Studio's version wins once it has one. */
+export const getBlog = once(async () => {
+  const d = await getHome();
+  const b = d.blog;
+  return b?.href ? { ...repoBlog, ...Object.fromEntries(Object.entries(b).filter(([, v]) => v)) } : repoBlog;
 });
 
 // --- content this repository owns -------------------------------------------

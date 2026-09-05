@@ -149,6 +149,15 @@ export default defineType({
       description:
         'Optional, and kept scarce on purpose. Three embeds across the whole site is the budget.',
     }),
+    defineField({
+      name: 'videos',
+      title: 'Films',
+      type: 'array',
+      of: [{ type: 'embeddedVideo' }],
+      group: 'media',
+      description:
+        'The films from this engagement a reader can actually watch. Every player on the site is a facade, so nothing loads until somebody clicks and the count is not a page-weight problem. A film nobody can play is worse than no film: leave one out until it is public.',
+    }),
 
     // --- extras ------------------------------------------------------------
     defineField({

@@ -62,6 +62,8 @@ export interface CmsVideo {
   poster: CmsImage | null;
   title: string;
   duration?: string;
+  note?: string;
+  ratio?: '16:9' | '9:16';
 }
 
 // --- image projection -------------------------------------------------------
@@ -81,6 +83,8 @@ const VIDEO = `{
   videoId,
   title,
   duration,
+  note,
+  ratio,
   poster ${IMAGE}
 }`;
 
@@ -102,7 +106,7 @@ export const QUERIES = {
     reelHeading, reelBadgePlay, reelBadgePending, reelNote,
     workHeading, workMore,
     pipelinesHeading, pipelinesIntro,
-    writingHeading, writingItems, writingMore,
+    writingHeading, writingItems, writingMore, blog,
     aboutHeading, aboutBody,
     seoTitle, seoDescription
   }`,
@@ -126,6 +130,7 @@ export const QUERIES = {
     hero ${IMAGE},
     gallery[] ${IMAGE},
     video ${VIDEO},
+    videos[] ${VIDEO},
     stack, links
   }`,
 
@@ -134,10 +139,16 @@ export const QUERIES = {
     num, title, mechanism, summary, loop, stages, gates
   }`,
 
+  shelfCards: `*[_type == "shelfCard"] | order(order asc){
+    client, href, kind, year, problem, ratio, place,
+    image ${IMAGE}
+  }`,
+
   specBrands: `*[_type == "specBrand"] | order(order asc){
     "id": slug.current,
     num, name, product, proves, note, pipeline,
-    shots[] ${IMAGE}
+    shots[] ${IMAGE},
+    videos[] ${VIDEO}
   }`,
 };
 
@@ -175,5 +186,12 @@ export function toVideo(raw: any): CmsVideo | null {
     poster: toImage(raw.poster),
     title: raw.title ?? '',
     duration: raw.duration ?? undefined,
+    note: raw.note ?? undefined,
+    // A missing shape is a wide one, which is what every film on the site was
+    // before the field existed.
+    ratio: raw.ratio === '9:16' ? '9:16' : '16:9',
   };
 }
+
+export const toVideos = (list: any[] | null | undefined): CmsVideo[] =>
+  (list ?? []).map(toVideo).filter((v): v is CmsVideo => v !== null);
