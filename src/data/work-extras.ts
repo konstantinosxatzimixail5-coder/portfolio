@@ -24,7 +24,7 @@ export interface WorkExtra {
   ratio?: string;
 }
 
-/** Before the case studies. The studio is the thing they were all made under. */
+/** Before the case studies, because it is the largest of them. */
 export const leadWork: WorkExtra[] = [
   {
     href: 'https://talecrafters.studio/',
@@ -32,7 +32,7 @@ export const leadWork: WorkExtra[] = [
     kind: 'Content & Growth Strategy, fully functioning SEO & AIO optimised website',
     year: '2026',
     problem:
-      'My own studio, and the site is the argument for it: every claim on it carries the pipeline, the gate or the stack that produced it.',
+      'Strategy, build and copy for a synthetic media studio, on a site where every claim carries the pipeline, the gate or the stack that produced it.',
     src: 'site/talecrafters-mark',
     alt: 'The TaleCrafters mark on a near-black ground: two white eyes over a wide grin made of film-strip perforations, with a cyan edge under it.',
     ratio: '4 / 3',

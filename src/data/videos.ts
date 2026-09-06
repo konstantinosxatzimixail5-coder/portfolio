@@ -184,7 +184,7 @@ export const clips: Record<string, Clip[]> = {
   reel: [
     {
       host: 'youtube',
-      videoId: '96fsW49yKuo',
+      videoId: 'lMCox9TvnoI',
       title: 'Reel',
       // No duration on purpose. It was published as 1:30 and it is not that
       // length; rather than swap one guess for another, the play button says
