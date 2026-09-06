@@ -56,9 +56,9 @@ export const tailWork: WorkExtra[] = [
     href: 'https://www.youtube.com/shorts/j_1NQCp2kp0',
     client: 'ΜΠΑΜ',
     kind: 'Spec, self-initiated',
-    year: '2024',
+    year: '2025',
     problem:
-      'An AI-generated satire of Greece, cut two and a half years ago out of Grok Imagine and Suno, back when holding a character for nine seconds was the whole difficulty.',
+      'An AI-generated satire of Greece, cut out of Grok Imagine and Suno back when holding a character for nine seconds was the whole difficulty.',
     // The short is vertical and the shelf is not. A 9:16 card left a hole in
     // the column beside it, so the frame is set whole on the page's own ground
     // rather than cropped down to a letterbox of itself.
