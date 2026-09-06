@@ -37,7 +37,7 @@ export const profile = {
   // actually on the shelves. "AI" never stands on its own in body copy here; the
   // hyphenated role line above is a fixed label and keeps its own spelling.
   claim:
-    'A storyteller who builds the machine as well as the story. Scripts, shorts, invented brands and photoreal frames come out of generative pipelines a marketing team can run without me.',
+    'A storyteller who builds the machine as well as the story. The brief, the pipeline and the finished work come off the same desk.',
 
   phone: {
     // E.164 for the machines, spaced for the humans, digits only for wa.me.

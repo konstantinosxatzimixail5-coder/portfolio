@@ -1442,6 +1442,25 @@
     ],
     "fallback": "/img/cms/b95ad579481ee797c24ecca9896320197e262356-480.webp"
   },
+  "cms/bbbb7aebc080ebcaeb9073dab962ccc8468405de": {
+    "key": "cms/bbbb7aebc080ebcaeb9073dab962ccc8468405de",
+    "width": 480,
+    "height": 269,
+    "aspect": 1.7843,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/cms/bbbb7aebc080ebcaeb9073dab962ccc8468405de-480.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/cms/bbbb7aebc080ebcaeb9073dab962ccc8468405de-480.webp"
+      }
+    ],
+    "fallback": "/img/cms/bbbb7aebc080ebcaeb9073dab962ccc8468405de-480.webp"
+  },
   "cms/c2f0f6864de09740a1625e1004c5a3c7d473e7f0": {
     "key": "cms/c2f0f6864de09740a1625e1004c5a3c7d473e7f0",
     "width": 480,
@@ -2262,6 +2281,82 @@
       }
     ],
     "fallback": "/img/site/product/grain01-billboard-960.webp"
+  },
+  "site/product/slab-bed": {
+    "key": "site/product/slab-bed",
+    "width": 480,
+    "height": 757,
+    "aspect": 0.6342,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/product/slab-bed-480.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/product/slab-bed-480.webp"
+      }
+    ],
+    "fallback": "/img/site/product/slab-bed-480.webp"
+  },
+  "site/product/slab-desk": {
+    "key": "site/product/slab-desk",
+    "width": 480,
+    "height": 757,
+    "aspect": 0.6342,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/product/slab-desk-480.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/product/slab-desk-480.webp"
+      }
+    ],
+    "fallback": "/img/site/product/slab-desk-480.webp"
+  },
+  "site/product/slab-gym": {
+    "key": "site/product/slab-gym",
+    "width": 480,
+    "height": 757,
+    "aspect": 0.6342,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/product/slab-gym-480.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/product/slab-gym-480.webp"
+      }
+    ],
+    "fallback": "/img/site/product/slab-gym-480.webp"
+  },
+  "site/product/slab-tray": {
+    "key": "site/product/slab-tray",
+    "width": 480,
+    "height": 524,
+    "aspect": 0.9152,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/product/slab-tray-480.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/product/slab-tray-480.webp"
+      }
+    ],
+    "fallback": "/img/site/product/slab-tray-480.webp"
   },
   "site/reel-cover": {
     "key": "site/reel-cover",
@@ -3275,6 +3370,52 @@
       }
     ],
     "fallback": "/img/site/video/cocoon-pilot-960.webp"
+  },
+  "site/video/greece-satire": {
+    "key": "site/video/greece-satire",
+    "width": 480,
+    "height": 852,
+    "aspect": 0.5637,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/video/greece-satire-480.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/video/greece-satire-480.webp"
+      }
+    ],
+    "fallback": "/img/site/video/greece-satire-480.webp"
+  },
+  "site/video/greece-satire-card": {
+    "key": "site/video/greece-satire-card",
+    "width": 960,
+    "height": 720,
+    "aspect": 1.3333,
+    "avif": [
+      {
+        "w": 480,
+        "src": "/img/site/video/greece-satire-card-480.avif"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/video/greece-satire-card-960.avif"
+      }
+    ],
+    "webp": [
+      {
+        "w": 480,
+        "src": "/img/site/video/greece-satire-card-480.webp"
+      },
+      {
+        "w": 960,
+        "src": "/img/site/video/greece-satire-card-960.webp"
+      }
+    ],
+    "fallback": "/img/site/video/greece-satire-card-960.webp"
   },
   "site/video/jarfis-ugc": {
     "key": "site/video/jarfis-ugc",

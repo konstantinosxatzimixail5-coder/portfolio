@@ -2,7 +2,8 @@ import { sanity, QUERIES, toImage, toImages, toVideo, toVideos } from './sanity'
 import { clips as repoClips, type Clip } from '../data/videos';
 import { leadWork, tailWork } from '../data/work-extras';
 import { blog as repoBlog } from '../data/blog';
-import { positioning } from '../data/positioning';
+import { trimmed } from '../data/product-extras';
+import { positioning, portraitLabel, workTitles } from '../data/positioning';
 import { profile } from '../data/profile';
 import { navLinks } from '../data/sections';
 import { morePipelines } from '../data/pipelines';
@@ -58,7 +59,12 @@ export const getHome = once(async () => {
   // The three positioning lines are the one place the repository wins over the
   // Studio, and src/data/positioning.ts says why. Everything else on the home
   // page is the Studio's.
-  return { ...d, ...positioning, openImage: toImage(d.openImage) };
+  const openImage = toImage(d.openImage);
+  return {
+    ...d,
+    ...positioning,
+    openImage: openImage && { ...openImage, label: portraitLabel },
+  };
 });
 
 export const getReel = once(async () => {
@@ -90,6 +96,7 @@ export const getWork = once(async () => {
   const list = await sanity.fetch<any[]>(QUERIES.work);
   return list.map((w) => ({
     ...w,
+    title: workTitles[w.slug] ?? w.title,
     hero: toImage(w.hero),
     gallery: toImages(w.gallery),
     video: toVideo(w.video),
@@ -125,7 +132,11 @@ export const findPipeline = async (id: string) =>
 
 export const getSpecBrands = once(async () => {
   const list = await sanity.fetch<any[]>(QUERIES.specBrands);
-  return list.map((b) => ({ ...b, shots: toImages(b.shots), videos: clipsFromCms(b.videos) }));
+  return list.map((b) => ({
+    ...b,
+    shots: toImages(b.shots).map(trimmed),
+    videos: clipsFromCms(b.videos),
+  }));
 });
 
 /**

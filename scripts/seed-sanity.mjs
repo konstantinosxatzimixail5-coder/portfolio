@@ -27,6 +27,7 @@ import { clips } from '../src/data/videos.ts';
 import { productExtras } from '../src/data/product-extras.ts';
 import { leadWork, tailWork } from '../src/data/work-extras.ts';
 import { blog } from '../src/data/blog.ts';
+import { positioning, portraitLabel, workTitles } from '../src/data/positioning.ts';
 
 const DRY = process.argv.includes('--dry');
 
@@ -231,7 +232,35 @@ plan.push({
   set: { title: 'Reel', duration: '' },
 });
 
-// 5. The studio blog block, on the home page.
+// 5. The positioning lines, the portrait caption and the one retitled case.
+//
+// These are the fields the repository currently wins for, and this is how it
+// stops. Once they are in the dataset, delete src/data/positioning.ts and the
+// Studio owns them like everything else.
+plan.push({
+  what: 'homePage headline, lede, note, about and SEO',
+  id: 'homePage',
+  set: {
+    headline: positioning.headline,
+    lede: positioning.lede,
+    note: positioning.note,
+    aboutBody: positioning.aboutBody,
+    seoTitle: positioning.seoTitle,
+    seoDescription: positioning.seoDescription,
+    'openImage.label': portraitLabel,
+  },
+});
+
+for (const [slug, title] of Object.entries(workTitles)) {
+  const id = await client.fetch(`*[_type == "work" && slug.current == $slug][0]._id`, { slug });
+  if (!id) {
+    console.warn(`  skip title for ${slug}: no case study with that slug`);
+    continue;
+  }
+  plan.push({ what: `work:${slug} title`, id, set: { title } });
+}
+
+// 6. The studio blog block, on the home page.
 plan.push({
   what: 'homePage.blog',
   id: 'homePage',

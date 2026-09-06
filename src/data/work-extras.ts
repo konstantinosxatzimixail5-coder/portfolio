@@ -29,7 +29,7 @@ export const leadWork: WorkExtra[] = [
   {
     href: 'https://talecrafters.studio/',
     client: 'TaleCrafters',
-    kind: 'Studio, mine',
+    kind: 'Content & Growth Strategy, fully functioning SEO & AIO optimised website',
     year: '2026',
     problem:
       'My own studio, and the site is the argument for it: every claim on it carries the pipeline, the gate or the stack that produced it.',
@@ -51,6 +51,20 @@ export const tailWork: WorkExtra[] = [
     src: 'site/product/feral-billboard',
     alt: 'A night-city billboard for FERAL Yuzu Static, the can breaking out of the board in front of the artwork with lime slices and green liquid crossing the frame.',
     ratio: '16 / 9',
+  },
+  {
+    href: 'https://www.youtube.com/shorts/j_1NQCp2kp0',
+    client: 'ΜΠΑΜ',
+    kind: 'Spec, self-initiated',
+    year: '2024',
+    problem:
+      'An AI-generated satire of Greece, cut two and a half years ago out of Grok Imagine and Suno, back when holding a character for nine seconds was the whole difficulty.',
+    // The short is vertical and the shelf is not. A 9:16 card left a hole in
+    // the column beside it, so the frame is set whole on the page's own ground
+    // rather than cropped down to a letterbox of itself.
+    src: 'site/video/greece-satire-card',
+    alt: 'A cartoon frame from the satire: two wide-eyed trains meeting head on over a level crossing, drivers leaning out of both cabs, the word ΜΠΑΜ across the sky above them.',
+    ratio: '4 / 3',
   },
   {
     href: '/films/mars-drop/',

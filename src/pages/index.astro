@@ -143,7 +143,7 @@ const jsonLd = graph([
 
         <p class="open__claim">{site.claim}</p>
 
-        <p class="open__note quiet">{home.note}</p>
+        {home.note && <p class="open__note quiet">{home.note}</p>}
       </div>
 
       <Frame
