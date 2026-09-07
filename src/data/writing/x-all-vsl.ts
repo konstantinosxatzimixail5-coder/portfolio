@@ -39,7 +39,7 @@ export const xAllVsl: WritingSample = {
     },
     {
       t: 'note',
-      text: 'Health scares are the highest-ranked purchase trigger in the file. Opening on a reflex she already has proves she takes the danger seriously everywhere except the one surface her child actually lives on.',
+      text: 'Health scares rank first in the purchase-trigger file. The opening uses a reflex she already has and brings the risk down to the floor where her child spends the afternoon.',
     },
 
     { t: 'h', text: 'Hook two, The Forgotten Acid' },

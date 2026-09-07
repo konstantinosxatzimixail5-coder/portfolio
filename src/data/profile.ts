@@ -19,7 +19,7 @@ export interface Contact {
 
 export const profile = {
   // The line above the headline, and the one Google prints under the title.
-  role: 'AI-Enabled Marketing Designer, Creative Producer, Content and Growth Strategist',
+  role: 'Marketing Designer, Creative Producer, Content and Growth Strategist',
 
   // Short enough for the nav strip and the footer, where the full line will not fit.
   roleShort: 'Marketing design, creative production, content and growth',
@@ -37,7 +37,7 @@ export const profile = {
   // actually on the shelves. "AI" never stands on its own in body copy here; the
   // hyphenated role line above is a fixed label and keeps its own spelling.
   claim:
-    'A storyteller who builds the machine as well as the story. The brief, the pipeline and the finished work come off the same desk.',
+    'I plan the campaign, build the working system and make the finished work. The films, product sets, websites and copy come from the same desk.',
 
   phone: {
     // E.164 for the machines, spaced for the humans, digits only for wa.me.

@@ -40,7 +40,7 @@ export const linkedinPosts: WritingSample = {
     },
     {
       t: 'p',
-      text: 'So how do you build one without it being dull? Structured taxonomies. Filters by category and by letter. A rich question widget. Popovers that actually help instead of interrupting. And a rule that empty terms never publish, because one blank definition teaches a reader that the rest are not worth clicking either.',
+      text: 'So how do you build one without it being dull? Start with a structured taxonomy and filters by category and letter. Add a question widget, useful popovers and a rule that blocks empty terms from publication. One blank definition teaches a reader to stop clicking.',
     },
     {
       t: 'quote',

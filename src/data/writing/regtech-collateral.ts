@@ -169,7 +169,7 @@ export const caseStudyBrochure: WritingSample = {
     {
       t: 'list',
       items: [
-        'Operational efficiency, through automated checks and dynamic risk profiling that lets low-risk transactions clear themselves',
+        'Faster operations, through automated checks and transaction-level risk profiling that lets low-risk work clear itself',
         'Compliance cost, through a pricing model that does not charge per screening across a transaction lifecycle',
         'Accuracy, through goods and party matching that cuts the false positives staff were spending their week clearing',
         'Regulatory responsiveness, through a platform that absorbs a new restricted party list without a system overhaul',

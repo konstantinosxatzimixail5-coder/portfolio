@@ -18,6 +18,6 @@ export const blog = {
   href: 'https://talecrafters.studio/blog',
   linkLabel: 'Read them',
   standfirst:
-    'Written against questions people actually type, for search engines and for the answer engines reading over their shoulder.',
-  note: 'What generative video costs in 2026. What the EU AI Act now makes an advertiser label. How a master plate holds one product across a hundred shots. Each one is a working answer with its sources cited, not a keyword page, which is the only version of this that survives being read by somebody who does the job.',
+    'Built around the questions people type, with enough detail for a working marketer to use the answer.',
+  note: 'Topics include generative-video costs in 2026, advertising labels under the EU Artificial Intelligence Act and the use of a master plate across a hundred product shots. Every article cites its sources.',
 };

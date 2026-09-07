@@ -41,7 +41,7 @@ export const espressoScripts: WritingSample = {
       rows: [
         {
           time: '0:00',
-          spoken: 'You’ve never actually been woken up. You’ve only ever been warmed up.',
+          spoken: 'Your alarm warms you up. Coffee wakes you.',
           visual: 'Hard cut in. Man mid-forties, kitchen, six in the morning, dark, holding a mug of instant. Dead eyes. No music.',
         },
         {

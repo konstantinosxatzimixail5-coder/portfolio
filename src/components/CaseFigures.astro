@@ -1,0 +1,161 @@
+---
+import type { CaseFigure } from '../data/case-studies';
+
+interface Props {
+  label: string;
+  figures: CaseFigure[];
+  context?: string;
+  href?: string;
+}
+
+const { label, figures, context, href } = Astro.props;
+---
+
+<aside class="figures" aria-label={label}>
+  <div class="figures__head">
+    <p class="mono figures__label">{label}</p>
+    {
+      context &&
+        (href ? (
+          <a class="figures__context" href={href}>{context}<span aria-hidden="true"> ↗</span></a>
+        ) : (
+          <p class="figures__context">{context}</p>
+        ))
+    }
+  </div>
+  <dl class="figures__grid">
+    {
+      figures.map((figure) => (
+        <div class="figures__item">
+          <dt>
+            <span class="figures__value">{figure.value}</span>
+            <span class="figures__name">{figure.label}</span>
+          </dt>
+          <dd class="mono mono--lower">{figure.note}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</aside>
+
+<style>
+  .figures {
+    border-block: 1px solid var(--rule-bright);
+    padding-block: var(--s-4);
+    display: grid;
+    grid-template-columns: minmax(8rem, 0.28fr) minmax(0, 1fr);
+    gap: var(--s-5);
+    margin-top: var(--s-4);
+  }
+
+  .figures__head {
+    align-content: space-between;
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  .figures__label {
+    color: var(--red);
+    font-size: 0.64rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .figures__context {
+    color: var(--newsprint-dim);
+    font-family: var(--display);
+    font-size: var(--step-0);
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  a.figures__context:hover {
+    color: var(--cyan);
+  }
+
+  .figures__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-4);
+    margin: 0;
+  }
+
+  .figures__item {
+    border-left: 1px solid var(--rule);
+    display: grid;
+    gap: var(--s-3);
+    padding-left: var(--s-4);
+  }
+
+  .figures__item:nth-child(1) .figures__value {
+    color: var(--cyan);
+  }
+
+  .figures__item:nth-child(2) .figures__value {
+    color: var(--red);
+  }
+
+  .figures__item:nth-child(3) .figures__value {
+    color: var(--gold);
+  }
+
+  .figures__item dt {
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  .figures__value {
+    font-family: var(--display);
+    font-size: var(--step-3);
+    letter-spacing: -0.035em;
+    line-height: 0.95;
+  }
+
+  .figures__name {
+    color: var(--newsprint);
+    font-size: var(--step--1);
+    line-height: 1.25;
+  }
+
+  .figures__item dd {
+    color: var(--fg-faint);
+    font-size: 0.61rem;
+    line-height: 1.45;
+    margin: 0;
+  }
+
+  @media (max-width: 760px) {
+    .figures {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-4);
+    }
+
+    .figures__head {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: baseline;
+    }
+  }
+
+  @media (max-width: 580px) {
+    .figures__grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+
+    .figures__item {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: end;
+      border-left: 0;
+      border-top: 1px solid var(--rule);
+      padding: var(--s-3) 0;
+    }
+
+    .figures__item:first-child {
+      border-top: 0;
+    }
+
+    .figures__item dd {
+      text-align: right;
+    }
+  }
+</style>

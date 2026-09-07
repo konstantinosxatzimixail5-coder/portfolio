@@ -58,7 +58,7 @@ export const captures: Capture[] = [
     title: 'The stitch',
     alt: 'Close on two weathered hands at a workbench, one drawing a waxed thread taut and the other steadying folded blue-grey cloth with a thimble on the finger, a brass ring, an anchor tattoo on the forearm, tacks and a pencil scattered on the wood.',
     proves:
-      'Hands doing skilled work. Ten fingers, a thimble, a thread under tension, and a grip that would actually hold the material it is holding.',
+      'Hands doing skilled work. Ten fingers, a thimble, taut thread and a grip that holds the folded material in place.',
     register: 'Craft documentary, window light, shallow at f2',
   },
   {
@@ -83,7 +83,7 @@ export const captures: Capture[] = [
     title: 'The doorstep',
     alt: 'A woman in a grey t-shirt stands in a doorway holding up a dark supplement jar toward the camera, mid-sentence, with an unmade room and a mirror behind her.',
     proves:
-      'The register a creator advert lives in. Unlit skin, a real doorway, and a product held at the angle a person actually holds one, not at the angle a product shot wants.',
+      'The register a creator advert lives in. Unlit skin, a real doorway and a product held at a natural wrist angle.',
     register: 'Creator testimonial, phone camera, no grade',
     focus: '52% 40%',
   },

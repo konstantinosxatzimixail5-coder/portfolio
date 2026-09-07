@@ -7,6 +7,7 @@ import { positioning, portraitLabel, workTitles } from '../data/positioning';
 import { profile } from '../data/profile';
 import { navLinks } from '../data/sections';
 import { morePipelines } from '../data/pipelines';
+import { applyCaseStudyCopy } from '../data/case-studies';
 
 // Every page and both shared components need the settings, and Astro renders
 // each page in its own pass. Without a cache the navigation alone would be
@@ -69,7 +70,13 @@ export const getHome = once(async () => {
 
 export const getReel = once(async () => {
   const d = await singleton<any>(QUERIES.reel, 'reelPage');
-  return { ...d, poster: toImage(d.poster), trio: toImages(d.trio) };
+  return {
+    ...d,
+    lede:
+      'One cut. Under it, every shot in order, with the piece it came from, the pipeline that made it and my role in the work.',
+    poster: toImage(d.poster),
+    trio: toImages(d.trio),
+  };
 });
 
 export const getSpecPage = once(() => singleton<any>(QUERIES.specPage, 'specPage'));
@@ -94,21 +101,33 @@ const clipsFromCms = (list: any): Clip[] =>
 
 export const getWork = once(async () => {
   const list = await sanity.fetch<any[]>(QUERIES.work);
-  return list.map((w) => ({
-    ...w,
-    title: workTitles[w.slug] ?? w.title,
-    hero: toImage(w.hero),
-    gallery: toImages(w.gallery),
-    video: toVideo(w.video),
-    // Films published in the Studio for this case study. They take over from
-    // the repository's list for that case; see getClips below.
-    videos: clipsFromCms(w.videos),
-    stack: w.stack ?? [],
-    links: w.links ?? [],
-  }));
+  return list.map((w) =>
+    applyCaseStudyCopy({
+      ...w,
+      title: workTitles[w.slug] ?? w.title,
+      hero: toImage(w.hero),
+      gallery: toImages(w.gallery),
+      video: toVideo(w.video),
+      // Films published in the Studio for this case study. They take over from
+      // the repository's list for that case; see getClips below.
+      videos: clipsFromCms(w.videos),
+      stack: w.stack ?? [],
+      links: w.links ?? [],
+    })
+  );
 });
 
-export const getPipelines = once(() => sanity.fetch<any[]>(QUERIES.pipelines));
+export const getPipelines = once(async () => {
+  const list = await sanity.fetch<any[]>(QUERIES.pipelines);
+  return list.map((pipeline) => ({
+    ...pipeline,
+    summary:
+      pipeline.summary ===
+      'Prompting is the easy part. What earns its keep is the directory structure, the skills, the connectors and the ledger telling you what every accepted asset actually cost.'
+        ? 'The directory structure, skills, connectors and cost ledger keep this line usable across a long run.'
+        : pipeline.summary,
+  }));
+});
 
 // All seven, in one list, ordered by their sheet number. Three are edited in the
 // Studio and four are transcribed in src/data/pipelines.ts, and a reader has no
@@ -178,7 +197,12 @@ export const getShelfCards = once(async () => {
 export const getBlog = once(async () => {
   const d = await getHome();
   const b = d.blog;
-  return b?.href ? { ...repoBlog, ...Object.fromEntries(Object.entries(b).filter(([, v]) => v)) } : repoBlog;
+  return b?.href
+    ? {
+        ...b,
+        ...repoBlog,
+      }
+    : repoBlog;
 });
 
 // --- content this repository owns -------------------------------------------

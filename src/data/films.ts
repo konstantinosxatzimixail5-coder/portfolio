@@ -1259,7 +1259,7 @@ Style, light, colour, materials and every surface in the shot come from @spires_
     runtime: '1:47',
     strapline: 'Two men, one red planet, and the growing suspicion that somebody is testing something.',
     standfirst:
-      'A comedy two-hander with no action in it, made to find out whether an episodic AI pipeline can hold a scene on dialogue alone.',
+      'A 107-second comedy scene built to test whether an episodic production system can hold two characters through dialogue alone.',
     logline:
       'A chef and a rocket executive find themselves standing on a Mars colony with no memory of getting there. Over a hundred and seven seconds they stop arguing about whose fault it is, work out that they are inside a demonstration, and start giving notes to the person running it.',
     poster: 'site/mars-drop/md-poster',
@@ -1329,7 +1329,7 @@ Style, light, colour, materials and every surface in the shot come from @spires_
         name: 'The demonstration',
         image: 'site/mars-drop/md-hero',
         alt: 'A single of the executive at the foot of the booster, arms open in a shrug, two moons and a rock face behind him.',
-        note: 'The turn. He works out what they are in, and the shrug arrives a beat before the line rather than on it.',
+        note: 'The turn. He works out what they are in, and the shrug lands one beat ahead of the line.',
         prompt:
           'Medium single, reverse of the previous angle, same register. A man in a navy-blue flight suit with shoulder flags and a round mission patch, dark hair, standing beside the lower stage of a white booster with vertical lettering down it. A deep orange rock wall fills the right third of frame, two moons in a dark blue sky, pale cloud bank low behind him. He opens both arms in a shrug, palms up, shoulders lifting. Camera static, eye level, subject centre.',
       },
@@ -1342,7 +1342,7 @@ Style, light, colour, materials and every surface in the shot come from @spires_
         alt: 'A single of the chef, hands on hips, leaning slightly toward camera as he delivers the closing note.',
         note: 'The address to camera, then straight back to the opening wide so the film ends where it started, with nothing resolved.',
         prompt:
-          'Medium single, same setup as beat B. The man in the black suit plants both hands on his hips and leans a few degrees toward camera, chin lifted, talking past the lens rather than into it. Water tower and orange dunes behind, unchanged. Hold, then cut to the beat A wide, identical framing, both figures back in position.',
+          'Medium single, same setup as beat B. The man in the black suit plants both hands on his hips and leans a few degrees toward camera, chin lifted, with his eyeline fixed just off lens. Water tower and orange dunes behind, unchanged. Hold, then cut to the beat A wide, identical framing, both figures back in position.',
       },
     ],
     castIntro:
@@ -1377,7 +1377,7 @@ Style, light, colour, materials and every surface in the shot come from @spires_
         num: '02',
         name: 'Fix the beats',
         tool: 'Four blocks',
-        body: 'Arrival, act natural, the demonstration, the notes. Each beat gets one camera position and keeps it, so the cutting pattern is decided before the first frame rather than in the edit.',
+        body: 'Arrival, act natural, the demonstration and the notes. Each beat keeps one camera position. The beat map fixes the cutting pattern.',
       },
       {
         num: '03',
@@ -1395,13 +1395,13 @@ Style, light, colour, materials and every surface in the shot come from @spires_
         num: '05',
         name: 'Performance pass',
         tool: 'Higgsfield',
-        body: 'Motion on each block, directed to the listening rather than the speaking. The reaction is generated first and the line is timed to it.',
+        body: 'Motion on each block follows the listener. The reaction comes first and the line is timed to it.',
       },
       {
         num: '06',
         name: 'Voice',
         tool: 'ElevenLabs',
-        body: 'Two reads, cut against the picture rather than under it. Both were retimed after the motion pass, because a line that arrives on the gesture instead of just after it reads as a puppet.',
+        body: 'Two reads, cut against picture. Both were retimed after the motion pass because a line arriving on the gesture reads as a puppet.',
       },
       {
         num: '07',
@@ -1417,7 +1417,7 @@ Style, light, colour, materials and every surface in the shot come from @spires_
       { name: 'Nano Banana 2', role: 'Design', body: 'Character sheets and the colony plates, locked before the first shot.' },
       { name: 'ChatGPT Image 2', role: 'Design', body: 'Set dressing and the second pass on the habitat and tower.' },
       { name: 'Higgsfield', role: 'Motion', body: 'The performance passes. Directed at the listener, not the speaker.' },
-      { name: 'ElevenLabs', role: 'Voice', body: 'Both reads, retimed against the motion rather than the script.' },
+      { name: 'ElevenLabs', role: 'Voice', body: 'Both reads, retimed against the finished motion.' },
       { name: 'CapCut', role: 'Assembly', body: 'Cut, mix and burned-in subtitles.' },
     ],
     skills: [
@@ -1470,8 +1470,8 @@ Style, light, colour, materials and every surface in the shot come from @spires_
       },
       {
         name: 'Voice ahead of gesture',
-        symptom: 'Lines landed on the movement rather than just after it, which reads as lip-sync on a puppet.',
-        lock: 'Voice is cut last, against picture, and every read is retimed after the motion pass rather than before it.',
+        symptom: 'Lines landed on the movement, which made the characters read as lip-synced puppets.',
+        lock: 'Voice is cut last against picture, with every read timed after the motion pass.',
       },
     ],
   },

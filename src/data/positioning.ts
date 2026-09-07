@@ -22,20 +22,22 @@ const blocks = (text: string) =>
     }));
 
 export const positioning = {
-  headline: 'I run the strategy and the production line that answers it.',
+  headline: 'I handle the strategy, the production and the line between them.',
 
-  lede: 'Content and growth strategy, marketing pipelines, AI-enabled design and GenAI workflows, and the creative production that turns the plan into films, product sets and ads.',
+  lede: 'My work covers content and growth, creative production and GenAI workflows. The output includes films, product sets, adverts and websites.',
 
   // The line under the lede used to end "a marketing team can run without me",
   // which sold the handover and undersold the person doing it.
   note: '',
 
-  seoTitle: 'Konstantinos Chatzimichail, Creative Production & Growth Strategy',
+  seoTitle: 'Konstantinos Chatzimichail, Creative Production and Growth Strategy',
   seoDescription:
-    'Content and growth strategy, marketing pipelines, AI-enabled design and GenAI workflows, and the creative production behind them. Films, product sets and creator ads, out of Athens.',
+    'Marketing design, content and growth strategy, GenAI workflows and creative production. Films, product sets, adverts and websites from Greece.',
 
   aboutBody: blocks(
-    `Versatile professional bridging business strategy and media fluency, with hands-on experience across marketing, communications, and business development. Driven by curiosity and ambition, I possess an entrepreneurial and creative mindset that thrives on innovation and strategic thinking. I enjoy taking on messy, open-ended challenges and turning them into measurable results. Actively seeking dynamic opportunities to take on ambitious projects and do work that counts.`
+    `My background covers marketing, communications, business development and filmmaking. I am happiest with a loose brief, a difficult production problem and responsibility for the finished piece.
+
+I am looking for a role where I can own the work from first idea through delivery, learn from a sharp team and keep building things that people can watch, read or use.`
   ),
 };
 

@@ -58,7 +58,7 @@ export const tailWork: WorkExtra[] = [
     kind: 'Spec, self-initiated',
     year: '2025',
     problem:
-      'An AI-generated satire of Greece, cut out of Grok Imagine and Suno back when holding a character for nine seconds was the whole difficulty.',
+      'A synthetic satire of Greece, made with Grok Imagine and Suno when holding a character for nine seconds was the whole difficulty.',
     // The short is vertical and the shelf is not. A 9:16 card left a hole in
     // the column beside it, so the frame is set whole on the page's own ground
     // rather than cropped down to a letterbox of itself.
@@ -72,7 +72,7 @@ export const tailWork: WorkExtra[] = [
     kind: 'Original',
     year: '1:47',
     problem:
-      'An animated two-hander with no action in it, made to find out whether the pipeline can hold a scene on dialogue alone.',
+      'An animated two-hander built to test whether an episodic production system can hold a dialogue scene for 107 seconds.',
     src: 'site/mars-drop/md-poster',
     alt: 'A wide animated frame of a Mars colony: two figures standing apart in front of a landed rocket and a domed habitat, orange rock formations behind them.',
     ratio: '16 / 9',
