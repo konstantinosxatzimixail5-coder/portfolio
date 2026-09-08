@@ -140,6 +140,19 @@ export const clips: Record<string, Clip[]> = {
     },
   ],
 
+  'work:elladistan': [
+    {
+      host: 'youtube',
+      videoId: 'j_1NQCp2kp0',
+      title: 'Elladistan',
+      note: 'I wrote the lyrics, found the melody with Suno, generated the key images in Nano Banana and animated them in Grok Imagine. I assembled the final vertical cut in CapCut.',
+      ratio: '9:16',
+      poster: 'site/video/greece-satire',
+      posterAlt:
+        'A vertical cartoon frame from Elladistan, the Greek satire built in the style of a 1990s Saturday-morning animation.',
+    },
+  ],
+
   'brand:feral': [
     {
       host: 'youtube',

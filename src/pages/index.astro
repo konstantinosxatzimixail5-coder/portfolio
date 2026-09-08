@@ -6,8 +6,6 @@ import Strip from '../components/Strip.astro';
 import Clips from '../components/Clips.astro';
 import RichText from '../components/RichText.astro';
 import WhatsApp from '../components/WhatsApp.astro';
-import CaseFigures from '../components/CaseFigures.astro';
-import { caseStudyCopy } from '../data/case-studies';
 import {
   getHome,
   getSettings,
@@ -157,13 +155,6 @@ const jsonLd = graph([
         sizes="(max-width: 900px) 60vw, 300px"
       />
     </div>
-
-    <CaseFigures
-      label="Selected result"
-      context="Big Blue Data Academy"
-      href="/work/bbda/"
-      figures={caseStudyCopy.bbda.figures}
-    />
 
     <!-- the contents index -->
     <nav class="toc" aria-label="Contents">
@@ -869,6 +860,7 @@ const jsonLd = graph([
   .grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
     gap: var(--s-6) var(--s-5);
   }
 

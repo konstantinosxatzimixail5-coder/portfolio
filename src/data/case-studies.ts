@@ -1,4 +1,4 @@
-// Repository-owned copy for the five case studies used as proof of commercial
+// Repository-owned copy for the case studies used as proof of commercial
 // and production work. Sanity still owns the media, order, links and stack.
 // Keeping these lines here makes each number reviewable in the same commit as
 // the component that prints it.
@@ -37,25 +37,27 @@ export const caseStudyCopy: Record<string, CaseStudyCopy> = {
   bbda: {
     year: '2025',
     problem:
-      'I ran paid social and content for a data school, using seven visual registers across one campaign system.',
+      'I ran the content calendar and paid media for a data school, producing seven visual registers in one fortnight.',
     cardProblem:
       'Paid-media spend fell by 60%. Followers grew 10% in three months, and user acquisition rose 20%.',
     brief: [
       'Big Blue Data Academy teaches data science to people changing careers. Its feed had to sell courses to an audience that can spot a course advert in half a second.',
-      'The job covered the content calendar, Meta and LinkedIn campaigns, copy, and production from first idea through delivery.',
+      'I handled the content calendar, Meta and LinkedIn campaigns, copy and production from the first brainstorm through delivery. The schedule needed enough material to run week after week without a long approval cycle attached to every post.',
     ],
     constraint: [
-      'A weekly schedule can flatten every idea into the same house template. I set seven visual registers, then kept the logo, blue and course message fixed across all of them.',
+      'A weekly schedule can flatten every idea into one house template. I fixed seven separate visual registers, then kept the logo, Big Blue blue and course message consistent across the run.',
     ],
     built: [
-      'Promo films, Meta adverts, LinkedIn posts, carousels and short character-led pieces. Each brief started with an audience objection or course promise, followed by the format that could carry it.',
+      'I made promo films, Meta adverts, LinkedIn posts, carousels and short character-led pieces. The work included a photoreal data punk, a 3D cartoon detective, a storybook snake, a country singer and three further treatments.',
+      'Every brief began with an audience objection or course promise. I chose the format after the message, then cut the finished work in 9:16 for feeds and 16:9 for wider placements.',
     ],
     how: [
-      'I wrote the register list first: photoreal, 3D cartoon, storybook illustration, live-action pastiche and three other treatments. Each one received its own plate set and prompt vocabulary.',
-      'The logo, blue and lock-up stayed fixed. I composited the mark in the cut and checked any lettering inside the frame character by character. Held objects went through a separate anatomy check.',
+      'I wrote the full register list before generating a frame. Each treatment received its own lighting model, edge quality, plate set and prompt vocabulary, which stopped the styles from drifting back towards one another under deadline.',
+      'Nano Banana Pro handled the separate plates. I used Higgsfield Cinema Studio and Google Veo 3 for motion, then assembled each cut in CapCut.',
+      'I composited the logo by hand and checked every piece of lettering character by character. Frames with guitars, magnifiers or clipboards went through a separate anatomy check before they entered the edit.',
     ],
     landed: [
-      'The programme ran across paid and organic social during the period I managed the account. The campaign figures appear above.',
+      'The pieces ran across paid and organic social while I managed the account. Paid-media spend fell by 60%, followers grew 10% within three months and user acquisition rose 20%.',
     ],
     figureLabel: 'Results',
     figures: [
@@ -63,6 +65,34 @@ export const caseStudyCopy: Record<string, CaseStudyCopy> = {
       { value: '+10%', label: 'Follower growth', note: 'within three months' },
       { value: '+20%', label: 'User acquisition', note: 'during the same programme' },
     ],
+  },
+
+  cocoon: {
+    problem:
+      'I produced four films for a Horizon Europe consortium, combining footage from a Greek solar park with an illustrated cyberattack sequence.',
+    cardProblem:
+      'Four consortium films, one solar-park shoot and an illustrated attack sequence for an unfilmable event chain.',
+    brief: [
+      'SEleNe CC needed to explain the COCOON project to engineers, reviewers, policy staff and the public. The project had a physical photovoltaic park, a control cabin and an operator, while the cyberattack itself existed only in grant text and technical diagrams.',
+      'I had to show the field work, explain the digital chain and keep every scientific claim inside wording the consortium could approve.',
+    ],
+    constraint: [
+      'The physical pilot and the cyber event came from different source material. I gave them one visual system, then used colour to separate normal operation, intrusion and physical effect without rewriting the technical vocabulary.',
+    ],
+    built: [
+      'I made a pilot film at the Halkidiki solar park, a second pilot piece, a promotional cut and a vector attack explainer. The site production followed the van through the gate, across the array and into the control cabin before ending with the HEDNO researcher.',
+      'For the illustrated film, I translated the documents into a clear event chain covering entry, lateral movement, control and the physical consequence. I also prepared a vertical site edit, storyboard and reusable diagram language.',
+    ],
+    how: [
+      'I wrote the pilot around the consortium wording and the locations available on the shoot day. The objectives and milestones sat over footage of the array, inverter, logging equipment and project team.',
+      'I built the explainer from the approved grant material and diagrams. Nano Banana Pro supplied key environments, Higgsfield handled motion and CapCut carried the edit.',
+      'Three checks governed delivery. The claim check kept each statement inside the evidence, the vocabulary review preserved the engineering terms, and the site pass confirmed that every physical detail matched the installation.',
+    ],
+    landed: [
+      'The four films documented two project milestones, including real-time supervision and control of photovoltaic parks by HEDNO and the first real-world execution of Ancillary Services in Greece.',
+    ],
+    figureLabel: 'Project figures',
+    figures: [],
   },
 
   'jarfis-property-group': {
@@ -98,28 +128,29 @@ export const caseStudyCopy: Record<string, CaseStudyCopy> = {
   'amino-alliance': {
     problem:
       'A supplement brand needed reusable presenter adverts and product stills with every line on the pouch intact.',
-    cardProblem: 'Three public cuts, two reusable presenters and 42 seconds of finished vertical video.',
+    cardProblem: 'Three public cuts, three reusable presenters and 42 seconds of finished vertical video.',
     brief: [
-      'Amino Alliance needed creator-style paid social for a real printed pouch. The brief called for different speakers, several environments and a product that stayed readable at arm’s length.',
-      'The setup also had to carry into the next offer without recasting or rebuilding the pack.',
+      'Amino Alliance needed creator-style paid social for a real printed pouch. The brief called for three speakers, separate environments and a product that stayed readable at arm’s length.',
+      'I built the identities and master product plate for reuse, so a later offer could return to the cast without another booking.',
     ],
     constraint: [
-      'The pouch carries a logo, product name and small type. Soft lettering makes the frame look fabricated. The presenters also needed to hold their faces across separate sessions.',
+      'The pouch carries a logo, product name and small type. Soft lettering makes the frame look fabricated. Each presenter also needed to hold their face across separate sessions and camera angles.',
     ],
     built: [
-      'Three public vertical cuts and product frames for static placements. Two reusable presenters carry the set across office, street and training scenes.',
+      'I made three vertical adverts, product stills and a reusable identity for each presenter. The settings covered a consultant’s office, an Amsterdam canal and a winter training route.',
     ],
     how: [
-      'Each presenter started with twenty or more reference stills at varied angles. I built the scene plates after the face held across the set, then wrote separate openings for the office, street and training contexts.',
-      'The pouch came from one approved master plate. I checked its front panel at full resolution and froze every frame where fingers touched the packaging.',
+      'I cast each creator from a written brief, then generated more than twenty reference stills per face across varied angles. Higgsfield Soul ID turned those selections into three trained identities.',
+      'I cloned a voice for each person and timed the read to the motion. Nano Banana Pro and ChatGPT Image 2 supplied the stills, while Veo 3.1 and Kling handled the moving shots.',
+      'The pouch came from one approved master plate. I checked its front panel at full resolution and reviewed every frame where a hand touched the packaging before finishing the cuts in CapCut.',
     ],
     landed: [
-      'Delivered for paid social with the reusable identity files and approved product plate included.',
+      'I delivered the three paid-social adverts with the trained identity files, still frames and approved pouch plate.',
     ],
     figureLabel: 'Project figures',
     figures: [
       { value: '3', label: 'Public vertical cuts', note: 'office, street and training' },
-      { value: '2', label: 'Reusable presenters', note: 'held across separate sessions' },
+      { value: '3', label: 'Reusable presenters', note: 'trained for later production' },
       { value: '0:42', label: 'Combined runtime', note: 'across the published adverts' },
     ],
   },
@@ -129,21 +160,22 @@ export const caseStudyCopy: Record<string, CaseStudyCopy> = {
       'A motorcycle dealership commissioned two hero films from showroom photography.',
     cardProblem: 'Two hero films, four model checks and a ten-second public studio cut.',
     brief: [
-      'Bike Barn wanted two motorcycles to feel like campaign subjects. The showroom plates had to become a studio orbit and a wet night street while every model-specific detail stayed intact.',
+      'Bike Barn wanted two motorcycles to carry their own hero films. I received showroom photography, then built a studio orbit and a wet Amsterdam night around the bikes.',
     ],
     constraint: [
-      'Motorcycles carry details that riders know by sight. A badge, tank graphic, headlamp cluster or spoke count drifting between frames breaks the film.',
-      'The brief included a wet cobbled street at night. There was no location shoot, rain machine or rider.',
+      'Riders know the model from its badge, tank graphic, headlamp cluster and spoke pattern. I had to preserve those details while changing the setting, lighting and camera movement.',
+      'The night sequence called for wet cobbles, canal houses, lamplight and a rider. I created the entire setting from the showroom source material.',
     ],
     built: [
-      'Two hero films for the selected motorcycles. The Indian Elite cut published here follows the bike through a slow studio orbit built from one locked plate.',
+      'I produced two hero films. One placed the Indian Elite on a black studio floor for a slow orbit; the second took the motorcycle onto a rain-darkened street.',
     ],
     how: [
-      'I isolated the motorcycle first, then locked the badge, fairing and wheels. A written set specification fixed the floor, key light and reflection pattern for every generated frame.',
-      'Each render was laid over the plate at forty per cent opacity. Any shift in the tank outline or spoke pattern sent the frame back for another pass.',
+      'I isolated the motorcycle and approved one master plate before starting motion. The badge, fairing, wheel count and gold pinstripe became the fixed reference for every later frame.',
+      'A written set specification held the street, canal houses, wet cobbles and lamplight across the night film. Nano Banana Pro made the plates, Kling supplied motion and CapCut carried the edit.',
+      'I laid each render over the source at forty per cent opacity. A shift in the tank outline, lettering or spoke pattern sent the shot back for another pass.',
     ],
     landed: [
-      'Delivered as hero assets with a reusable plate for later crops and motion tests.',
+      'I delivered both hero assets and the locked plate for later crops. The Indian Elite studio cut plays on this page.',
     ],
     figureLabel: 'Project figures',
     figures: [
@@ -155,31 +187,32 @@ export const caseStudyCopy: Record<string, CaseStudyCopy> = {
 
   mariposa: {
     problem:
-      'One restaurant brief covered a live website, a ninety-second script, dish frames and short social films.',
-    cardProblem: 'One live website, a ninety-second VSL and two public vertical films.',
+      'I built the website, ran one film shoot and made more than ten AI social adverts for a restaurant whose photography covered only part of the menu.',
+    cardProblem: 'One live website, one film shoot and more than ten social adverts.',
     brief: [
-      'Mariposa needed a website and the material that would run beside it: a film, scripts, social cuts and stills for dishes the original shoot had missed.',
-      'A diner had to recognise the room and the plate when they arrived at the restaurant.',
+      'Mariposa needed a search-ready website, a brand film, short social pieces and stills for dishes the original photography had missed. I handled the site, copy and moving work as one commission.',
+      'A diner had to recognise both the terrace and the food on arrival. The generated material therefore had to stay close to the room, the crockery and the plates served by the kitchen.',
     ],
     constraint: [
-      'The restaurant already had photography shot on its terrace under real light. That work set the reference for the crockery, plating and colour of every generated dish.',
-      'Each synthetic plate had to match something the kitchen could serve. The kitchen team held the final say.',
+      'The restaurant already had photographs taken on its terrace under real light, though the archive covered only part of the menu. Those frames set the reference for crockery, plating, colour and camera angle.',
+      'Each generated dish had to match something the kitchen could serve. The chefs approved the final plate masters.',
     ],
     built: [
-      'A Next.js website, a ninety-second VSL script, two public vertical films and stills for the missing dishes. The drawn film used the room’s warm palette and carried the day from the garden to the table.',
+      'I designed and built the Next.js website, wrote a ninety-second VSL and ran one on-location film shoot. I also made more than ten social adverts, an illustrated brand piece with short vertical cuts, and stills for the missing dishes.',
     ],
     how: [
-      'I locked one master plate per dish, covering the crockery, garnish, light and camera angle. Every later frame started from that approved image.',
-      'Full-resolution checks covered printed details and plate outlines. The kitchen reviewed each dish against the food served on site.',
+      'I began with the real terrace photography and grouped it by light, lens position and service time. The shoot filled the live-action gaps; the approved room references then guided the site and social work.',
+      'For each missing dish, I locked one master plate covering the crockery, garnish, lighting and viewpoint. Nano Banana Pro, Nano Banana 2 and ChatGPT Image 2 supplied the stills, while Higgsfield handled motion.',
+      'I checked printed words at full resolution and laid every generated plate outline over its reference at forty per cent opacity. The kitchen reviewed the food before I finished the films in CapCut and shipped the site through Vercel.',
     ],
     landed: [
-      'The website and films are live at mariposa.restaurant. The site, script and moving pieces shipped as one restaurant system.',
+      'The website is live at mariposa.restaurant. I delivered the film shoot, VSL, dish masters and social campaign beside it.',
     ],
     figureLabel: 'Project figures',
     figures: [
       { value: '1', label: 'Live website', note: 'design, build and copy' },
-      { value: '90 sec', label: 'VSL script', note: 'written for the restaurant' },
-      { value: '2', label: 'Public vertical films', note: 'plate move and venue film' },
+      { value: '1', label: 'Film shoot', note: 'planned and filmed on location' },
+      { value: '10+', label: 'Social adverts', note: 'made across the campaign' },
     ],
   },
 };

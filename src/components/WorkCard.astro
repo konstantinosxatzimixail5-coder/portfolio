@@ -45,6 +45,7 @@ const spec = /spec|original/i.test(kind);
     image={image}
     src={src}
     alt={alt}
+    label=""
     num={num}
     ratio={ratio}
     sizes="(max-width: 900px) 100vw, 45vw"
@@ -73,7 +74,10 @@ const spec = /spec|original/i.test(kind);
 <style>
   .card {
     display: grid;
+    align-content: start;
     gap: var(--s-3);
+    min-width: 0;
+    width: 100%;
     text-decoration: none;
     color: inherit;
     padding-bottom: var(--s-2);
@@ -102,6 +106,12 @@ const spec = /spec|original/i.test(kind);
   .card__body {
     display: grid;
     gap: var(--s-2);
+    min-width: 0;
+    width: 100%;
+  }
+
+  .card :global(.frame) {
+    width: 100%;
   }
 
   .card__meta {

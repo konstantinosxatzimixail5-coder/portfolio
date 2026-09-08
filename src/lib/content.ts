@@ -8,6 +8,7 @@ import { profile } from '../data/profile';
 import { navLinks } from '../data/sections';
 import { morePipelines } from '../data/pipelines';
 import { applyCaseStudyCopy } from '../data/case-studies';
+import { elladistanWork } from '../data/repository-work';
 
 // Every page and both shared components need the settings, and Astro renders
 // each page in its own pass. Without a cache the navigation alone would be
@@ -101,7 +102,7 @@ const clipsFromCms = (list: any): Clip[] =>
 
 export const getWork = once(async () => {
   const list = await sanity.fetch<any[]>(QUERIES.work);
-  return list.map((w) =>
+  const cmsWork = list.map((w) =>
     applyCaseStudyCopy({
       ...w,
       title: workTitles[w.slug] ?? w.title,
@@ -115,6 +116,7 @@ export const getWork = once(async () => {
       links: w.links ?? [],
     })
   );
+  return [...cmsWork, elladistanWork];
 });
 
 export const getPipelines = once(async () => {

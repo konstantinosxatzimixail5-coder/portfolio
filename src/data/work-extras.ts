@@ -2,7 +2,7 @@
 //
 // Three pieces belong on that shelf and already have a better home than a case
 // study would give them: the studio has a live site, FERAL has the whole product
-// shelf, and the animation has a film page with its beat map on it. So each one
+// shelf, and Mars Drop has a film page with its beat map on it. So each one
 // gets a card and the card goes where the work actually is. Writing a fourth
 // version of any of them here would be the same argument printed twice, and the
 // two copies would drift.
@@ -51,20 +51,6 @@ export const tailWork: WorkExtra[] = [
     src: 'site/product/feral-billboard',
     alt: 'A night-city billboard for FERAL Yuzu Static, the can breaking out of the board in front of the artwork with lime slices and green liquid crossing the frame.',
     ratio: '16 / 9',
-  },
-  {
-    href: 'https://www.youtube.com/shorts/j_1NQCp2kp0',
-    client: 'ΜΠΑΜ',
-    kind: 'Spec, self-initiated',
-    year: '2025',
-    problem:
-      'A synthetic satire of Greece, made with Grok Imagine and Suno when holding a character for nine seconds was the whole difficulty.',
-    // The short is vertical and the shelf is not. A 9:16 card left a hole in
-    // the column beside it, so the frame is set whole on the page's own ground
-    // rather than cropped down to a letterbox of itself.
-    src: 'site/video/greece-satire-card',
-    alt: 'A cartoon frame from the satire: two wide-eyed trains meeting head on over a level crossing, drivers leaning out of both cabs, the word ΜΠΑΜ across the sky above them.',
-    ratio: '4 / 3',
   },
   {
     href: '/films/mars-drop/',
