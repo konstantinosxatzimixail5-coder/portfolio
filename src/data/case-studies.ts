@@ -58,6 +58,7 @@ const blocks = (paragraphs: string[]) =>
 
 export const caseStudyCopy: Record<string, CaseStudyCopy> = {
   bbda: {
+    title: 'Big Blue Data Academy',
     caseTitle: 'The Unconventional Social Strategy That Became Mainstream',
     year: '2025',
     problem:
@@ -305,6 +306,7 @@ export const caseStudyCopy: Record<string, CaseStudyCopy> = {
   },
 
   'bike-barn': {
+    title: 'Bike Barn',
     caseTitle: 'Indian Elite Models',
     problem:
       'A motorcycle dealership commissioned two hero films from showroom photography.',
