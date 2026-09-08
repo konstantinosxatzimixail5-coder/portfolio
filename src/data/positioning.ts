@@ -52,6 +52,5 @@ export const portraitLabel = 'Me, Myself and I';
  * four films rather than the one the old title implied.
  */
 export const workTitles: Record<string, string> = {
-  cocoon:
-    'Four films for a Horizon Europe consortium: a pilot film shot on a Greek solar park, and an attack explainer',
+  cocoon: 'SEleNe CC',
 };

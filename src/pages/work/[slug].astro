@@ -24,23 +24,37 @@ export async function getStaticPaths() {
 const { d, prev, next } = Astro.props;
 const site = await getSettings();
 
-// The skeleton. Same five sections on every case study, in this order, always.
-// The labels are not editable on purpose: the shape is the promise the site
-// makes, and a page missing its constraint is the one thing that cannot happen.
-const sections = [
-  { id: 'brief', label: 'Brief', body: d.brief },
-  { id: 'constraint', label: 'Constraint', body: d.constraint },
-  { id: 'built', label: 'What I built', body: d.built },
-  { id: 'how', label: 'How I built it', body: d.how },
-  { id: 'landed', label: 'Where it landed', body: d.landed },
-];
-
 const spec = d.kind === 'Spec, self-initiated';
 
 // The films from this engagement that a reader can actually watch. The Studio's
 // own video field still plays first; these are added under it rather than
 // instead of it. See src/data/videos.ts.
 const films = await clipsForAsync(`work:${d.slug}`);
+const hasMedia = d.gallery.length > 0 || !!d.video || films.length > 0;
+const fullCase = !!(d.problemBody && d.idea && d.made && d.result && d.artefacts && d.gates);
+
+// Commercial cases carry the complete working record: idea, outputs, controls,
+// handover files and tools. Older and self-initiated pages keep the original
+// five-part structure until their source material can support the same depth.
+const sections = fullCase
+  ? [
+      { id: 'problem', label: 'Problem', body: d.problemBody },
+      { id: 'idea', label: 'Idea', body: d.idea },
+      { id: 'made', label: 'What I made', items: d.made },
+      { id: 'result', label: 'Result', body: d.result },
+      { id: 'how', label: 'How I built it', body: d.how },
+      { id: 'artefacts', label: 'Artefacts', artefacts: d.artefacts },
+      { id: 'gates', label: 'Gates', gates: d.gates },
+      { id: 'stack', label: 'Stack', stack: d.stack },
+      ...(hasMedia ? [{ id: 'frames', label: 'Frames & films' }] : []),
+    ]
+  : [
+      { id: 'brief', label: 'Brief', body: d.brief },
+      { id: 'constraint', label: 'Constraint', body: d.constraint },
+      { id: 'built', label: 'What I built', body: d.built },
+      { id: 'how', label: 'How I built it', body: d.how },
+      { id: 'landed', label: 'Where it landed', body: d.landed },
+    ];
 
 const jsonLd = graph([
   person(site.domain, site),
@@ -78,6 +92,7 @@ const jsonLd = graph([
         }
       </p>
       <h1 class="cs__title">{d.title}</h1>
+      {d.caseTitle && <p class="cs__case-title">{d.caseTitle}</p>}
       <p class="cs__problem">{d.problem}</p>
       {
         d.figures?.length > 0 && (
@@ -114,9 +129,53 @@ const jsonLd = graph([
           sections.map((s) => (
             <section class={`cs__sec cs__sec--${s.id}`} id={s.id} data-section={s.id}>
               <h2 class="cs__h2">{s.label}</h2>
-              <RichText value={s.body} />
+              {s.body && <RichText value={s.body} />}
 
-              {s.id === 'built' && d.gallery.length > 0 && (
+              {s.id === 'made' && s.items?.length > 0 && (
+                <ul class="made-list">
+                  {s.items.map((item: string) => (
+                    <li><span aria-hidden="true">→</span><span>{item}</span></li>
+                  ))}
+                </ul>
+              )}
+
+              {s.id === 'artefacts' && s.artefacts?.length > 0 && (
+                <dl class="artefacts">
+                  {s.artefacts.map((item: any) => (
+                    <div class="artefacts__row">
+                      <dt class="mono">{item.label}</dt>
+                      <dd>{item.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+
+              {s.id === 'gates' && s.gates?.length > 0 && (
+                <div class="gates">
+                  {s.gates.map((gate: any, i: number) => (
+                    <article class="gate">
+                      <p class="mono gate__num">Gate {String(i + 1).padStart(2, '0')}</p>
+                      <h3>{gate.name}</h3>
+                      <p>{gate.test}</p>
+                    </article>
+                  ))}
+                </div>
+              )}
+
+              {s.id === 'stack' && s.stack?.length > 0 && (
+                <div class="stack">
+                  <dl class="stack__list">
+                    {s.stack.map((row: any) => (
+                      <div class="stack__row">
+                        <dt class="mono">{row.stage}</dt>
+                        <dd class="mono mono--lower">{row.tool}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              )}
+
+              {(s.id === 'built' || s.id === 'frames') && d.gallery.length > 0 && (
                 <div class="cs__strip">
                   {d.gallery.map((g: any, i: number) => (
                     <Frame
@@ -129,7 +188,7 @@ const jsonLd = graph([
                 </div>
               )}
 
-              {s.id === 'built' && d.video && (
+              {(s.id === 'built' || s.id === 'frames') && d.video && (
                 <div class="cs__video">
                   <VideoFacade
                     host={d.video.host}
@@ -141,7 +200,7 @@ const jsonLd = graph([
                 </div>
               )}
 
-              {s.id === 'built' && films.length > 0 && (
+              {(s.id === 'built' || s.id === 'frames') && films.length > 0 && (
                 <div class="cs__video">
                   <Clips
                     clips={films}
@@ -150,7 +209,7 @@ const jsonLd = graph([
                 </div>
               )}
 
-              {s.id === 'how' && d.stack.length > 0 && (
+              {!fullCase && s.id === 'how' && d.stack.length > 0 && (
                 <div class="stack">
                   <p class="mono stack__head">Stack, stage by stage</p>
                   <dl class="stack__list">
@@ -164,7 +223,7 @@ const jsonLd = graph([
                 </div>
               )}
 
-              {s.id === 'landed' && d.links.length > 0 && (
+              {((fullCase && s.id === 'result') || (!fullCase && s.id === 'landed')) && d.links.length > 0 && (
                 <ul class="cs__links">
                   {d.links.map((l: any) => (
                     <li>
@@ -221,6 +280,14 @@ const jsonLd = graph([
   .cs__title {
     font-size: var(--step-5);
     letter-spacing: -0.025em;
+  }
+
+  .cs__case-title {
+    font-family: var(--display);
+    font-size: clamp(var(--step-1), 3vw, var(--step-3));
+    line-height: 1.08;
+    max-width: 24ch;
+    color: var(--newsprint);
   }
 
   .cs__problem {
@@ -359,9 +426,127 @@ const jsonLd = graph([
     max-width: 46ch;
   }
 
+  .cs__sec--idea {
+    border-left: 2px solid var(--red);
+    padding-left: var(--s-5);
+  }
+
+  .cs__sec--idea .cs__h2 {
+    color: var(--red);
+  }
+
+  .cs__sec--idea :global(p) {
+    font-family: var(--display);
+    font-size: var(--step-1);
+    line-height: 1.42;
+    color: var(--newsprint);
+    max-width: 48ch;
+  }
+
+  .made-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--s-3);
+    max-width: var(--measure);
+  }
+
+  .made-list li {
+    display: grid;
+    grid-template-columns: 1.2rem minmax(0, 1fr);
+    gap: var(--s-2);
+    font-size: var(--step-0);
+    line-height: 1.55;
+  }
+
+  .made-list li > :first-child {
+    color: var(--red);
+  }
+
+  .artefacts {
+    margin: 0;
+    border-top: 1px solid var(--rule-bright);
+  }
+
+  .artefacts__row {
+    display: grid;
+    grid-template-columns: minmax(8rem, 0.34fr) minmax(0, 1fr);
+    gap: var(--s-5);
+    align-items: baseline;
+    padding-block: var(--s-3);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .artefacts__row dt {
+    color: var(--red);
+    font-size: 0.64rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .artefacts__row dd {
+    margin: 0;
+    color: var(--fg-quiet);
+    font-size: var(--step--1);
+    line-height: 1.45;
+  }
+
+  .gates {
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .gate {
+    position: relative;
+    display: grid;
+    gap: var(--s-2);
+    padding: var(--s-4) var(--s-5);
+    background: var(--ink-raised);
+    border-left: 2px solid var(--red);
+  }
+
+  .gate::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto auto;
+    width: 2.75rem;
+    height: 1px;
+    background: var(--red);
+  }
+
+  .gate__num {
+    margin: 0;
+    color: var(--red);
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .gate h3 {
+    font-family: var(--body);
+    font-size: var(--step--1);
+    font-weight: 650;
+    color: var(--newsprint);
+  }
+
+  .gate p:last-child {
+    margin: 0;
+    color: var(--fg-quiet);
+    font-size: var(--step--1);
+    line-height: 1.55;
+    max-width: 64ch;
+  }
+
   @media (max-width: 620px) {
-    .cs__sec--constraint {
+    .cs__sec--constraint,
+    .cs__sec--idea {
       padding-left: var(--s-4);
+    }
+
+    .artefacts__row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-1);
     }
   }
 
